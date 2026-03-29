@@ -1,13 +1,10 @@
 import './App.css'
+import WeatherPage from './pages/WeatherPage'
 
 function App() {
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <h1>Weather</h1>
-      </header>
-
-      <main className="app-content" aria-label="weather-content" />
+      <WeatherPage />
     </div>
   )
 }

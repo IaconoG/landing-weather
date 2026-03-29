@@ -1,16 +1,23 @@
 :root {
-  /* Colors */
+  /* Colors - Base */
   --color-surface: #ffffff;
   --color-background: #f8fafc;
   --color-text-primary: #1f2937;
   --color-text-secondary: #4b5563;
   --color-text-accent: #3b82f6;
+  
+  /* Colors - UI Components */
+  --color-border-light: #dbe3ef;
+  --color-border-input: #cbd5e1;
+  --color-button-primary: #2563eb;
+  --color-button-text: #ffffff;
 
   /* Spacing */
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
   --spacing-md: 1rem;
   --spacing-lg: 2rem;
+  --spacing-xl: 2.5rem;
 
   /* Border Radius */
   --border-radius-sm: 0.125rem;
@@ -25,7 +32,6 @@
   /* Font Sizes */
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
-
   --font-size-md: 1rem;
   --font-size-lg: 1.25rem;
 
@@ -33,5 +39,13 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
+
+  /* Component Heights */
+  --height-control: 40px;
+  --height-card-current: 140px;
+  --height-card-metrics: 120px;
+  --height-card-hourly: 160px;
+  --height-card-weekly: 160px;
+  --height-card-chart: 220px;
 }
 
