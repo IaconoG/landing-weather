@@ -11,7 +11,7 @@ export type LocationResponse = {
 }
 
 /**
- * Prametors de busqueda de ubicacion.
+ * Parametros de busqueda de ubicacion.
  */
 export type LocationSearchInput = {
   query: string;
@@ -24,7 +24,7 @@ export type LocationState = {
   location?: LocationResponse;
   loading: boolean;
   success: boolean;
-  errors?: string[] | null;
+  error?: string | null;
 }
 
 /**
