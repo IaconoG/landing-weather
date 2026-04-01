@@ -1,20 +1,20 @@
 import { create } from 'zustand';
 
-import type { CurrentWeather } from '../../../types/weather.types';
+import type { CurrentWeather, WeatherError } from '../../../types/weather.types';
 
 interface WeatherState {
   latitude: number | null;
   longitude: number | null;
   currentWeather: CurrentWeather | null; 
   isLoading: boolean;
-  error: string | null;
+  error: WeatherError | null;
 }
 
 interface WeatherActions {
   setLocation: (latitude: number, longitude: number) => void;
   setCurrentWeather: (weatherData: CurrentWeather | null) => void;
   setLoading: (isLoading: boolean) => void;
-  setError: (error: string | null) => void;
+  setError: (error: WeatherError | null) => void;
 }
 
 
