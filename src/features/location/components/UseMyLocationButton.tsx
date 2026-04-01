@@ -11,22 +11,16 @@ type UseMyLocationButtonProps = {
 const UseMyLocationButton: React.FC<UseMyLocationButtonProps> = ({ onLocationFound }) => {
   const { location, requestLocation, isLoading, error } = useLocation();
 
-  const handleClick = () => {
-    requestLocation();
-  }
-
-  // Notificar al componente padre cuando se obtiene la ubicación. A través de un `useEffect` que dependa de `location`, para evitar llamar a `onLocationFound` en cada renderizado.
   useEffect(() => {
-    if (location) {
-      onLocationFound(location);
-    }
+    if (!location) return;
+    onLocationFound(location);
   }, [location, onLocationFound]);
 
 
   return (
     <div className="use-my-location-button">
       <button
-        onClick={handleClick}
+        onClick={requestLocation}
         disabled={isLoading}
         className="use-my-location-button__button"
       >
