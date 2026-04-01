@@ -43,16 +43,16 @@ const useLocation = (): UseLocationResult => {
       (geoError: GeolocationPositionError) => {
         switch (geoError.code) {
           case geoError.PERMISSION_DENIED:
-            setError('Permission denied. Please allow location access to get weather data.');
+            setError('Permiso denegado. Por favor, permite el acceso a la ubicación para obtener los datos del clima.');
             break;
           case geoError.POSITION_UNAVAILABLE:
-            setError('Position unavailable. Please try again later.');
+            setError('Posición no disponible. Por favor, inténtalo de nuevo más tarde.');
             break;
           case geoError.TIMEOUT:
-            setError('Location request timed out. Please try again.');
+            setError('Solicitud de ubicación agotada. Por favor, inténtalo de nuevo.');
             break;
           default:
-            setError('An unknown error occurred while fetching location.');
+            setError('Ocurrió un error desconocido al obtener la ubicación.');
         }
         setIsLoading(false);
       },
