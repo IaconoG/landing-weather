@@ -1,0 +1,61 @@
+.weather-current-card {
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md);
+
+
+
+  & .weather-current-card__main {
+    display: grid;
+    gap: var(--spacing-md);
+  }
+
+  & .weather-current-card__temperature {
+    display: grid;
+    gap: var(--spacing-xs);
+  }
+
+  & .weather-current-card__temperature-value {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    line-height: 1;
+  }
+
+  & .weather-current-card__condition {
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-current-card__details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--spacing-sm);
+  }
+
+  & .weather-current-card__detail {
+    display: grid;
+    gap: var(--spacing-xs);
+  }
+
+  & .weather-current-card__detail-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-current-card__detail-value {
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  &.weather-current-card--error,
+  &.weather-current-card--empty {
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-current-card__error-message,
+  & .weather-current-card__empty-message {
+    margin: 0;
+  }
+}

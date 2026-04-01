@@ -36,42 +36,6 @@
   color: var(--color-text-secondary);
 }
 
-.location-header-controls {
-  display: flex;
-  gap: var(--spacing-sm);
-  flex-wrap: wrap;
-  margin-top: var(--spacing-sm);
-}
-
-.location-header-controls input {
-  flex: 1 1 220px;
-  min-height: var(--height-control);
-  border: 1px solid var(--color-border-input);
-  border-radius: var(--border-radius-md);
-  padding: 0 var(--spacing-sm);
-  background: var(--color-surface);
-  font-family: inherit;
-  font-size: var(--font-size-md);
-}
-
-.location-header-controls button {
-  min-height: var(--height-control);
-  border: 1px solid var(--color-button-primary);
-  border-radius: var(--border-radius-md);
-  padding: 0 var(--spacing-md);
-  background: var(--color-button-primary);
-  color: var(--color-button-text);
-  font-family: inherit;
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-medium);
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-}
-
-.location-header-controls button:hover {
-  background-color: #1d4ed8;
-}
-
 .weather-content {
   display: grid;
   gap: var(--spacing-md);
