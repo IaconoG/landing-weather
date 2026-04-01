@@ -8,36 +8,50 @@ type UseWeatherParams = {
 }
 
 const buildMissingLocationError = (): WeatherError => ({
-  message: 'No se pudo obtner la ubicación. Permite el acceso a tu ubicación para ver el clima o ingresa una ubicación manualmente.',
+  message: 'No se pudo obtener la ubicación. Permite el acceso a tu ubicación para ver el clima o ingresa una ubicación manualmente.',
   type: undefined,
   timestamp: new Date(),
 });
 
 const useWeather = ({ latitude, longitude }: UseWeatherParams) => {
   const missingLocation = latitude === null || longitude === null;
-
-  const initialState = useMemo<CurrentWeatherResult>(
-    () => 
-      missingLocation
-        ? { data: null, error: buildMissingLocationError(), fetchedAt: 0 }
-        : { data: null, error: null, fetchedAt: 0 },
-    [missingLocation]
+  
+  const missingLocationState = useMemo<CurrentWeatherResult>(
+    () => ({
+      data: null,
+      error: buildMissingLocationError(),
+      fetchedAt: 0
+    } ),
+    []
   );
 
-  const [weather, setWeather] = useState<CurrentWeatherResult>(initialState)
+  const [weather, setWeather] = useState<CurrentWeatherResult>({
+    data: null,
+    error: null,
+    fetchedAt: 0,
+  });
 
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  
   useEffect(() => {
     if (missingLocation) return;
 
     let cancelled = false;
 
     const run = async () => {
-      const result = await weatherService.getCurrentWeather({
-        latitude: latitude! as number,
-        longitude: longitude! as number,
-      });
+      setIsLoading(true);
+      try {
+        const result = await weatherService.getCurrentWeather({
+          latitude: latitude as number,
+          longitude: longitude as number,
+        });
 
-      if (!cancelled) setWeather(result);
+        if (!cancelled) setWeather(result);
+      } finally {
+        if (!cancelled) {
+          setIsLoading(false);
+        }
+      }
     };
 
     run();
@@ -46,7 +60,10 @@ const useWeather = ({ latitude, longitude }: UseWeatherParams) => {
       cancelled = true;
     }
   }, [latitude, longitude, missingLocation]);
-  return weather;
+  return { 
+    weather: missingLocation ? missingLocationState : weather,
+    isLoading: missingLocation ? false : isLoading,
+  };
 };
 
 export default useWeather;
