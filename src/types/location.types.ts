@@ -31,3 +31,10 @@ export type LocationState = {
  * Fuente de la ubicacion.
  */
 export type LocationSource = 'geolocation' | 'search';
+
+export type SelectedLocation = {
+  latitude: number;
+  longitude: number;
+  label: string;
+  source: LocationSource;
+}

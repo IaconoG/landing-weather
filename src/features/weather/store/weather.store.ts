@@ -3,16 +3,20 @@ import { persist } from 'zustand/middleware';
 
 import type { CurrentWeather, WeatherError } from '../../../types/weather.types';
 
+import type { LocationSource, SelectedLocation } from '../../../types/location.types';
+
 interface WeatherState {
   latitude: number | null;
   longitude: number | null;
+  locationLabel: string | null;
+  locationSource: LocationSource | null;
   currentWeather: CurrentWeather | null; 
   isWeatherLoading: boolean;
   weatherError: WeatherError | null;
 }
 
 interface WeatherActions {
-  setLocation: (latitude: number, longitude: number) => void;
+  setLocation: (location: SelectedLocation) => void;
   setCurrentWeather: (weatherData: CurrentWeather | null) => void;
   setIsWeatherLoading: (isWeatherLoading: boolean) => void;
   setWeatherError: (weatherError: WeatherError | null) => void;
@@ -23,14 +27,18 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
     (set) => ({
       latitude: null,
       longitude: null,
+      locationLabel: null,
+      locationSource: null,
       currentWeather: null,
       weatherError: null,
       isWeatherLoading: false,
 
-      setLocation: (latitude, longitude) => 
+      setLocation: (location) => 
         set({
-          latitude,
-          longitude,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          locationLabel: location.label,
+          locationSource: location.source,
           currentWeather: null,
           weatherError: null,
           isWeatherLoading: true,
@@ -44,6 +52,8 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
       partialize: (state) => ({
         latitude: state.latitude,
         longitude: state.longitude,
+        locationLabel: state.locationLabel,
+        locationSource: state.locationSource,
       }),
     }
   )
