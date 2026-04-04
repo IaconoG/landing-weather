@@ -1,16 +1,16 @@
-import type { StructureWeatherData,  HourlyWeatherData } from "@i-giann/open-meteo-wrapper"
-import type { CurrentWeather } from "../../types/weather.types"
+import type { StructureWeatherData, HourlyWeatherData } from "@i-giann/open-meteo-wrapper";
+import type { CurrentWeather } from "../../types/weather.types";
 
+const toNumber = (value?: { value: number }): number => value?.value ?? 0;
 
-const toNumber = (value?: {value: number}): number => value?.value ?? 0;
-
-const toTimestamp = (value?: {value: Date}): number =>
+const toTimestamp = (value?: { value: Date }): number =>
   value?.value instanceof Date ? value.value.getTime() : Date.now();
 
-export const mapToCurrentWeather = (data: StructureWeatherData): CurrentWeather => { 
+export const mapToCurrentWeather = (data: StructureWeatherData): CurrentWeather => {
   const firstHour: HourlyWeatherData | undefined = data.currentDay?.hourly?.[0];
 
-  const weatherDescription = firstHour?.weatherDescription?.value ?? 'Condición desconocida'
+  const weatherDescription =
+    firstHour?.weatherDescription?.value ?? "Condición desconocida";
 
   return {
     temperature: toNumber(firstHour?.temperature),
@@ -20,7 +20,7 @@ export const mapToCurrentWeather = (data: StructureWeatherData): CurrentWeather 
     windSpeed: toNumber(firstHour?.wind?.speed),
     pressure: toNumber(firstHour?.pressureMsl),
     visibility: toNumber(firstHour?.visibility),
-    uv: toNumber(firstHour?.uv) ?? 0,
+    uv: firstHour?.uv?.value ?? 0,
     timestamp: toTimestamp(firstHour?.hour),
-  }
-}
+  };
+};
