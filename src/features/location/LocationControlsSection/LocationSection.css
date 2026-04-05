@@ -1,0 +1,6 @@
+.location-controls-section {
+  width: 100%;
+  display: grid;
+  gap: var(--spacing-sm);
+  align-items: start;
+}

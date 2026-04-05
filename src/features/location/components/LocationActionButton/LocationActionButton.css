@@ -1,0 +1,28 @@
+.location-action-button {
+	width: 100%;
+	min-height: var(--height-control);
+	border: 1px solid var(--color-border-input);
+	border-radius: var(--border-radius-md);
+	padding: 0 var(--spacing-md);
+	background: var(--color-surface);
+	color: var(--color-text-primary);
+	font-weight: var(--font-weight-medium);
+	cursor: pointer;
+}
+
+.location-action-button:disabled {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+
+.location-action-button--primary {
+	border-color: var(--color-button-primary);
+	background: var(--color-button-primary);
+	color: var(--color-button-text);
+}
+
+.location-action-button--secondary {
+	border-color: var(--color-border-input);
+	background: var(--color-surface);
+	color: var(--color-text-primary);
+}

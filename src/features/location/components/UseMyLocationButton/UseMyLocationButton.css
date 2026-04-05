@@ -1,0 +1,10 @@
+.use-my-location-button {
+  display: grid;
+  gap: var(--spacing-xs);
+
+  & .use-my-location-button__error {
+    margin: 0;
+    color: #b42318;
+    font-size: var(--font-size-sm);
+  }
+}

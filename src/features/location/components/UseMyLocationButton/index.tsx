@@ -1,39 +1,30 @@
-import { useEffect } from "react";
-import useLocation from "../../hooks/useLocation";
 import "./UseMyLocationButton.css";
-import type { SelectedLocation } from "../../../../types/location.types";
+import LocationActionButton from "../LocationActionButton";
 
 type UseMyLocationButtonProps = {
-  onLocationFound: (location: SelectedLocation ) => void
-}
+  isLoading: boolean;
+  error: string | null;
+  onRequestLocation: () => void;
+};
 
-const UseMyLocationButton: React.FC<UseMyLocationButtonProps> = ({ onLocationFound }) => {
-  const { location, requestLocation, isLoading, error } = useLocation();
-
-  useEffect(() => {
-    if (!location) return;
-    onLocationFound({
-      latitude: location.latitude,
-      longitude: location.longitude,
-      label: `Mi ubicación (${location.latitude.toFixed(2)}, ${location.longitude.toFixed(2)})`,
-      source: 'geolocation',
-    });
-  }, [location, onLocationFound]);
-
-
+const UseMyLocationButton: React.FC<UseMyLocationButtonProps> = ({
+  isLoading,
+  error,
+  onRequestLocation,
+}) => {
   return (
     <div className="use-my-location-button">
-      <button
-        onClick={requestLocation}
-        disabled={isLoading}
-        className="use-my-location-button__button"
-      >
-        {isLoading ? "Obteniendo ubicación..." : "Usar mi ubicación"}
-      </button>
+      <LocationActionButton
+        onClick={onRequestLocation}
+        disabled={false}
+        loading={isLoading}
+        loadingLabel="Obteniendo ubicación..."
+        label="Usar mi ubicación"
+        variant="secondary"
+      />
       {error && <p className="use-my-location-button__error">{error}</p>}
     </div>
   );
-}
-
+};
 
 export default UseMyLocationButton;

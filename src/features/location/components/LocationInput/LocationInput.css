@@ -1,43 +1,22 @@
 .location-input {
+  width: 100%;
   position: relative;
   display: grid;
   gap: var(--spacing-xs);
 
-  & .location-input__search-box {
-    display: flex;
-    gap: var(--spacing-sm);
-    align-items: stretch;
-  }
-
   & .location-input__input {
-    flex: 1 1 240px;
+    width: 100%;
     min-height: var(--height-control);
     border: 1px solid var(--color-border-input);
     border-radius: var(--border-radius-md);
     padding: 0 var(--spacing-sm);
     background: var(--color-surface);
     color: var(--color-text-primary);
-
-    &:focus {
-      outline: 2px solid var(--color-button-primary);
-      outline-offset: 1px;
-    }
   }
 
-  & .location-input__search-button {
-    min-height: var(--height-control);
-    border: 1px solid var(--color-button-primary);
-    border-radius: var(--border-radius-md);
-    padding: 0 var(--spacing-md);
-    background: var(--color-button-primary);
-    color: var(--color-button-text);
-    font-weight: var(--font-weight-medium);
-    cursor: pointer;
-
-    &:disabled {
-      cursor: not-allowed;
-      opacity: 0.7;
-    }
+  & .location-input__input:focus {
+    outline: 2px solid var(--color-button-primary);
+    outline-offset: 1px;
   }
 
   & .location-input__error {
@@ -56,6 +35,7 @@
     box-shadow: var(--shadow-md);
     display: grid;
     gap: var(--spacing-xs);
+    z-index: 2;
   }
 
   & .location-input__result-item {
@@ -72,10 +52,10 @@
     background: transparent;
     color: var(--color-text-primary);
     cursor: pointer;
+  }
 
-    &:hover {
-      background: var(--color-background);
-      border-color: var(--color-border-light);
-    }
+  & .location-input__select-button:hover {
+    background: var(--color-background);
+    border-color: var(--color-border-light);
   }
 }

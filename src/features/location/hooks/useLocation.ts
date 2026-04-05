@@ -1,9 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from "react";
 
 export type BrowserLocation = {
   latitude: number;
   longitude: number;
-}
+};
 
 type UseLocationResult = {
   location: BrowserLocation | null;
@@ -11,7 +11,7 @@ type UseLocationResult = {
   isLoading: boolean;
   requestLocation: () => void;
   clearLocationError: () => void;
-}
+};
 
 const useLocation = (): UseLocationResult => {
   const [location, setLocation] = useState<BrowserLocation | null>(null);
@@ -25,8 +25,8 @@ const useLocation = (): UseLocationResult => {
   const requestLocation = useCallback(() => {
     setError(null);
 
-    if(!navigator.geolocation) {
-      setError('Geolocation is not supported by your browser');
+    if (!navigator.geolocation) {
+      setError("Tu navegador no soporta geolocalización.");
       return;
     }
 
@@ -43,16 +43,16 @@ const useLocation = (): UseLocationResult => {
       (geoError: GeolocationPositionError) => {
         switch (geoError.code) {
           case geoError.PERMISSION_DENIED:
-            setError('Permiso denegado. Por favor, permite el acceso a la ubicación para obtener los datos del clima.');
+            setError("Permiso denegado para obtener tu ubicación.");
             break;
           case geoError.POSITION_UNAVAILABLE:
-            setError('Posición no disponible. Por favor, inténtalo de nuevo más tarde.');
+            setError("Posición no disponible en este momento.");
             break;
           case geoError.TIMEOUT:
-            setError('Solicitud de ubicación agotada. Por favor, inténtalo de nuevo.');
+            setError("Tiempo agotado al solicitar ubicación.");
             break;
           default:
-            setError('Ocurrió un error desconocido al obtener la ubicación.');
+            setError("Ocurrió un error al obtener la ubicación.");
         }
         setIsLoading(false);
       },
@@ -61,7 +61,7 @@ const useLocation = (): UseLocationResult => {
         timeout: 10000,
         maximumAge: 300000,
       }
-    )
+    );
   }, []);
 
   return { location, error, isLoading, requestLocation, clearLocationError };

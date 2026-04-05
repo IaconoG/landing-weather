@@ -1,72 +1,51 @@
-import { useEffect, useState } from 'react'
-import type { SelectedLocation } from '../../../../types/location.types'
-import useLocationSearch from '../../hooks/useLocationSearch'
-import './LocationInput.css'
+import type { LocationSuggestion, SelectedLocation } from "../../../../types/location.types";
+import "./LocationInput.css";
 
 type LocationInputProps = {
-  onLocationSelect: (location: SelectedLocation ) => void
-}
+  query: string;
+  isLoading: boolean;
+  error: string | null;
+  suggestions: LocationSuggestion[];
+  onQueryChange: (value: string) => void;
+  onSearch: () => Promise<void>;
+  onClearSearch: () => void;
+  onLocationSelect: (location: SelectedLocation) => void;
+};
 
-const LocationInput: React.FC<LocationInputProps> = ({ onLocationSelect }) => {
-  const [query, setQuery] = useState('')
-  const { suggestions, error, isLoading, searchLocation, clearSearch } =
-    useLocationSearch()
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(e.target.value)
-  }
-
-  useEffect(() => {
-    if (!query.trim()) {
-      clearSearch()
-      return
-    }
-
-    const timerId = setTimeout(() => {
-      void searchLocation(query)
-    }, 350)
-
-    return () => {
-      clearTimeout(timerId)
-    }
-  }, [query, searchLocation, clearSearch])
-
-  const handleSelectResult = (location: SelectedLocation) => {
-    onLocationSelect(location)
-    setQuery(location.label)
-    clearSearch()
-  }
-
-  const handleSearch = async () => {
-    await searchLocation(query)
-  }
-
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      void handleSearch()
-    }
-  }
+const LocationInput: React.FC<LocationInputProps> = ({
+  query,
+  isLoading,
+  error,
+  suggestions,
+  onQueryChange,
+  onSearch,
+  onClearSearch,
+  onLocationSelect,
+}) => {
+  const handleSelectResult = (option: LocationSuggestion) => {
+    onLocationSelect({
+      latitude: option.latitude,
+      longitude: option.longitude,
+      label: option.displayName,
+      source: "search",
+    });
+    onQueryChange(option.displayName);
+    onClearSearch();
+  };
 
   return (
     <div className="location-input">
-      <div className="location-input__search-box">
-        <input
-          type="text"
-          className="location-input__input"
-          placeholder="Busca tu ciudad o provincia..."
-          value={query}
-          onChange={handleInputChange}
-          onKeyDown={handleKeyPress}
-          disabled={isLoading}
-        />
-        <button
-          className="location-input__search-button"
-          onClick={handleSearch}
-          disabled={isLoading || !query.trim()}
-        >
-          {isLoading ? 'Buscando...' : 'Buscar'}
-        </button>
-      </div>
+      <input
+        type="text"
+        className="location-input__input"
+        placeholder="Busca tu ciudad o coordenadas (lat,lon)..."
+        value={query}
+        onChange={(e) => onQueryChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") void onSearch();
+        }}
+        disabled={isLoading}
+      />
 
       {error && <p className="location-input__error">{error}</p>}
 
@@ -77,14 +56,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onLocationSelect }) => {
               <button
                 type="button"
                 className="location-input__select-button"
-                onClick={() =>
-                  handleSelectResult({
-                    latitude: option.latitude,
-                    longitude: option.longitude,
-                    label: option.displayName,
-                    source: 'search',
-                  })
-                }
+                onClick={() => handleSelectResult(option)}
               >
                 {option.displayName}
               </button>
@@ -93,7 +65,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onLocationSelect }) => {
         </ul>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default LocationInput
+export default LocationInput;
