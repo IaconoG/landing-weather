@@ -1,0 +1,107 @@
+.weather-main-section-content {
+  height: fit-content;
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "title title"
+    "temperature description"
+    "metrics metrics";
+  gap: var(--spacing-md) var(--spacing-lg);
+
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--border-radius-md);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+
+  & .weather-main-section__title {
+    grid-area: title;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  & .weather-main-section__temperature {
+    grid-area: temperature;
+    font-size: var(--font-size-6xl);
+    color: var(--color-text-primary);
+    line-height: 1;
+  }
+
+  & .weather-main-section__description {
+    grid-area: description;
+    color: var(--color-text-secondary);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-self: flex-end;
+  }
+
+  & .weather-main-section__description-value {
+    padding-top: var(--spacing-sm);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    line-height: 1.2;
+  }
+
+  & .weather-main-section__sensation {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-main-section__metrics {
+    grid-area: metrics;
+    display: flex;
+    gap: var(--spacing-2xl);
+  }
+
+  & .weather-main-section__metric {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  & .weather-main-section__metric-label {
+    font-size: var(--font-size-md);
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-main-section__metric-value {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-primary);
+  }
+
+  &.weather-main-section--empty,
+  &.weather-main-section--error {
+    display: block;
+  }
+
+  & .weather-main-section__empty-message,
+  & .weather-main-section__error-message {
+    margin: 0;
+    color: var(--color-text-secondary);
+  }
+
+  &.weather-main-section-content--skeleton {
+    & .weather-main-section__skeleton-title {
+      grid-area: title;
+    }
+
+    & .weather-main-section-content__skeleton-temperature {
+      grid-area: temperature;
+    }
+
+    & .weather-main-section-content__skeleton-description {
+      grid-area: description;
+      align-self: flex-end;
+    }
+
+    & .weather-main-section-content__skeleton-metrics {
+      grid-area: metrics;
+      display: flex;
+      gap: var(--spacing-2xl);
+    }
+  }
+}

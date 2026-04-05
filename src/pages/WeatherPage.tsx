@@ -1,8 +1,20 @@
+/* hooks */
+import useWeatherController from "../features/weather/hooks/useWeatherController";
+/* store */
+import {useWeatherStore} from "../features/weather/store/weather.store";
+/* components */
 import WeatherPageHeader from "../shared/components/WeatherPageHeader";
 import WeatherPageFooter from "../shared/components/WeatherPageFooter";
-import WeatherCurrentCard from "../features/weather/components/WeatherCurrentCard";
-import useWeatherController from "../features/weather/hooks/useWeatherController";
-import {useWeatherStore} from "../features/weather/store/weather.store";
+
+import LocationSection from "../features/location/LocationControlsSection";
+
+import WeatherMainSection from "../features/weather/sections/WeatherMainSection";
+import WeatherHourlySection from "../features/weather/sections/WeatherHourlySection";
+import WeatherDetailsSection from "../features/weather/sections/WeatherDetailsSection";
+/* styles */
+import "./WeatherPage.css";
+
+
 
 const WeatherPage: React.FC = () => {
   useWeatherController();
@@ -16,11 +28,23 @@ const WeatherPage: React.FC = () => {
       <WeatherPageHeader />
 
       <main className="weather-content">
-        <WeatherCurrentCard
-          data={currentWeather}
-          error={weatherError}
-          isLoading={isWeatherLoading}
+        <div className="weather-main-section">
+          <WeatherMainSection 
+            data={currentWeather} error={weatherError} isLoading={isWeatherLoading}
+          />
+          <LocationSection />
+        </div>
+        <WeatherDetailsSection 
+          data={currentWeather} error={weatherError} isLoading={isWeatherLoading}
         />
+        <WeatherHourlySection
+          data={currentWeather} error={weatherError} isLoading={isWeatherLoading}
+        />
+          {/* <WeatherGraphSection /> */}
+        {/* <WeatherMapSection /> */}
+        {/* <WeatherAlertsSection /> */}
+        {/* <WeatherForecastSection /> */}
+        {/* <WeatherHistoricalSection /> */}
       </main>
       
       <WeatherPageFooter />
