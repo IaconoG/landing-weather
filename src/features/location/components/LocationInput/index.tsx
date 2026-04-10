@@ -38,7 +38,7 @@ const LocationInput: React.FC<LocationInputProps> = ({
       <input
         type="text"
         className="location-input__input"
-        placeholder="Busca tu ciudad o coordenadas (lat,lon)..."
+        placeholder="Busca tu ciudad o coordenadas (lat,lon)"
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
         onKeyDown={(e) => {

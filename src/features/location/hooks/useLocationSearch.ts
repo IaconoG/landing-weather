@@ -43,7 +43,7 @@ const parseCoordinatesQuery = (query: string): LocationSuggestion | null => {
     id: `coords-${latitude}-${longitude}`,
     latitude,
     longitude,
-    displayName: `Coordenadas (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`,
+    displayName: `Coordenadas: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`,
   };
 };
 
