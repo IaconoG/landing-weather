@@ -1,6 +1,8 @@
 import type { CurrentWeather, WeatherError } from "../../../../types/weather.types";
-import WeatherDetailsSectionSkeleton from "./WeatherDetailsSectionSkeleton";
+import WeatherDetailsSectionSkeleton from "./componnents/WeatherDetailsSectionSkeleton";
 import "./WeatherDetailsSection.css";
+import WeatherDetailsSectionNoData from "./componnents/WeatherDetailsSectionNoData";
+import WeatherDetailsSectionError from "./componnents/WeatherDetailsSectionError";
 
 type WeatherDetailsSectionProps = {
   data: CurrentWeather | null;
@@ -54,24 +56,8 @@ const WeatherDetailsSection: React.FC<WeatherDetailsSectionProps> = ({
   isLoading,
 }) => {
   if (isLoading) return <WeatherDetailsSectionSkeleton />;
-
-  if (error) {
-    return (
-      <div className="weather-details-section weather-details-section--error">
-        <p className="weather-details-section__error-message">{error.message}</p>
-      </div>
-    );
-  }
-
-  if (!data) {
-    return (
-      <div className="weather-details-section weather-details-section--empty">
-        <p className="weather-details-section__empty-message">
-          Sin datos de detalles por ahora.
-        </p>
-      </div>
-    );
-  }
+  if (error) return <WeatherDetailsSectionError message={error.message} />;
+  if (!data) return <WeatherDetailsSectionNoData />;
 
   const metrics = buildMetrics(data);
 

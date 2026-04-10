@@ -1,29 +1,14 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { weatherService } from "../../../services/weather/weather.service";
-import type { CurrentWeatherResult, WeatherError } from "../../../types/weather.types";
+import type { CurrentWeatherResult } from "../../../types/weather.types";
 
 type UseWeatherParams = {
   latitude: number | null;
   longitude: number | null;
 }
 
-const buildMissingLocationError = (): WeatherError => ({
-  message: 'No se pudo obtener la ubicación. Permite el acceso a tu ubicación para ver el clima o ingresa una ubicación manualmente.',
-  type: undefined,
-  timestamp: new Date(),
-});
-
 const useWeather = ({ latitude, longitude }: UseWeatherParams) => {
   const missingLocation = latitude === null || longitude === null;
-  
-  const missingLocationState = useMemo<CurrentWeatherResult>(
-    () => ({
-      data: null,
-      error: buildMissingLocationError(),
-      fetchedAt: 0
-    } ),
-    []
-  );
 
   const [weather, setWeather] = useState<CurrentWeatherResult>({
     data: null,
@@ -60,8 +45,15 @@ const useWeather = ({ latitude, longitude }: UseWeatherParams) => {
       cancelled = true;
     }
   }, [latitude, longitude, missingLocation]);
+
   return { 
-    weather: missingLocation ? missingLocationState : weather,
+    weather: missingLocation
+      ? {
+          data: null,
+          error: null,
+          fetchedAt: 0,
+        }
+      : weather,
     isLoading: missingLocation ? false : isLoading,
   };
 };

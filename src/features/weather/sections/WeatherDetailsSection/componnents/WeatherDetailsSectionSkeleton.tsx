@@ -1,4 +1,4 @@
-import BaseSkeleton from "../../../../shared/components/BaseSkeleton";
+import BaseSkeleton from "../../../../../shared/components/BaseSkeleton";
 
 const WeatherDetailsSectionSkeleton: React.FC = () => {
   return (

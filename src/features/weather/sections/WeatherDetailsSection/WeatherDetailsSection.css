@@ -21,9 +21,9 @@
     border-radius: var(--border-radius-lg);
     overflow: hidden;
     padding: var(--spacing-md) 20px;
-    background-color: var(--color-surface);
-    box-shadow: var(--shadow-sm);
-    border: 1px solid var(--color-border-light);
+    background: color-mix(in srgb, var(--color-surface-strong) 84%, transparent);
+    box-shadow: none;
+    border: none;
     display: flex;
     flex-direction: column;
     gap: var(--spacing-sm);
@@ -37,15 +37,15 @@
   & .weather-details-section__metric-graph {
     flex: 1;
     border-radius: var(--border-radius-md);
-    background: var(--color-background);
-    border: 1px dashed var(--color-border-light);
+    background: linear-gradient(180deg, rgba(33, 39, 83, 0.58) 0%, rgba(35, 41, 92, 0.22) 100%);
+    border: 1px dashed rgba(150, 165, 245, 0.22);
   }
 
   & .weather-details-section__metric-description {
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
-    color: var(--color-text-secondary);
+    color: var(--color-text-muted);
     font-size: var(--font-size-sm);
     & .weather-details-section__metric-value {
       
@@ -60,17 +60,31 @@
 
   &.weather-details-section--error,
   &.weather-details-section--empty {
-    border: 1px solid var(--color-border-light);
+    border: none;
     border-radius: var(--border-radius-lg);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-sm);
-    padding: var(--spacing-md);
+    box-shadow: none;
+    padding: 0;
   }
 
   & .weather-details-section__error-message,
   & .weather-details-section__empty-message {
     margin: 0;
     color: var(--color-text-secondary);
+  }
+
+  &.weather-details-section--empty {
+    padding-top: var(--spacing-sm);
+
+    & .weather-details-section__metric-graph {
+      border-style: dashed;
+      border-color: color-mix(in srgb, var(--color-text-secondary) 18%, transparent);
+      background: linear-gradient(180deg, rgba(64, 72, 108, 0.25) 0%, rgba(64, 72, 108, 0.08) 100%);
+    }
+
+    & .weather-details-section__metric-text,
+    & .weather-details-section__metric-value {
+      color: color-mix(in srgb, var(--color-text-secondary) 88%, var(--color-text-primary) 12%);
+    }
   }
 
   &.weather-details-section--skeleton {

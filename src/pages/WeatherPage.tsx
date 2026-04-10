@@ -6,8 +6,6 @@ import {useWeatherStore} from "../features/weather/store/weather.store";
 import WeatherPageHeader from "../shared/components/WeatherPageHeader";
 import WeatherPageFooter from "../shared/components/WeatherPageFooter";
 
-import LocationSection from "../features/location/LocationControlsSection";
-
 import WeatherMainSection from "../features/weather/sections/WeatherMainSection";
 import WeatherHourlySection from "../features/weather/sections/WeatherHourlySection";
 import WeatherDetailsSection from "../features/weather/sections/WeatherDetailsSection";
@@ -32,7 +30,6 @@ const WeatherPage: React.FC = () => {
           <WeatherMainSection 
             data={currentWeather} error={weatherError} isLoading={isWeatherLoading}
           />
-          <LocationSection />
         </div>
         <WeatherDetailsSection 
           data={currentWeather} error={weatherError} isLoading={isWeatherLoading}

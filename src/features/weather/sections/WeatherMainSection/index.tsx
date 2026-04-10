@@ -1,7 +1,12 @@
 /* types */
 import type { CurrentWeather, WeatherError } from "../../../../types/weather.types";
 /* components */
-import { WeatherMainSectionContent, WeatherMainSectionError, WeatherMainSectionNoData, WeatherMainSectionSkeleton } from "./components";
+import {
+  WeatherMainSectionContent,
+  WeatherMainSectionError,
+  WeatherMainSectionNoData,
+  WeatherMainSectionSkeleton,
+} from "./components";
 /* styles */
 import "./WeatherMainSection.css";
 
@@ -17,7 +22,7 @@ const WeatherMainSection: React.FC<WeatherMainSectionProps> = ({ data, error, is
   if (!data) return <WeatherMainSectionNoData />;
 
   return <WeatherMainSectionContent data={data} />;
-}
+};
       
 
 export default WeatherMainSection;
