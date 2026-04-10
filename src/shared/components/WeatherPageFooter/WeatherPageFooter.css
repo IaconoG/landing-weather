@@ -3,6 +3,7 @@
   justify-content: center;
   gap: var(--spacing-2xl);
   font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
 
   & a {
     color: var(--color-text-accent);

@@ -1,16 +1,25 @@
 :root {
   /* Colors - Base */
-  --color-surface: #ffffff;
-  --color-background: #f8fafc;
-  --color-text-primary: #1f2937;
-  --color-text-secondary: #4b5563;
-  --color-text-accent: #3b82f6;
+  --color-background: #151933;
+  --color-background-alt: #1b2144;
+  --color-surface: #252d58;
+  --color-surface-strong: #2b3360;
+  --color-text-primary: #edf1ff;
+  --color-text-secondary: #b7c0e6;
+  --color-text-muted: #929cc8;
+  --color-text-accent: #90b7ff;
   
   /* Colors - UI Components */
-  --color-border-light: #dbe3ef;
-  --color-border-input: #cbd5e1;
-  --color-button-primary: #2563eb;
-  --color-button-text: #ffffff;
+  --color-border-light: rgba(150, 163, 236, 0.2);
+  --color-border-input: rgba(157, 171, 241, 0.28);
+  --color-button-primary: #5f80ff;
+  --color-button-primary-hover: #6a8bff;
+  --color-button-text: #f7f9ff;
+  --color-feedback-error: #ff9da0;
+
+  /* Atmospheric Background */
+  --gradient-page: radial-gradient(120% 120% at 12% 8%, #242d5c 0%, #1a2149 48%, #141834 100%);
+  --gradient-panel: linear-gradient(170deg, rgba(63, 73, 143, 0.2) 0%, rgba(35, 42, 87, 0.86) 100%);
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -28,12 +37,13 @@
   --border-radius-xl: 1rem;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
-  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.15);
+  --shadow-sm: 0 2px 8px rgba(8, 11, 28, 0.14);
+  --shadow-md: 0 6px 16px rgba(7, 10, 27, 0.16);
+  --shadow-lg: 0 10px 24px rgba(6, 8, 24, 0.2);
 
   /* Font Sizes with 14px base*/
   --font-size-xs: 0.625rem; /* 10px */
+  --font-size-2xs: 0.75rem; /* 12px */
   --font-size-sm: 0.875rem; /* 14px */
   --font-size-md: 1rem; /* 16px */
   --font-size-lg: 1.25rem; /* 20px */
@@ -48,5 +58,8 @@
   --font-weight-regular: 400;
   --font-weight-medium: 500;
   --font-weight-bold: 700;
+
+  /* Component Heights */
+  --height-control: 40px;
 }
 
