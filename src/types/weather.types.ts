@@ -1,27 +1,27 @@
 import type { ErrorType } from "@i-giann/open-meteo-wrapper";
 
 /**
- * Clima simplificado para UI
+ * Current weather snapshot used by the main card.
  */
 export type CurrentWeather = {
-  temperature: number;           // °C
-  feelsLike: number;             // °C
-  humidity: number;              // %
-  weatherDescription: string;    // 'Clear sky', 'Partly cloudy', etc.
-  windSpeed: number;             // km/h
-  pressure: number;              // hPa
-  visibility: number;            // km
-  uv: number;                    // UV index
-  timestamp: number;             // Unix timestamp of the weather data
+  temperature: number; // °C
+  feelsLike: number; // °C
+  humidity: number; // %
+  weatherDescription: string;
+  windSpeed: number; // km/h
+  pressure: number; // hPa
+  visibility: number; // km
+  uv: number; // UV index
+  timestamp: number; // epoch ms
 };
 
 /**
- * Estado de carga de datos
+ * Shared fetch state.
  */
 export type WeatherState = "idle" | "loading" | "success" | "error";
 
 /**
- * Error simplificado para UI
+ * Standard UI error shape.
  */
 export type WeatherError = {
   message: string;
@@ -30,17 +30,82 @@ export type WeatherError = {
 };
 
 /**
- * Mapeo de codigo WMO a descripcion
+ * Map of weather codes to descriptions 
  */
 export type WeatherCodeMap = {
   [key: number]: string;
 };
 
 /**
- * Resultado de la consulta de clima actual
+ * Result of fetching current weather, including data, error and metadata.
  */
 export type CurrentWeatherResult = {
   data: CurrentWeather | null;
   error: WeatherError | null;
   fetchedAt: number;
+};
+
+/**
+ * Shared metadata for forecast blocks.
+ */
+export type ForecastMeta = {
+  timezone: string;
+  timezoneOffsetSeconds: number;
+  fetchedAt: number;
+  expiresAt: number;
+};
+
+type ForecastPointBase = {
+  timestamp: number; // epoch ms normalized to the weather timezone
+};
+
+/**
+ * Item shape for hourly forecast data.
+ */
+export type HourlyForecastItem = ForecastPointBase & {
+  temperature: number;
+  feelsLike: number;
+  humidity: number;
+  weatherCode: number;
+  weatherDescription: string;
+  windSpeed: number;
+  pressure: number;
+  visibility: number;
+  uv: number;
+  isDay?: boolean;
+  precipitationProbability?: number;
+  cloudCover?: number;
+};
+
+/**
+ * Item shape for daily forecast data.
+ */
+export type WeeklyForecastItem = {
+  dateTimestamp: number; // start of day in epoch ms
+  minTemperature: number;
+  maxTemperature: number;
+  weatherCode?: number;
+  weatherDescription?: string;
+  sunriseTimestamp?: number;
+  sunsetTimestamp?: number;
+  daylightDurationSeconds?: number;
+  precipitationProbability?: number;
+};
+
+/**
+ * Result of fetching hourly forecast, including data, error and metadata.
+ */
+export type HourlyForecastResult = {
+  data: HourlyForecastItem[] | null;
+  error: WeatherError | null;
+  meta: ForecastMeta | null;
+};
+
+/**
+ * Result of fetching weekly forecast, including data, error and metadata.
+ */
+export type WeeklyForecastResult = {
+  data: WeeklyForecastItem[] | null;
+  error: WeatherError | null;
+  meta: ForecastMeta | null;
 };
