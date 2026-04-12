@@ -19,6 +19,10 @@ import {
   mapToWeeklyForecast,
 } from "./weather.mapper";
 import { getTimeZoneOffsetSeconds } from "./utils";
+import {
+  HOURLY_FORECAST_TTL_MS,
+  WEEKLY_FORECAST_TTL_MS,
+} from "../../constants/weather.cache";
 
 export type WeatherLocationParams = {
   latitude: number;
@@ -30,12 +34,6 @@ const isWrapperError = (
   response: StructureWeatherData | FetchError,
 ): response is FetchError => {
   return "errorType" in response;
-};
-
-const expiredTimes = {
-  current: 60 * 60 * 1000, // 1 hour
-  hourly: 60 * 60 * 1000, // 1 hour
-  weekly: 3 * 60 * 60 * 1000, // 3 hours
 };
 
 const buildErrorResult = (
@@ -56,14 +54,14 @@ const buildMeta = (timezone: string, fetchedAt: number) => ({
   timezone,
   timezoneOffsetSeconds: getTimeZoneOffsetSeconds(timezone, fetchedAt),
   fetchedAt,
-  expiresAt: fetchedAt + expiredTimes.hourly,
+  expiresAt: fetchedAt + HOURLY_FORECAST_TTL_MS,
 });
 
 const buildWeeklyMeta = (timezone: string, fetchedAt: number) => ({
   timezone,
   timezoneOffsetSeconds: getTimeZoneOffsetSeconds(timezone, fetchedAt),
   fetchedAt,
-  expiresAt: fetchedAt + expiredTimes.weekly,
+  expiresAt: fetchedAt + WEEKLY_FORECAST_TTL_MS,
 });
 
 export class WeatherService {
