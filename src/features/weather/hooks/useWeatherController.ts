@@ -1,9 +1,16 @@
 import { useEffect } from "react";
-import type { CurrentWeather, WeatherError } from "../../../types/weather.types";
-import { useWeatherStore } from "../store/weather.store";
+import type {
+  CurrentWeather,
+  WeatherError,
+} from "../../../types/weather.types";
+import { useWeatherStore } from "../../../store/weather.store";
 import useWeather from "./useWeather";
+import { CURRENT_WEATHER_TTL_MS } from "../../../constants/weather.cache";
 
-const isSameCurrentWeather = (a: CurrentWeather | null, b: CurrentWeather | null): boolean => {
+const isSameCurrentWeather = (
+  a: CurrentWeather | null,
+  b: CurrentWeather | null,
+): boolean => {
   if (a === b) return true;
   if (!a || !b) return false;
 
@@ -16,11 +23,14 @@ const isSameCurrentWeather = (a: CurrentWeather | null, b: CurrentWeather | null
     a.pressure === b.pressure &&
     a.visibility === b.visibility &&
     a.uv === b.uv &&
-    a?.timestamp === b?.timestamp
+    a.timestamp === b.timestamp
   );
-}
+};
 
-const isSameWeatherError = (a: WeatherError | null, b: WeatherError | null): boolean => {
+const isSameWeatherError = (
+  a: WeatherError | null,
+  b: WeatherError | null,
+): boolean => {
   if (a === b) return true;
   if (!a || !b) return false;
 
@@ -29,42 +39,55 @@ const isSameWeatherError = (a: WeatherError | null, b: WeatherError | null): boo
     a.type === b.type &&
     a.timestamp.getTime() === b.timestamp.getTime()
   );
-}
-
+};
 
 const useWeatherController = () => {
   const latitude = useWeatherStore((state) => state.latitude);
   const longitude = useWeatherStore((state) => state.longitude);
 
-  const currentWeather = useWeatherStore((state) => state.currentWeather)
-  const weatherError = useWeatherStore((state) => state.weatherError)
-  const isWeatherLoading = useWeatherStore((state) => state.isWeatherLoading)
+  const currentWeather = useWeatherStore((state) => state.currentWeather);
+  const currentError = useWeatherStore((state) => state.currentError);
+  const isCurrentLoading = useWeatherStore((state) => state.isCurrentLoading);
+  const currentFetchedAt = useWeatherStore((state) => state.currentFetchedAt);
+  const currentExpiresAt = useWeatherStore((state) => state.currentExpiresAt);
 
   const setCurrentWeather = useWeatherStore((state) => state.setCurrentWeather);
-  const setIsWeatherLoading = useWeatherStore((state) => state.setIsWeatherLoading);
-  const setWeatherError = useWeatherStore((state) => state.setWeatherError);
+  const setIsCurrentLoading = useWeatherStore(
+    (state) => state.setIsCurrentLoading,
+  );
+  const setCurrentError = useWeatherStore((state) => state.setCurrentError);
+  const setCurrentMeta = useWeatherStore((state) => state.setCurrentMeta);
 
   const { weather, isLoading } = useWeather({ latitude, longitude });
-  const { data, error } = weather;
-
+  const { data, error, fetchedAt } = weather;
 
   useEffect(() => {
     if (!isSameCurrentWeather(currentWeather, data)) setCurrentWeather(data);
-    if (!isSameWeatherError(weatherError, error)) setWeatherError(error);
-    if (isWeatherLoading !== isLoading) setIsWeatherLoading(isLoading);
+    if (!isSameWeatherError(currentError, error)) setCurrentError(error);
+    if (isCurrentLoading !== isLoading) setIsCurrentLoading(isLoading);
+    if (fetchedAt > 0) {
+      const expiresAt = fetchedAt + CURRENT_WEATHER_TTL_MS;
+      if (currentFetchedAt !== fetchedAt || currentExpiresAt !== expiresAt) {
+        setCurrentMeta(fetchedAt, expiresAt);
+      }
+    }
   }, [
     data,
     error,
+    fetchedAt,
     isLoading,
     currentWeather,
-    weatherError,
-    isWeatherLoading,
+    currentError,
+    isCurrentLoading,
+    currentFetchedAt,
+    currentExpiresAt,
     setCurrentWeather,
-    setWeatherError,
-    setIsWeatherLoading,
+    setCurrentError,
+    setIsCurrentLoading,
+    setCurrentMeta,
   ]);
 
   return null;
-}
+};
 
 export default useWeatherController;
