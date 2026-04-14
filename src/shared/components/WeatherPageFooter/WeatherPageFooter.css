@@ -2,7 +2,7 @@
   display: flex;
   justify-content: center;
   gap: var(--spacing-2xl);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-2xs);
   color: var(--color-text-secondary);
 
   & a {

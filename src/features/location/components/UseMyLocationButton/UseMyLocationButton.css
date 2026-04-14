@@ -1,10 +1,13 @@
 .use-my-location-button {
   display: grid;
-  gap: var(--spacing-xs);
+  gap: 2px;
+  align-items: start;
+  min-height: 2rem;
 
   & .use-my-location-button__error {
     margin: 0;
     color: var(--color-feedback-error);
-    font-size: var(--font-size-sm);
+    font-size: var(--font-size-xs);
+    line-height: 1.2;
   }
 }

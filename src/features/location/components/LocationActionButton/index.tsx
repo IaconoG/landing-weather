@@ -24,7 +24,7 @@ const LocationActionButton: React.FC<LocationActionButtonProps> = ({
       onClick={onClick}
       disabled={disabled || loading}
     >
-      {loading ? loadingLabel ?? "Cargando..." : label}
+      {loading ? (loadingLabel ?? "Cargando...") : label}
     </button>
   );
 };

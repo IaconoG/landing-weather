@@ -1,6 +1,9 @@
 import type { CurrentWeather } from "../../../../../types/weather.types";
 
-export type MetricKey = Exclude<keyof CurrentWeather, "timestamp">;
+export type MetricKey = Exclude<
+  keyof CurrentWeather,
+  "timestamp" | "weatherDescription"
+>;
 
 export type Metric = {
   id: string;
@@ -30,11 +33,6 @@ export const METRIC_CONFIG: Record<MetricKey, MetricConfig> = {
     label: "Humedad",
     description: "Humedad relativa del aire",
     format: (value) => `${Math.round(Number(value))}%`,
-  },
-  weatherDescription: {
-    label: "Condición",
-    description: "Estado meteorológico actual",
-    format: (value) => String(value),
   },
   windSpeed: {
     label: "Viento",

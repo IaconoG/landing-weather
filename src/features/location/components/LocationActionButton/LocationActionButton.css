@@ -1,33 +1,47 @@
 .location-action-button {
-	width: 100%;
-	min-height: var(--height-control);
-	border: 1px solid rgba(157, 171, 241, 0.18);
-	border-radius: var(--border-radius-md);
-	padding: 0 var(--spacing-md);
-	background: rgba(28, 35, 76, 0.62);
-	color: var(--color-text-primary);
-	font-weight: var(--font-weight-medium);
-	cursor: pointer;
-	transition: background 0.2s ease, border-color 0.2s ease;
-}
+  min-height: 2rem;
+  border: 1px solid rgba(157, 171, 241, 0.18);
+  border-radius: var(--border-radius-sm);
+  padding: 0 var(--spacing-md);
+  background: rgba(28, 35, 76, 0.62);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.15s ease;
 
-.location-action-button:disabled {
-	opacity: 0.7;
-	cursor: not-allowed;
-}
+  font-family: var(--font-family-base);
 
-.location-action-button--primary {
-	border-color: rgba(121, 143, 255, 0.5);
-	background: var(--color-button-primary);
-	color: var(--color-button-text);
-}
+  &:not(:disabled):active {
+    transform: translateY(1px);
+  }
 
-.location-action-button--primary:not(:disabled):hover {
-	background: var(--color-button-primary-hover);
-}
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 
-.location-action-button--secondary {
-	border-color: rgba(157, 171, 241, 0.16);
-	background: rgba(28, 35, 76, 0.56);
-	color: var(--color-text-primary);
+  &.location-action-button--primary {
+    border-color: rgba(121, 143, 255, 0.5);
+    background: var(--color-button-primary);
+    color: var(--color-button-text);
+
+    &:not(:disabled):hover {
+      background: var(--color-button-primary-hover);
+    }
+  }
+
+  &.location-action-button--secondary {
+    border-color: rgba(157, 171, 241, 0.16);
+    background: rgba(28, 35, 76, 0.56);
+    color: var(--color-text-primary);
+
+    &:not(:disabled):hover {
+      border-color: rgba(157, 171, 241, 0.28);
+      background: rgba(40, 49, 93, 0.68);
+    }
+  }
 }

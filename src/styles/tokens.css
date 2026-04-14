@@ -8,7 +8,7 @@
   --color-text-secondary: #b7c0e6;
   --color-text-muted: #929cc8;
   --color-text-accent: #90b7ff;
-  
+
   /* Colors - UI Components */
   --color-border-light: rgba(150, 163, 236, 0.2);
   --color-border-input: rgba(157, 171, 241, 0.28);
@@ -18,8 +18,17 @@
   --color-feedback-error: #ff9da0;
 
   /* Atmospheric Background */
-  --gradient-page: radial-gradient(120% 120% at 12% 8%, #242d5c 0%, #1a2149 48%, #141834 100%);
-  --gradient-panel: linear-gradient(170deg, rgba(63, 73, 143, 0.2) 0%, rgba(35, 42, 87, 0.86) 100%);
+  --gradient-page: radial-gradient(
+    120% 120% at 12% 8%,
+    #242d5c 0%,
+    #1a2149 48%,
+    #141834 100%
+  );
+  --gradient-panel: linear-gradient(
+    170deg,
+    rgba(63, 73, 143, 0.2) 0%,
+    rgba(35, 42, 87, 0.86) 100%
+  );
 
   /* Spacing */
   --spacing-xs: 0.25rem;
@@ -42,24 +51,25 @@
   --shadow-lg: 0 10px 24px rgba(6, 8, 24, 0.2);
 
   /* Font Sizes with 14px base*/
-  --font-size-xs: 0.625rem; /* 10px */
-  --font-size-2xs: 0.75rem; /* 12px */
-  --font-size-sm: 0.875rem; /* 14px */
-  --font-size-md: 1rem; /* 16px */
-  --font-size-lg: 1.25rem; /* 20px */
-  --font-size-xl: 1.5rem; /* 24px */
-  --font-size-2xl: 1.875rem; /* 30px */
-  --font-size-3xl: 2.25rem; /* 36px */
-  --font-size-4xl: 2.5rem; /* 40px */
-  --font-size-5xl: 3rem; /* 48px */
-  --font-size-6xl: 4rem; /* 64px */
+  --font-size-xs: 0.5rem; /* 8px */
+  --font-size-2xs: 0.714rem; /* 10px */
+  --font-size-sm: 0.857rem; /* 12px */
+  --font-size-base: 1rem; /* 14px */
+  --font-size-md: 1.143rem; /* 16px */
+  --font-size-lg: 1.286rem; /* 18px */
+  --font-size-xl: 1.671rem; /* 22px */
+  --font-size-2xl: 2.286rem; /* 32px */
+  --font-size-3xl: 3rem; /* 42px */
 
   /* Font Weights */
   --font-weight-regular: 400;
   --font-weight-medium: 500;
-  --font-weight-bold: 700;
+  --font-weight-bold: 600;
+
+  /* Font Families */
+  --font-family-base: "Manrope", "Segoe UI", sans-serif;
+  --font-family-alt: "Manrope", "Segoe UI", sans-serif;
 
   /* Component Heights */
-  --height-control: 40px;
+  --height-control: 25px;
 }
-

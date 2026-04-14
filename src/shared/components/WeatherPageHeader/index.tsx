@@ -4,10 +4,9 @@ import "./WeatherPageHeader.css";
 const WeatherPageHeader: React.FC = () => {
   return (
     <header className="weather-header">
-        <h1 className="weather-title">Weather App</h1>
-        <LocationControlsSection />
-      </header>
-  )
-}
+      <LocationControlsSection />
+    </header>
+  );
+};
 
 export default WeatherPageHeader;

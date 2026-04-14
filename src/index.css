@@ -1,9 +1,10 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "./styles/tokens.css";
 
 :root {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.5;
+  font-family: var(--font-family-base);
+  line-height: 1.45;
   font-size: 14px;
   font-weight: var(--font-weight-regular);
   color: var(--color-text-primary);

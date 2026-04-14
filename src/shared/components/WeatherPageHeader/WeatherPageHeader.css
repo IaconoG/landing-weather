@@ -1,19 +1,4 @@
 .weather-header {
-  display: grid;
-  gap: var(--spacing-lg);
-  padding: var(--spacing-md) var(--spacing-lg);
-  border: none;
-  border-radius: var(--border-radius-lg);
-  background: color-mix(in srgb, var(--color-surface-strong) 90%, transparent);
-  box-shadow: none;
-
-  & .weather-title {
-    margin: 0;
-    font-size: var(--font-size-4xl);
-    font-weight: var(--font-weight-bold);
-    color: var(--color-text-primary);
-    justify-self: center;
-  }
-
+  display: block;
+  padding: 0;
 }
-

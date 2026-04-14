@@ -1,7 +1,7 @@
 .weather-weekly-section {
   & .weather-weekly-section__title {
     margin: 0 0 var(--spacing-sm);
-    font-size: var(--font-size-lg);
+    font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
   }
@@ -29,6 +29,7 @@
 
   & .weather-weekly-section__subtitle {
     margin: 0;
+    font-size: var(--font-size-sm);
     color: var(--color-text-muted);
   }
 
