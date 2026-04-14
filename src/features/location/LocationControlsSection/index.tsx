@@ -55,7 +55,7 @@ const LocationControls: React.FC = () => {
     setLocation({
       latitude: browserLocation.latitude,
       longitude: browserLocation.longitude,
-      label: `Mi ubicación (${browserLocation.latitude.toFixed(2)}, ${browserLocation.longitude.toFixed(2)})`,
+      label: `Mi ubicación (${browserLocation.latitude.toFixed(4)}, ${browserLocation.longitude.toFixed(4)})`,
       source: "geolocation",
     });
   }, [browserLocation, latitude, longitude, setLocation]);
@@ -150,8 +150,8 @@ const LocationControls: React.FC = () => {
             />
           </div>
           <p className="location-controls-section__search-hint">
-            Tip: tambien podes escribir coordenadas en formato lat,lon. Ejemplo:
-            40.7127,-74.0059
+            Tambien podes escribir coordenadas en formato latitud, longitud.
+            Ejemplo: 40.7127,-74.0059
           </p>
         </div>
 

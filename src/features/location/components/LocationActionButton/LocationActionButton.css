@@ -1,8 +1,8 @@
 .location-action-button {
-  min-height: 2rem;
+  min-height: 1.85rem;
   border: 1px solid rgba(157, 171, 241, 0.18);
   border-radius: var(--border-radius-sm);
-  padding: 0 var(--spacing-md);
+  padding: 0 var(--spacing-sm);
   background: rgba(28, 35, 76, 0.62);
   color: var(--color-text-primary);
   font-size: var(--font-size-2xs);
