@@ -10,6 +10,14 @@ import type {
 
 import type { LocationSource, SelectedLocation } from "../types/location.types";
 
+type DataState<T> = {
+  data: T | null;
+  error: WeatherError | null;
+  isLoading: boolean;
+  fetchedAt: number | null;
+  expiresAt: number | null;
+};
+
 interface WeatherState {
   latitude: number | null;
   longitude: number | null;
@@ -17,50 +25,27 @@ interface WeatherState {
   locationSource: LocationSource | null;
   recentLocations: SelectedLocation[];
 
-  // Current weather
-  currentWeather: CurrentWeather | null;
-  isCurrentLoading: boolean;
-  currentError: WeatherError | null;
-  currentFetchedAt: number | null;
-  currentExpiresAt: number | null;
-
-  // Hourly forecast
-  hourlyForecast: HourlyForecastItem[] | null;
-  isHourlyLoading: boolean;
-  hourlyError: WeatherError | null;
-  hourlyFetchedAt: number | null;
-  hourlyExpiresAt: number | null;
-
-  // Weekly forecast data and status
-  weeklyForecast: WeeklyForecastItem[] | null;
-  isWeeklyLoading: boolean;
-  weeklyError: WeatherError | null;
-  weeklyFetchedAt: number | null;
-  weeklyExpiresAt: number | null;
+  current: DataState<CurrentWeather>;
+  hourly: DataState<HourlyForecastItem[]>;
+  weekly: DataState<WeeklyForecastItem[]>;
 }
 
 interface WeatherActions {
   setLocation: (location: SelectedLocation) => void;
-  clearLocation: () => void;
+  clearLocations: () => void;
 
-  // Current weather actions
-  setCurrentWeather: (weatherData: CurrentWeather | null) => void;
-  setIsCurrentLoading: (isCurrentLoading: boolean) => void;
-  setCurrentError: (currentError: WeatherError | null) => void;
-  setCurrentMeta: (fetchedAt: number, expiresAt: number) => void;
-
-  // Hourly forecast actions
-  setHourlyForecast: (hourlyData: HourlyForecastItem[] | null) => void;
-  setIsHourlyLoading: (isHourlyLoading: boolean) => void;
-  setHourlyError: (hourlyError: WeatherError | null) => void;
-  setHourlyMeta: (fetchedAt: number, expiresAt: number) => void;
-
-  // Weekly forecast actions
-  setWeeklyForecast: (weeklyData: WeeklyForecastItem[] | null) => void;
-  setIsWeeklyLoading: (isWeeklyLoading: boolean) => void;
-  setWeeklyError: (weeklyError: WeatherError | null) => void;
-  setWeeklyMeta: (fetchedAt: number, expiresAt: number) => void;
+  setCurrentState: (next: Partial<DataState<CurrentWeather>>) => void;
+  setHourlyState: (next: Partial<DataState<HourlyForecastItem[]>>) => void;
+  setWeeklyState: (next: Partial<DataState<WeeklyForecastItem[]>>) => void;
 }
+
+const emptyDataState = <T>(): DataState<T> => ({
+  data: null,
+  error: null,
+  isLoading: false,
+  fetchedAt: null,
+  expiresAt: null,
+});
 
 export const useWeatherStore = create<WeatherState & WeatherActions>()(
   persist(
@@ -72,25 +57,29 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
       recentLocations: [],
 
       // Current weather state
-      currentWeather: null,
-      isCurrentLoading: false,
-      currentError: null,
-      currentFetchedAt: null,
-      currentExpiresAt: null,
+      current: {
+        data: null,
+        error: null,
+        isLoading: false,
+        fetchedAt: null,
+        expiresAt: null,
+      },
 
-      // Hourly forecast state
-      hourlyForecast: null,
-      isHourlyLoading: false,
-      hourlyError: null,
-      hourlyFetchedAt: null,
-      hourlyExpiresAt: null,
+      hourly: {
+        data: null,
+        error: null,
+        isLoading: false,
+        fetchedAt: null,
+        expiresAt: null,
+      },
 
-      // Weekly forecast state
-      weeklyForecast: null,
-      isWeeklyLoading: false,
-      weeklyError: null,
-      weeklyFetchedAt: null,
-      weeklyExpiresAt: null,
+      weekly: {
+        data: null,
+        error: null,
+        isLoading: false,
+        fetchedAt: null,
+        expiresAt: null,
+      },
 
       setLocation: (location) =>
         set((state) => {
@@ -109,68 +98,30 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
             locationSource: location.source,
             recentLocations,
 
-            currentWeather: null,
-            isCurrentLoading: true,
-            currentError: null,
-            currentFetchedAt: null,
-            currentExpiresAt: null,
-
-            hourlyForecast: null,
-            isHourlyLoading: false,
-            hourlyError: null,
-            hourlyFetchedAt: null,
-            hourlyExpiresAt: null,
-
-            weeklyForecast: null,
-            isWeeklyLoading: false,
-            weeklyError: null,
-            weeklyFetchedAt: null,
-            weeklyExpiresAt: null,
+            current: emptyDataState<CurrentWeather>(),
+            hourly: emptyDataState<HourlyForecastItem[]>(),
+            weekly: emptyDataState<WeeklyForecastItem[]>(),
           };
         }),
-      clearLocation: () =>
+      clearLocations: () =>
         set({
           latitude: null,
           longitude: null,
           locationLabel: null,
           locationSource: null,
+          recentLocations: [],
 
-          currentWeather: null,
-          isCurrentLoading: false,
-          currentError: null,
-          currentFetchedAt: null,
-          currentExpiresAt: null,
-
-          hourlyForecast: null,
-          isHourlyLoading: false,
-          hourlyError: null,
-          hourlyFetchedAt: null,
-          hourlyExpiresAt: null,
-
-          weeklyForecast: null,
-          isWeeklyLoading: false,
-          weeklyError: null,
-          weeklyFetchedAt: null,
-          weeklyExpiresAt: null,
+          current: emptyDataState<CurrentWeather>(),
+          hourly: emptyDataState<HourlyForecastItem[]>(),
+          weekly: emptyDataState<WeeklyForecastItem[]>(),
         }),
-      // Current weather actions
-      setCurrentWeather: (weatherData) => set({ currentWeather: weatherData }),
-      setIsCurrentLoading: (isCurrentLoading) => set({ isCurrentLoading }),
-      setCurrentError: (currentError) => set({ currentError }),
-      setCurrentMeta: (fetchedAt, expiresAt) =>
-        set({ currentFetchedAt: fetchedAt, currentExpiresAt: expiresAt }),
-      // Hourly forecast actions
-      setHourlyForecast: (hourlyData) => set({ hourlyForecast: hourlyData }),
-      setIsHourlyLoading: (isHourlyLoading) => set({ isHourlyLoading }),
-      setHourlyError: (hourlyError) => set({ hourlyError }),
-      setHourlyMeta: (fetchedAt, expiresAt) =>
-        set({ hourlyFetchedAt: fetchedAt, hourlyExpiresAt: expiresAt }),
-      // Weekly forecast actions
-      setWeeklyForecast: (weeklyData) => set({ weeklyForecast: weeklyData }),
-      setIsWeeklyLoading: (isWeeklyLoading) => set({ isWeeklyLoading }),
-      setWeeklyError: (weeklyError) => set({ weeklyError }),
-      setWeeklyMeta: (fetchedAt, expiresAt) =>
-        set({ weeklyFetchedAt: fetchedAt, weeklyExpiresAt: expiresAt }),
+
+      setCurrentState: (next) =>
+        set((state) => ({ current: { ...state.current, ...next } })),
+      setHourlyState: (next) =>
+        set((state) => ({ hourly: { ...state.hourly, ...next } })),
+      setWeeklyState: (next) =>
+        set((state) => ({ weekly: { ...state.weekly, ...next } })),
     }),
     {
       name: "weather-storage",

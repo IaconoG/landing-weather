@@ -1,60 +1,57 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { weatherService } from "../../../services/weather/weather.service";
 import type { CurrentWeatherResult } from "../../../types/weather.types";
 
 type UseWeatherParams = {
   latitude: number | null;
   longitude: number | null;
-}
+};
+
+const emptyWeather: CurrentWeatherResult = {
+  data: null,
+  error: null,
+  fetchedAt: 0,
+};
 
 const useWeather = ({ latitude, longitude }: UseWeatherParams) => {
-  const missingLocation = latitude === null || longitude === null;
+  const hasLocation = latitude !== null && longitude !== null;
 
-  const [weather, setWeather] = useState<CurrentWeatherResult>({
-    data: null,
-    error: null,
-    fetchedAt: 0,
-  });
+  const [requestWeather, setRequestWeather] =
+    useState<CurrentWeatherResult>(emptyWeather);
+  const [requestLoading, setRequestLoading] = useState(false);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  
   useEffect(() => {
-    if (missingLocation) return;
+    if (!hasLocation) return;
 
     let cancelled = false;
 
     const run = async () => {
-      setIsLoading(true);
-      try {
-        const result = await weatherService.getCurrentWeather({
-          latitude: latitude as number,
-          longitude: longitude as number,
-        });
+      setRequestLoading(true);
 
-        if (!cancelled) setWeather(result);
-      } finally {
-        if (!cancelled) {
-          setIsLoading(false);
-        }
-      }
+      const result = await weatherService.getCurrentWeather({
+        latitude,
+        longitude,
+      });
+
+      if (cancelled) return;
+
+      setRequestWeather(result);
+      setRequestLoading(false);
     };
 
-    run();
+    void run();
 
     return () => {
       cancelled = true;
-    }
-  }, [latitude, longitude, missingLocation]);
+    };
+  }, [hasLocation, latitude, longitude]);
 
-  return { 
-    weather: missingLocation
-      ? {
-          data: null,
-          error: null,
-          fetchedAt: 0,
-        }
-      : weather,
-    isLoading: missingLocation ? false : isLoading,
+  const weather = hasLocation ? requestWeather : emptyWeather;
+  const isLoading = hasLocation ? requestLoading : false;
+
+  return {
+    weather,
+    isLoading,
   };
 };
 

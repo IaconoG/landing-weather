@@ -1,0 +1,49 @@
+.weather-weekly-section {
+  & .weather-weekly-section__title {
+    margin: 0 0 var(--spacing-sm);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+  }
+
+  & .weather-weekly-section__content {
+    padding: var(--spacing-md) 20px;
+    border: none;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+    background: color-mix(
+      in srgb,
+      var(--color-surface-strong) 84%,
+      transparent
+    );
+    box-shadow: none;
+  }
+
+  & .weather-weekly-section__content--empty,
+  & .weather-weekly-section__content--error {
+    justify-content: center;
+    align-items: center;
+  }
+
+  & .weather-weekly-section__subtitle {
+    margin: 0;
+    color: var(--color-text-muted);
+  }
+
+  &.weather-weekly-section--error,
+  &.weather-weekly-section--empty {
+    & .weather-weekly-section__error-message,
+    & .weather-weekly-section__empty-message {
+      margin: 0;
+      color: var(--color-text-secondary);
+    }
+  }
+
+  &.weather-weekly-section--skeleton {
+    & .weather-weekly-section__skeleton-title {
+      margin-bottom: var(--spacing-md);
+    }
+  }
+}

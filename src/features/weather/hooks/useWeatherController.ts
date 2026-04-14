@@ -45,48 +45,45 @@ const useWeatherController = () => {
   const latitude = useWeatherStore((state) => state.latitude);
   const longitude = useWeatherStore((state) => state.longitude);
 
-  const currentWeather = useWeatherStore((state) => state.currentWeather);
-  const currentError = useWeatherStore((state) => state.currentError);
-  const isCurrentLoading = useWeatherStore((state) => state.isCurrentLoading);
-  const currentFetchedAt = useWeatherStore((state) => state.currentFetchedAt);
-  const currentExpiresAt = useWeatherStore((state) => state.currentExpiresAt);
-
-  const setCurrentWeather = useWeatherStore((state) => state.setCurrentWeather);
-  const setIsCurrentLoading = useWeatherStore(
-    (state) => state.setIsCurrentLoading,
-  );
-  const setCurrentError = useWeatherStore((state) => state.setCurrentError);
-  const setCurrentMeta = useWeatherStore((state) => state.setCurrentMeta);
+  const current = useWeatherStore((state) => state.current);
+  const setCurrentState = useWeatherStore((state) => state.setCurrentState);
 
   const { weather, isLoading } = useWeather({ latitude, longitude });
-  const { data, error, fetchedAt } = weather;
 
   useEffect(() => {
-    if (!isSameCurrentWeather(currentWeather, data)) setCurrentWeather(data);
-    if (!isSameWeatherError(currentError, error)) setCurrentError(error);
-    if (isCurrentLoading !== isLoading) setIsCurrentLoading(isLoading);
-    if (fetchedAt > 0) {
-      const expiresAt = fetchedAt + CURRENT_WEATHER_TTL_MS;
-      if (currentFetchedAt !== fetchedAt || currentExpiresAt !== expiresAt) {
-        setCurrentMeta(fetchedAt, expiresAt);
-      }
-    }
-  }, [
-    data,
-    error,
-    fetchedAt,
-    isLoading,
-    currentWeather,
-    currentError,
-    isCurrentLoading,
-    currentFetchedAt,
-    currentExpiresAt,
-    setCurrentWeather,
-    setCurrentError,
-    setIsCurrentLoading,
-    setCurrentMeta,
-  ]);
+    const fetchedAt = weather.fetchedAt > 0 ? weather.fetchedAt : null;
+    const expiresAt =
+      fetchedAt !== null ? fetchedAt + CURRENT_WEATHER_TTL_MS : null;
 
+    const sameData = isSameCurrentWeather(current.data, weather.data);
+    const sameError = isSameWeatherError(current.error, weather.error);
+    const sameLoading = current.isLoading === isLoading;
+    const sameFetchedAt = current.fetchedAt === fetchedAt;
+    const sameExpiresAt = current.expiresAt === expiresAt;
+
+    if (sameData && sameError && sameLoading && sameFetchedAt && sameExpiresAt)
+      return;
+
+    setCurrentState({
+      data: weather.data,
+      error: weather.error,
+      isLoading,
+      fetchedAt,
+      expiresAt,
+    });
+  }, [
+    current.data,
+    current.error,
+    current.isLoading,
+    current.fetchedAt,
+    current.expiresAt,
+
+    weather.data,
+    weather.error,
+    weather.fetchedAt,
+    isLoading,
+    setCurrentState,
+  ]);
   return null;
 };
 
