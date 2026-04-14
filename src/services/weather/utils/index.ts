@@ -1,9 +1,25 @@
+/**
+ * Converts a value to a number.
+ * @param value - An optional object containing a number value.
+ * @returns The number value or 0 if not provided.
+ */
 export const toNumber = (value?: { value: number }): number =>
   value?.value ?? 0;
 
+/**
+ * Converts a value to a timestamp in milliseconds.
+ * @param value - An optional object containing a Date value.
+ * @returns The timestamp in milliseconds.
+ */
 export const toTimestamp = (value?: { value: Date }): number =>
   value?.value instanceof Date ? value.value.getTime() : Date.now();
 
+/**
+ * Calculates the timezone offset in seconds for a given timezone and reference timestamp.
+ * @param timezone - The timezone for which to calculate the offset.
+ * @param referenceTimestampMs - The timestamp (in milliseconds) for which to calculate the offset.
+ * @returns The offset in seconds.
+ */
 export const getTimeZoneOffsetSeconds = (
   timezone: string,
   referenceTimestampMs: number,
@@ -34,4 +50,15 @@ export const getTimeZoneOffsetSeconds = (
   );
 
   return Math.round((zonedAsUtcMs - referenceTimestampMs) / 1000);
+};
+
+/**
+ * Validates if cached data is still valid based on TTL expiration time.
+ * Returns true if cache is valid (now < expiresAt), false if expired.
+ * @param expiresAt - The timestamp (in milliseconds) when the cache expires, or null if no cache.
+ * @return boolean indicating if the cache is still valid.
+ */
+export const isCacheValid = (expiresAt: number | null): boolean => {
+  if (expiresAt === null) return false;
+  return Date.now() < expiresAt;
 };

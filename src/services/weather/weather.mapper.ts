@@ -35,25 +35,16 @@ export const mapToHourlyForecast = (
   data: StructureWeatherData,
 ): HourlyForecastItem[] => {
   const currentDayHours = data.currentDay?.hourly ?? [];
-  const forecastHours = (data.forecast ?? []).flatMap(
-    (day) => day.hourly ?? [],
-  );
+  const forecastDays = data.forecast ?? [];
+  const seenTimestamps = new Set<number>();
+  const hourlyItems: HourlyForecastItem[] = [];
 
-  const merged = [...currentDayHours, ...forecastHours];
-
-  const byTimstampMap = new Map<number, HourlyWeatherData>();
-
-  for (const hour of merged) {
+  const appendHour = (hour: HourlyWeatherData) => {
     const timestamp = toTimestamp(hour.hour);
-    if (!byTimstampMap.has(timestamp)) {
-      byTimstampMap.set(timestamp, hour);
-    }
-  }
+    if (seenTimestamps.has(timestamp)) return;
 
-  return [...byTimstampMap.entries()]
-    .sort((tsA, tsB) => tsA[0] - tsB[0])
-    .slice(0, 24)
-    .map(([timestamp, hour]) => ({
+    seenTimestamps.add(timestamp);
+    hourlyItems.push({
       timestamp,
       temperature: toNumber(hour.temperature),
       feelsLike: toNumber(hour.apparentTemperature),
@@ -71,7 +62,24 @@ export const mapToHourlyForecast = (
           : undefined,
       precipitationProbability: hour.precipitationProbability?.value,
       cloudCover: hour.cloudCover?.value,
-    }));
+    });
+  };
+
+  for (const hour of currentDayHours) {
+    appendHour(hour);
+    if (hourlyItems.length === 24) return hourlyItems;
+  }
+
+  for (const day of forecastDays) {
+    const dayHours = day.hourly ?? [];
+
+    for (const hour of dayHours) {
+      appendHour(hour);
+      if (hourlyItems.length === 24) return hourlyItems;
+    }
+  }
+
+  return hourlyItems;
 };
 
 export const mapToWeeklyForecast = (
@@ -82,59 +90,72 @@ export const mapToWeeklyForecast = (
     ...(data.forecast ?? []),
   ];
 
-  const uniqueByDayMap = new Map<number, DailyWeatherData>();
-
+  const seenDayTimestamps = new Set<number>();
+  const uniqueDays: Array<{ dateTimestamp: number; day: DailyWeatherData }> =
+    [];
   for (const day of days) {
-    const dayTs = toTimestamp(day.day);
-    if (!uniqueByDayMap.has(dayTs)) {
-      uniqueByDayMap.set(dayTs, day);
+    const dateTimestamp = toTimestamp(day.day);
+    if (seenDayTimestamps.has(dateTimestamp)) continue;
+
+    seenDayTimestamps.add(dateTimestamp);
+    uniqueDays.push({ dateTimestamp, day });
+
+    if (uniqueDays.length === 7) {
+      break;
     }
   }
 
-  return [...uniqueByDayMap.entries()]
-    .sort((a, b) => a[0] - b[0])
-    .slice(0, 7)
-    .map(([dateTimestamp, day]) => {
-      const hourlyByCode = new Map<number, number>();
-      const hourlyForecasts = day.hourly ?? [];
+  return uniqueDays.map(({ dateTimestamp, day }) => {
+    const hourlyByCode = new Map<number, number>();
+    const hourlyForecasts = day.hourly ?? [];
 
-      for (const hour of hourlyForecasts) {
-        const code = hour.weatherCode?.value ?? 0;
-        hourlyByCode.set(code, (hourlyByCode.get(code) ?? 0) + 1);
+    let dominantWeatherCode: number | undefined;
+    let dominantWeatherCount = 0;
+    let representativeHour = hourlyForecasts[0];
+    let maxPrecipitationProbability = 0;
+
+    for (const hour of hourlyForecasts) {
+      const code = hour.weatherCode?.value;
+      if (code !== undefined) {
+        const nextCount = (hourlyByCode.get(code) ?? 0) + 1;
+        hourlyByCode.set(code, nextCount);
+
+        if (nextCount > dominantWeatherCount) {
+          dominantWeatherCount = nextCount;
+          dominantWeatherCode = code;
+        }
+
+        if (!representativeHour) {
+          representativeHour = hour;
+        }
       }
-      const dominantWeatherCode =
-        [...hourlyByCode.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ??
-        undefined;
 
-      const representativeHour =
-        hourlyForecasts.find((hour) => hour.weatherCode?.value !== undefined) ??
-        hourlyForecasts[0];
+      const precipitationProbability =
+        hour.precipitationProbability?.value ?? 0;
+      if (precipitationProbability > maxPrecipitationProbability) {
+        maxPrecipitationProbability = precipitationProbability;
+      }
+    }
 
-      return {
-        dateTimestamp,
-        minTemperature: toNumber(day.temperatureMin),
-        maxTemperature: toNumber(day.temperatureMax),
-        sunriseTimestamp:
-          day.sunrise?.value instanceof Date
-            ? day.sunrise.value.getTime()
-            : undefined,
-        sunsetTimestamp:
-          day.sunset?.value instanceof Date
-            ? day.sunset.value.getTime()
-            : undefined,
-        daylightDurationSeconds: day.daylightDuration?.value,
-        weatherCode: dominantWeatherCode,
-        weatherDescription:
-          representativeHour?.weatherDescription?.value ??
-          "Condición desconocida",
-        precipitationProbability:
-          hourlyForecasts.length > 0
-            ? Math.max(
-                ...hourlyForecasts.map(
-                  (hour) => hour.precipitationProbability?.value ?? 0,
-                ),
-              )
-            : undefined,
-      };
-    });
+    return {
+      dateTimestamp,
+      minTemperature: toNumber(day.temperatureMin),
+      maxTemperature: toNumber(day.temperatureMax),
+      sunriseTimestamp:
+        day.sunrise?.value instanceof Date
+          ? day.sunrise.value.getTime()
+          : undefined,
+      sunsetTimestamp:
+        day.sunset?.value instanceof Date
+          ? day.sunset.value.getTime()
+          : undefined,
+      daylightDurationSeconds: day.daylightDuration?.value,
+      weatherCode: dominantWeatherCode,
+      weatherDescription:
+        representativeHour?.weatherDescription?.value ??
+        "Condición desconocida",
+      precipitationProbability:
+        hourlyForecasts.length > 0 ? maxPrecipitationProbability : undefined,
+    };
+  });
 };
