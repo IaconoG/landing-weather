@@ -8,7 +8,7 @@ type LocationRecentHistoryProps = {
   onLocationSelect: (location: SelectedLocation) => void;
 };
 
-const LocationRecentHistory: React.FC<LocationRecentHistoryProps> = ({
+const RecentLocationsList: React.FC<LocationRecentHistoryProps> = ({
   latitude,
   longitude,
   recentLocations,
@@ -61,4 +61,4 @@ const LocationRecentHistory: React.FC<LocationRecentHistoryProps> = ({
   );
 };
 
-export default LocationRecentHistory;
+export default RecentLocationsList;

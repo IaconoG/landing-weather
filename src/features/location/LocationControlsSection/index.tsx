@@ -3,20 +3,20 @@ import { useCallback, useEffect, useState } from "react";
 import LocationInput from "../components/LocationInput";
 import UseMyLocationButton from "../components/UseMyLocationButton";
 import LocationLoadingBadge from "./LocationLoadingBadge";
-import LocationRecentHistory from "./LocationRecentHistory";
-import ClearLocationAction from "./ClearLocationAction";
-import ThemePlaceholderButton from "./ThemePlaceholderButton";
+import RecentLocationsList from "./RecentLocationsList";
+import ClearLocationsButton from "./ClearLocationsButton";
+import ThemeButtonPlaceholder from "./ThemeButtonPlaceholder";
 /* store */
 import { useWeatherStore } from "../../../store/weather.store";
 /* hooks */
 import useLocationSearch from "../hooks/useLocationSearch";
-import useLocation from "../hooks/useLocation";
+import useBrowserGeolocation from "../hooks/useBrowserGeolocation";
 /* types */
 import type { SelectedLocation } from "../../../types/location.types";
 /* styles */
-import "./LocationSection.css";
+import "./LocationControls.css";
 
-const LocationControlsSection: React.FC = () => {
+const LocationControls: React.FC = () => {
   const latitude = useWeatherStore((state) => state.latitude);
   const longitude = useWeatherStore((state) => state.longitude);
   const currentIsLoading = useWeatherStore((state) => state.current.isLoading);
@@ -40,7 +40,7 @@ const LocationControlsSection: React.FC = () => {
     isLoading: isGeolocationLoading,
     requestLocation,
     clearLocationError,
-  } = useLocation();
+  } = useBrowserGeolocation();
 
   useEffect(() => {
     if (!browserLocation) return;
@@ -117,14 +117,14 @@ const LocationControlsSection: React.FC = () => {
               error={geolocationError}
               onRequestLocation={handleRequestGeolocation}
             />
-            <ClearLocationAction
+            <ClearLocationsButton
               onClear={handleClearLocations}
               hasLocation={hasLocation}
               hasRecentLocations={recentLocations.length > 0}
             />
           </div>
           <div className="location-controls-section__actions-right">
-            <ThemePlaceholderButton />
+            <ThemeButtonPlaceholder />
           </div>
         </div>
       </header>
@@ -156,7 +156,7 @@ const LocationControlsSection: React.FC = () => {
         </div>
 
         <div className="location-controls-section__locations">
-          <LocationRecentHistory
+          <RecentLocationsList
             latitude={latitude}
             longitude={longitude}
             recentLocations={recentLocations}
@@ -168,4 +168,4 @@ const LocationControlsSection: React.FC = () => {
   );
 };
 
-export default LocationControlsSection;
+export default LocationControls;

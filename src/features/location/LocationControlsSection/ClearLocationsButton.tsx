@@ -6,7 +6,7 @@ type ClearLocationActionProps = {
   hasRecentLocations: boolean;
 };
 
-const ClearLocationAction: React.FC<ClearLocationActionProps> = ({
+const ClearLocationsButton: React.FC<ClearLocationActionProps> = ({
   onClear,
   hasLocation,
   hasRecentLocations,
@@ -22,4 +22,4 @@ const ClearLocationAction: React.FC<ClearLocationActionProps> = ({
   );
 };
 
-export default ClearLocationAction;
+export default ClearLocationsButton;

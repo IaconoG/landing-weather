@@ -13,7 +13,7 @@ type UseLocationResult = {
   clearLocationError: () => void;
 };
 
-const useLocation = (): UseLocationResult => {
+const useBrowserGeolocation = (): UseLocationResult => {
   const [location, setLocation] = useState<BrowserLocation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -67,4 +67,4 @@ const useLocation = (): UseLocationResult => {
   return { location, error, isLoading, requestLocation, clearLocationError };
 };
 
-export default useLocation;
+export default useBrowserGeolocation;

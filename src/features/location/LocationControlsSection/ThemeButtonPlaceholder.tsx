@@ -1,4 +1,4 @@
-const ThemePlaceholderButton: React.FC = () => {
+const ThemeButtonPlaceholder: React.FC = () => {
   return (
     <button
       type="button"
@@ -10,4 +10,4 @@ const ThemePlaceholderButton: React.FC = () => {
   );
 };
 
-export default ThemePlaceholderButton;
+export default ThemeButtonPlaceholder;
