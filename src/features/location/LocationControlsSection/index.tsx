@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 /* components */
 import LocationInput from "../components/LocationInput";
 import UseMyLocationButton from "../components/UseMyLocationButton";
@@ -13,15 +13,132 @@ import type { SelectedLocation } from "../../../types/location.types";
 /* styles */
 import "./LocationSection.css";
 
-const LocationControlsSection: React.FC = () => {
+const LocationLoadingBadge = memo(() => {
+  const isCurrentLoading = useWeatherStore((state) => state.current.isLoading);
+
+  if (!isCurrentLoading) return null;
+
+  return (
+    <span className="location-controls-section__loading">Actualizando...</span>
+  );
+});
+
+const LocationCurrentSummary = memo(() => {
   const latitude = useWeatherStore((state) => state.latitude);
   const longitude = useWeatherStore((state) => state.longitude);
   const locationLabel = useWeatherStore((state) => state.locationLabel);
   const locationSource = useWeatherStore((state) => state.locationSource);
+
+  const hasLocation = latitude !== null && longitude !== null;
+
+  return hasLocation ? (
+    <>
+      <p className="location-controls-section__summary-label">Actual</p>
+      <p className="location-controls-section__summary-value">
+        {locationLabel ?? "Ubicacion guardada"}
+      </p>
+      {locationSource !== "search" && (
+        <div className="location-controls-section__meta">
+          <span className="location-controls-section__coords">
+            {latitude?.toFixed(2)}, {longitude?.toFixed(3)}
+          </span>
+        </div>
+      )}
+    </>
+  ) : (
+    <>
+      <p className="location-controls-section__summary-label">
+        Sin ubicacion activa
+      </p>
+      <p className="location-controls-section__summary-value">
+        Busca una ciudad o usa tu ubicacion para cargar el clima actual.
+      </p>
+    </>
+  );
+});
+
+const LocationRecentHistory = memo(() => {
+  const latitude = useWeatherStore((state) => state.latitude);
+  const longitude = useWeatherStore((state) => state.longitude);
   const recentLocations = useWeatherStore((state) => state.recentLocations);
-  const isCurrentLoading = useWeatherStore((state) => state.isCurrentLoading);
   const setLocation = useWeatherStore((state) => state.setLocation);
-  const clearLocation = useWeatherStore((state) => state.clearLocation);
+
+  const handleLocationFound = useCallback(
+    (location: SelectedLocation) => {
+      if (latitude === location.latitude && longitude === location.longitude) {
+        return;
+      }
+
+      setLocation(location);
+    },
+    [latitude, longitude, setLocation],
+  );
+
+  if (recentLocations.length === 0) return null;
+
+  return (
+    <div
+      className="location-controls-section__history"
+      aria-label="Ultimas ubicaciones"
+    >
+      <p className="location-controls-section__history-label">Recientes</p>
+      <div className="location-controls-section__history-list">
+        {recentLocations.map((location) => {
+          const isCurrent =
+            latitude === location.latitude && longitude === location.longitude;
+
+          return (
+            <button
+              key={`${location.latitude}-${location.longitude}`}
+              type="button"
+              className={`location-controls-section__history-item${
+                isCurrent
+                  ? " location-controls-section__history-item--current"
+                  : ""
+              }`}
+              onClick={() => handleLocationFound(location)}
+              disabled={isCurrent}
+            >
+              <span className="location-controls-section__history-name">
+                {location.label}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+});
+
+type ClearLocationActionProps = {
+  onClear: () => void;
+};
+
+const ClearLocationAction = memo(({ onClear }: ClearLocationActionProps) => {
+  const latitude = useWeatherStore((state) => state.latitude);
+  const longitude = useWeatherStore((state) => state.longitude);
+  const recentLocations = useWeatherStore((state) => state.recentLocations);
+
+  const hasLocation = latitude !== null && longitude !== null;
+
+  return (
+    <LocationActionButton
+      onClick={onClear}
+      disabled={!hasLocation}
+      loading={false}
+      label={
+        recentLocations.length > 0 ? "Limpiar ubicaciónes" : "Limpiar ubicación"
+      }
+      variant="secondary"
+    />
+  );
+});
+
+const LocationControlsSection: React.FC = () => {
+  const latitude = useWeatherStore((state) => state.latitude);
+  const longitude = useWeatherStore((state) => state.longitude);
+  const setLocation = useWeatherStore((state) => state.setLocation);
+  const clearLocations = useWeatherStore((state) => state.clearLocations);
 
   const [query, setQuery] = useState("");
 
@@ -41,25 +158,23 @@ const LocationControlsSection: React.FC = () => {
     clearLocationError,
   } = useLocation();
 
-  const handleLocationFound = useCallback(
-    (location: SelectedLocation) => {
-      if (latitude === location.latitude && longitude === location.longitude)
-        return;
-      setLocation(location);
-    },
-    [latitude, longitude, setLocation],
-  );
-
   useEffect(() => {
     if (!browserLocation) return;
 
-    handleLocationFound({
+    if (
+      latitude === browserLocation.latitude &&
+      longitude === browserLocation.longitude
+    ) {
+      return;
+    }
+
+    setLocation({
       latitude: browserLocation.latitude,
       longitude: browserLocation.longitude,
       label: `Mi ubicación (${browserLocation.latitude.toFixed(2)}, ${browserLocation.longitude.toFixed(2)})`,
       source: "geolocation",
     });
-  }, [browserLocation, handleLocationFound]);
+  }, [browserLocation, latitude, longitude, setLocation]);
 
   useEffect(() => {
     const trimmed = query.trim();
@@ -80,19 +195,28 @@ const LocationControlsSection: React.FC = () => {
     await searchLocation(query);
   }, [query, searchLocation]);
 
+  const handleSearchLocationSelect = useCallback(
+    (location: SelectedLocation) => {
+      if (latitude === location.latitude && longitude === location.longitude) {
+        return;
+      }
+
+      setLocation(location);
+    },
+    [latitude, longitude, setLocation],
+  );
+
   const handleRequestGeolocation = useCallback(() => {
     clearLocationError();
     requestLocation();
   }, [clearLocationError, requestLocation]);
 
-  const handleClearLocation = useCallback(() => {
+  const handleClearLocations = useCallback(() => {
     setQuery("");
     clearSearch();
     clearLocationError();
-    clearLocation();
-  }, [clearLocation, clearLocationError, clearSearch]);
-
-  const hasLocation = latitude !== null && longitude !== null;
+    clearLocations();
+  }, [clearLocations, clearLocationError, clearSearch]);
 
   return (
     <section
@@ -105,72 +229,11 @@ const LocationControlsSection: React.FC = () => {
             Elegi desde donde ver el clima
           </h3>
         </div>
-        {isCurrentLoading && (
-          <span className="location-controls-section__loading">
-            Actualizando...
-          </span>
-        )}
+        <LocationLoadingBadge />
       </header>
       <div className="location-controls-section__summary">
-        {hasLocation ? (
-          <>
-            <p className="location-controls-section__summary-label">Actual</p>
-            <p className="location-controls-section__summary-value">
-              {locationLabel ?? "Ubicacion guardada"}
-            </p>
-            {locationSource !== "search" && (
-              <div className="location-controls-section__meta">
-                <span className="location-controls-section__coords">
-                  {latitude?.toFixed(2)}, {longitude?.toFixed(3)}
-                </span>
-              </div>
-            )}
-          </>
-        ) : (
-          <>
-            <p className="location-controls-section__summary-label">
-              Sin ubicacion activa
-            </p>
-            <p className="location-controls-section__summary-value">
-              Busca una ciudad o usa tu ubicacion para cargar el clima actual.
-            </p>
-          </>
-        )}
-        {recentLocations.length > 0 && (
-          <div
-            className="location-controls-section__history"
-            aria-label="Ultimas ubicaciones"
-          >
-            <p className="location-controls-section__history-label">
-              Recientes
-            </p>
-            <div className="location-controls-section__history-list">
-              {recentLocations.map((location) => {
-                const isCurrent =
-                  latitude === location.latitude &&
-                  longitude === location.longitude;
-
-                return (
-                  <button
-                    key={`${location.latitude}-${location.longitude}`}
-                    type="button"
-                    className={`location-controls-section__history-item${
-                      isCurrent
-                        ? " location-controls-section__history-item--current"
-                        : ""
-                    }`}
-                    onClick={() => handleLocationFound(location)}
-                    disabled={isCurrent}
-                  >
-                    <span className="location-controls-section__history-name">
-                      {location.label}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
+        <LocationCurrentSummary />
+        <LocationRecentHistory />
       </div>
 
       <div className="location-controls-section__actions--input">
@@ -182,10 +245,9 @@ const LocationControlsSection: React.FC = () => {
           onQueryChange={setQuery}
           onSearch={handleSearch}
           onClearSearch={clearSearch}
-          onLocationSelect={handleLocationFound}
+          onLocationSelect={handleSearchLocationSelect}
         />
       </div>
-      {/* estilo solo para boton de request geolocation */}
       <div className="location-controls-section__actions--geolocation">
         <UseMyLocationButton
           isLoading={isGeolocationLoading}
@@ -193,24 +255,13 @@ const LocationControlsSection: React.FC = () => {
           onRequestLocation={handleRequestGeolocation}
         />
       </div>
-      {/* estilo solo par aboton de clear */}
       <div className="location-controls-section__actions--clear">
-        <LocationActionButton
-          onClick={handleClearLocation}
-          disabled={!hasLocation}
-          loading={false}
-          label={
-            recentLocations.length > 0
-              ? "Limpiar ubicaciónes"
-              : "Limpiar ubicación"
-          }
-          variant="secondary"
-        />
+        <ClearLocationAction onClear={handleClearLocations} />
       </div>
 
       <p className="location-controls-section__hint">
         Tip: tambien podes escribir coordenadas en formato lat,lon. Ejemplo:
-        -34.60,-58.38
+        40.7127,-74.0059
       </p>
     </section>
   );

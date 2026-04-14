@@ -60,7 +60,7 @@ const useLocation = (): UseLocationResult => {
         enableHighAccuracy: true,
         timeout: 10000,
         maximumAge: 300000,
-      }
+      },
     );
   }, []);
 
