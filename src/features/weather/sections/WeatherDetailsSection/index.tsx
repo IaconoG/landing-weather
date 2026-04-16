@@ -3,11 +3,11 @@ import type {
   WeatherError,
 } from "../../../../types/weather.types";
 import WeatherDetailsSectionSkeleton from "./componnents/WeatherDetailsSectionSkeleton";
-import "./WeatherDetailsSection.css";
 import WeatherDetailsSectionNoData from "./componnents/WeatherDetailsSectionNoData";
 import WeatherDetailsSectionError from "./componnents/WeatherDetailsSectionError";
 import { buildMetrics } from "./utils/buildMetrics";
 import type { MetricKey } from "./utils/metricConfig";
+import "./WeatherDetailsSection.css";
 
 type WeatherDetailsSectionProps = {
   data: CurrentWeather | null;

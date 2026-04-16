@@ -37,7 +37,7 @@
     padding: 0 var(--spacing-sm);
     background: rgba(28, 35, 76, 0.3);
     color: var(--color-text-muted);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-2xs);
     cursor: not-allowed;
   }
 
@@ -50,7 +50,7 @@
   }
 
   & .location-controls-section__loading {
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-2xs);
     color: var(--color-text-accent);
     background: rgba(120, 147, 255, 0.14);
     border-radius: var(--border-radius-sm);

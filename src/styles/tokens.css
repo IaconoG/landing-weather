@@ -31,19 +31,19 @@
   );
 
   /* Spacing */
-  --spacing-xs: 0.25rem;
-  --spacing-sm: 0.5rem;
-  --spacing-md: 1rem;
-  --spacing-lg: 1.5rem;
-  --spacing-xl: 2rem;
-  --spacing-2xl: 2.5rem;
+  --spacing-xs: 0.25rem; /* 4px */
+  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-md: 1rem; /* 14px */
+  --spacing-lg: 1.286rem; /* 18px */
+  --spacing-xl: 1.671rem; /* 22px */
+  --spacing-2xl: 2.286rem; /* 32px */
 
   /* Border Radius */
-  --border-radius-xs: 0.125rem;
-  --border-radius-sm: 0.25rem;
-  --border-radius-md: 0.5rem;
-  --border-radius-lg: 0.75rem;
-  --border-radius-xl: 1rem;
+  --border-radius-xs: 0.25rem; /* 4px */
+  --border-radius-sm: 0.429rem; /* 6px */
+  --border-radius-md: 0.5rem; /* 8px */
+  --border-radius-lg: 0.857rem; /* 12px */
+  --border-radius-xl: 1rem; /* 14px */
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(8, 11, 28, 0.14);

@@ -7,7 +7,7 @@
   & .use-my-location-button__error {
     margin: 0;
     color: var(--color-feedback-error);
-    font-size: var(--font-size-xs);
+    font-size: var(--font-size-2xs);
     line-height: 1.2;
   }
 }
