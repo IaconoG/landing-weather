@@ -10,7 +10,7 @@ import WeatherPageFooter from "../shared/components/WeatherPageFooter";
 import WeatherMainSection from "../features/weather/sections/WeatherMainSection";
 import WeatherHourlySection from "../features/weather/sections/WeatherHourlySection";
 import WeatherDetailsSection from "../features/weather/sections/WeatherDetailsSection";
-import WeatherWeeklySection from "../features/weather/sections/WeatherWeeklySection";
+import WeatherMonthlySection from "../features/weather/sections/WeatherMonthlySection";
 
 /* styles */
 import "./WeatherPage.css";
@@ -53,14 +53,14 @@ const WeatherHourlyContainer: React.FC = () => {
   );
 };
 
-const WeatherWeeklyContainer: React.FC = () => {
-  const weekly = useWeatherStore((state) => state.weekly);
+const WeatherMonthlyContainer: React.FC = () => {
+  const monthly = useWeatherStore((state) => state.monthly);
 
   return (
-    <WeatherWeeklySection
-      data={weekly.data}
-      error={weekly.error}
-      isLoading={weekly.isLoading}
+    <WeatherMonthlySection
+      data={monthly.data}
+      error={monthly.error}
+      isLoading={monthly.isLoading}
     />
   );
 };
@@ -77,7 +77,7 @@ const WeatherPage: React.FC = () => {
         <WeatherCurrentMainContainer />
         <WeatherCurrentDetailsContainer />
         <WeatherHourlyContainer />
-        <WeatherWeeklyContainer />
+        <WeatherMonthlyContainer />
         {/* <WeatherGraphSection /> */}
         {/* <WeatherMapSection /> */}
         {/* <WeatherAlertsSection /> */}
