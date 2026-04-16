@@ -12,6 +12,7 @@ import {
 import {
   mapToCurrentWeather,
   mapToHourlyForecast,
+  mapToMonthlyForecast,
   mapToWeeklyForecast,
 } from "./weather.mapper";
 import type { WeatherError } from "../../types/weather.types";
@@ -36,6 +37,7 @@ type WorkerSuccess = {
   current: ReturnType<typeof mapToCurrentWeather>;
   hourly: ReturnType<typeof mapToHourlyForecast>;
   weekly: ReturnType<typeof mapToWeeklyForecast>;
+  monthly: ReturnType<typeof mapToMonthlyForecast>;
 };
 
 type WorkerFailure = {
@@ -97,6 +99,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
       current: mapToCurrentWeather(response),
       hourly: mapToHourlyForecast(response),
       weekly: mapToWeeklyForecast(response),
+      monthly: mapToMonthlyForecast(response),
     };
 
     self.postMessage(message);

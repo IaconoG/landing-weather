@@ -3,9 +3,10 @@ import { persist } from "zustand/middleware";
 
 import type {
   CurrentWeather,
-  HourlyForecastItem,
   WeatherError,
+  HourlyForecastItem,
   WeeklyForecastItem,
+  MonthlyForecastItem,
 } from "../types/weather.types";
 
 import type { LocationSource, SelectedLocation } from "../types/location.types";
@@ -28,6 +29,7 @@ interface WeatherState {
   current: DataState<CurrentWeather>;
   hourly: DataState<HourlyForecastItem[]>;
   weekly: DataState<WeeklyForecastItem[]>;
+  monthly: DataState<MonthlyForecastItem[]>;
 }
 
 interface WeatherActions {
@@ -37,6 +39,7 @@ interface WeatherActions {
   setCurrentState: (next: Partial<DataState<CurrentWeather>>) => void;
   setHourlyState: (next: Partial<DataState<HourlyForecastItem[]>>) => void;
   setWeeklyState: (next: Partial<DataState<WeeklyForecastItem[]>>) => void;
+  setMonthlyState: (next: Partial<DataState<MonthlyForecastItem[]>>) => void;
 }
 
 const emptyDataState = <T>(): DataState<T> => ({
@@ -81,6 +84,14 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
         expiresAt: null,
       },
 
+      monthly: {
+        data: null,
+        error: null,
+        isLoading: false,
+        fetchedAt: null,
+        expiresAt: null,
+      },
+
       setLocation: (location) =>
         set((state) => {
           const withoutCurrent = state.recentLocations.filter(
@@ -101,6 +112,7 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
             current: emptyDataState<CurrentWeather>(),
             hourly: emptyDataState<HourlyForecastItem[]>(),
             weekly: emptyDataState<WeeklyForecastItem[]>(),
+            monthly: emptyDataState<MonthlyForecastItem[]>(),
           };
         }),
       clearLocations: () =>
@@ -114,6 +126,7 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
           current: emptyDataState<CurrentWeather>(),
           hourly: emptyDataState<HourlyForecastItem[]>(),
           weekly: emptyDataState<WeeklyForecastItem[]>(),
+          monthly: emptyDataState<MonthlyForecastItem[]>(),
         }),
 
       setCurrentState: (next) =>
@@ -122,6 +135,8 @@ export const useWeatherStore = create<WeatherState & WeatherActions>()(
         set((state) => ({ hourly: { ...state.hourly, ...next } })),
       setWeeklyState: (next) =>
         set((state) => ({ weekly: { ...state.weekly, ...next } })),
+      setMonthlyState: (next) =>
+        set((state) => ({ monthly: { ...state.monthly, ...next } })),
     }),
     {
       name: "weather-storage",

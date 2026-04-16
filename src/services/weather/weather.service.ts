@@ -3,6 +3,7 @@ import type {
   CurrentWeatherResult,
   HourlyForecastItem,
   HourlyForecastResult,
+  MonthlyForecastResult,
   WeatherError,
   WeeklyForecastItem,
   WeeklyForecastResult,
@@ -367,6 +368,21 @@ export class WeatherService {
         meta: null,
       };
     }
+  };
+
+  getMonthlyForecast = async (
+    _params: WeatherLocationParams,
+  ): Promise<MonthlyForecastResult> => {
+    // Por implementar - pendiente de definir formato de datos mensual en el worker
+    return {
+      data: null,
+      error: {
+        message: "Pronóstico mensual no disponible por ahora",
+        type: "unavailable",
+        timestamp: new Date(),
+      },
+      meta: null,
+    };
   };
 }
 

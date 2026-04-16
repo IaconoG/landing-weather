@@ -30,7 +30,7 @@ export type WeatherError = {
 };
 
 /**
- * Map of weather codes to descriptions 
+ * Map of weather codes to descriptions
  */
 export type WeatherCodeMap = {
   [key: number]: string;
@@ -78,6 +78,15 @@ export type HourlyForecastItem = ForecastPointBase & {
 };
 
 /**
+ * Result of fetching hourly forecast, including data, error and metadata.
+ */
+export type HourlyForecastResult = {
+  data: HourlyForecastItem[] | null;
+  error: WeatherError | null;
+  meta: ForecastMeta | null;
+};
+
+/**
  * Item shape for daily forecast data.
  */
 export type WeeklyForecastItem = {
@@ -93,19 +102,30 @@ export type WeeklyForecastItem = {
 };
 
 /**
- * Result of fetching hourly forecast, including data, error and metadata.
+ * Result of fetching weekly forecast, including data, error and metadata.
  */
-export type HourlyForecastResult = {
-  data: HourlyForecastItem[] | null;
+export type WeeklyForecastResult = {
+  data: WeeklyForecastItem[] | null;
   error: WeatherError | null;
   meta: ForecastMeta | null;
 };
 
 /**
- * Result of fetching weekly forecast, including data, error and metadata.
+ * Item shape for monthly forecast data.
  */
-export type WeeklyForecastResult = {
-  data: WeeklyForecastItem[] | null;
+export type MonthlyForecastItem = {
+  dateTimestamp: number; // start of month in epoch ms
+  minTemperature: number;
+  maxTemperature: number;
+  weatherCode?: number;
+  weatherDescription?: string;
+};
+
+/**
+ * Result of fetching monthly forecast, including data, error and metadata.
+ */
+export type MonthlyForecastResult = {
+  data: MonthlyForecastItem[] | null;
   error: WeatherError | null;
   meta: ForecastMeta | null;
 };

@@ -7,6 +7,7 @@ import type {
   CurrentWeather,
   HourlyForecastItem,
   WeeklyForecastItem,
+  MonthlyForecastItem,
 } from "../../types/weather.types";
 import { toNumber, toTimestamp } from "./utils";
 
@@ -158,4 +159,10 @@ export const mapToWeeklyForecast = (
         hourlyForecasts.length > 0 ? maxPrecipitationProbability : undefined,
     };
   });
+};
+
+export const mapToMonthlyForecast = (
+  _data: StructureWeatherData,
+): MonthlyForecastItem[] => {
+  return undefined as unknown as MonthlyForecastItem[]; // Por implementar
 };
