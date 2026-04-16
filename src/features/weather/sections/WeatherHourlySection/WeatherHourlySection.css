@@ -7,6 +7,7 @@
   }
 
   & .weather-hourly-section__content {
+    max-width: 960px;
     padding: var(--spacing-md) 20px;
     border: none;
     border-radius: var(--border-radius-md);
@@ -30,6 +31,252 @@
   & .weather-hourly-section__subtitle {
     margin: 0;
     font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__day-carousel {
+    display: flex;
+    gap: var(--spacing-xs);
+    overflow-x: auto;
+    padding-bottom: var(--spacing-xs);
+    scroll-snap-type: x proximity;
+  }
+
+  & .weather-hourly-section__day-card {
+    min-width: 10rem;
+    flex: 0 0 auto;
+    display: grid;
+    justify-items: center;
+    gap: 0.125rem;
+    padding: var(--spacing-sm);
+    border: 1px solid rgba(157, 171, 241, 0.2);
+    border-radius: var(--border-radius-md);
+    background: rgba(28, 35, 76, 0.4);
+    color: var(--color-text-primary);
+    cursor: pointer;
+    scroll-snap-align: start;
+  }
+
+  & .weather-hourly-section__day-card--placeholder {
+    min-height: 5rem;
+    cursor: default;
+  }
+
+  & .weather-hourly-section__day-card:hover {
+    cursor: pointer;
+    border-color: rgba(157, 171, 241, 0.3);
+  }
+
+  & .weather-hourly-section__day-card--active {
+    border-color: rgba(121, 143, 255, 0.42);
+    background: rgba(95, 128, 255, 0.18);
+  }
+
+  & .weather-hourly-section__day-card-name {
+    font-size: var(--font-size-2xs);
+    text-transform: capitalize;
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-hourly-section__day-card-date {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__day-card-icon {
+    font-size: var(--font-size-lg);
+    line-height: 1;
+  }
+
+  & .weather-hourly-section__day-card-range {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-medium);
+  }
+
+  & .weather-hourly-section__detail {
+    display: grid;
+    gap: var(--spacing-md);
+    padding-top: var(--spacing-sm);
+  }
+
+  & .weather-hourly-section__detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--spacing-md);
+  }
+
+  & .weather-hourly-section__detail-title-group {
+    display: grid;
+    gap: 2px;
+  }
+
+  & .weather-hourly-section__detail-title {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-text-primary);
+    text-transform: capitalize;
+  }
+
+  & .weather-hourly-section__detail-subtitle {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__detail-summary {
+    display: grid;
+    justify-items: end;
+    gap: 2px;
+  }
+
+  & .weather-hourly-section__detail-summary-value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  & .weather-hourly-section__detail-summary-label {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__detail-body {
+    display: grid;
+    gap: var(--spacing-md);
+  }
+
+  & .weather-hourly-section__chart {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+    overflow-x: auto;
+    padding: var(--spacing-sm) 0;
+  }
+
+  & .weather-hourly-section__chart-point {
+    width: 100%;
+    flex: 0 0 auto;
+    display: grid;
+    justify-items: center;
+    gap: 0.25rem;
+  }
+
+  & .weather-hourly-section__chart-point--placeholder {
+    height: 30rem;
+    min-width: 3rem;
+    border-radius: var(--border-radius-md);
+    background: rgba(28, 35, 76, 0.2);
+    border: 1px dashed rgba(157, 171, 241, 0.14);
+  }
+
+  & .weather-hourly-section__chart-time {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__chart-track {
+    position: relative;
+    width: 1.5rem;
+    height: 6rem;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  & .weather-hourly-section__chart-temperature-bar {
+    width: 100%;
+    height: var(--temperature-offset, 50%);
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      rgba(121, 143, 255, 0.96) 0%,
+      rgba(95, 128, 255, 0.42) 100%
+    );
+  }
+
+  & .weather-hourly-section__chart-feels-line {
+    position: absolute;
+    left: 50%;
+    bottom: var(--feels-like-offset, 50%);
+    width: 0.4rem;
+    height: 0.4rem;
+    transform: translateX(-50%);
+    border-radius: 999px;
+    background: var(--color-button-text);
+    box-shadow: 0 0 0 2px rgba(21, 27, 60, 0.9);
+  }
+
+  & .weather-hourly-section__chart-temperature-value {
+    font-size: var(--font-size-2xs);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-primary);
+  }
+
+  & .weather-hourly-section__chart-feels-value {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__precipitation {
+    display: grid;
+    gap: var(--spacing-sm);
+    padding-top: var(--spacing-sm);
+    border-top: 1px solid rgba(157, 171, 241, 0.12);
+  }
+
+  & .weather-hourly-section__precipitation-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--spacing-sm);
+  }
+
+  & .weather-hourly-section__precipitation-title {
+    margin: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-text-secondary);
+  }
+
+  & .weather-hourly-section__precipitation-summary {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__precipitation-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
+    gap: var(--spacing-xs);
+  }
+
+  & .weather-hourly-section__precipitation-item {
+    display: grid;
+    gap: 2px;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--border-radius-sm);
+    background: rgba(28, 35, 76, 0.32);
+  }
+
+  & .weather-hourly-section__precipitation-item--placeholder {
+    min-height: 2.5rem;
+    border: 1px dashed rgba(157, 171, 241, 0.14);
+  }
+
+  & .weather-hourly-section__precipitation-time {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
+  }
+
+  & .weather-hourly-section__precipitation-value {
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-primary);
+  }
+
+  & .weather-hourly-section__precipitation-empty {
+    margin: 0;
+    font-size: var(--font-size-2xs);
     color: var(--color-text-muted);
   }
 
