@@ -6,17 +6,22 @@ import {
   type StructureWeatherData,
 } from "@i-giann/open-meteo-wrapper";
 import {
+  CURRENT_HOURLY_PARAMS,
   HOURLY_FORECAST_PARAMS,
   WEEKLY_DAILY_PARAMS,
 } from "../../constants/weather.query";
 import {
   mapToCurrentWeather,
   mapToHourlyForecast,
-  mapToMonthlyForecast,
   mapToWeeklyForecast,
+  mapToMonthlyForecast,
 } from "./weather.mapper";
 import type { WeatherError } from "../../types/weather.types";
 import { getTimeZoneOffsetSeconds } from "./utils";
+import {
+  FULL_PAST_DAYS,
+  type WeatherFetchProfile,
+} from "./weather.fetch-profile";
 
 type WorkerRequest = {
   id: number;
@@ -24,6 +29,7 @@ type WorkerRequest = {
     latitude: number;
     longitude: number;
     timezone: string;
+    profile: WeatherFetchProfile;
     forecastDays: number;
   };
 };
@@ -35,9 +41,9 @@ type WorkerSuccess = {
   timezone: string;
   timezoneOffsetSeconds: number;
   current: ReturnType<typeof mapToCurrentWeather>;
-  hourly: ReturnType<typeof mapToHourlyForecast>;
-  weekly: ReturnType<typeof mapToWeeklyForecast>;
-  monthly: ReturnType<typeof mapToMonthlyForecast>;
+  hourly?: ReturnType<typeof mapToHourlyForecast>;
+  weekly?: ReturnType<typeof mapToWeeklyForecast>;
+  monthly?: ReturnType<typeof mapToMonthlyForecast>;
 };
 
 type WorkerFailure = {
@@ -61,13 +67,16 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
   const fetchedAt = Date.now();
 
   try {
+    const isFullProfile = params.profile === "full";
+    const requestPastDays = isFullProfile ? FULL_PAST_DAYS : 0;
+
     const response = await fetchWeather({
       latitude: params.latitude,
       longitude: params.longitude,
       timezone: params.timezone,
-      hourly: HOURLY_FORECAST_PARAMS,
-      daily: WEEKLY_DAILY_PARAMS,
-      past_days: 0,
+      hourly: isFullProfile ? HOURLY_FORECAST_PARAMS : CURRENT_HOURLY_PARAMS,
+      daily: isFullProfile ? WEEKLY_DAILY_PARAMS : undefined,
+      past_days: requestPastDays,
       forecast_days: params.forecastDays,
     });
 
@@ -97,9 +106,9 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
         fetchedAt,
       ),
       current: mapToCurrentWeather(response),
-      hourly: mapToHourlyForecast(response),
-      weekly: mapToWeeklyForecast(response),
-      monthly: mapToMonthlyForecast(response),
+      hourly: isFullProfile ? mapToHourlyForecast(response) : undefined,
+      weekly: isFullProfile ? mapToWeeklyForecast(response) : undefined,
+      monthly: isFullProfile ? mapToMonthlyForecast(response) : undefined,
     };
 
     self.postMessage(message);

@@ -2,8 +2,10 @@ import { useEffect } from "react";
 import { useWeatherStore } from "../../../store/weather.store";
 import useHourlyForecast from "./useHourlyForecast";
 import useWeeklyForecast from "./useWeeklyForecast";
+import useMonthlyForecast from "./useMonthlyForecast";
 import type {
   HourlyForecastItem,
+  MonthlyForecastItem,
   WeeklyForecastItem,
   WeatherError,
 } from "../../../types/weather.types";
@@ -43,9 +45,11 @@ const useForecastController = () => {
 
   const hourly = useWeatherStore((state) => state.hourly);
   const weekly = useWeatherStore((state) => state.weekly);
+  const monthly = useWeatherStore((state) => state.monthly);
 
   const setHourlyState = useWeatherStore((state) => state.setHourlyState);
   const setWeeklyState = useWeatherStore((state) => state.setWeeklyState);
+  const setMonthlyState = useWeatherStore((state) => state.setMonthlyState);
 
   const hourlyState = useHourlyForecast({
     latitude,
@@ -59,6 +63,13 @@ const useForecastController = () => {
     longitude,
     cachedData: weekly.data as WeeklyForecastItem[] | null,
     expiresAt: weekly.expiresAt,
+  });
+
+  const monthlyState = useMonthlyForecast({
+    latitude,
+    longitude,
+    cachedData: monthly.data as MonthlyForecastItem[] | null,
+    expiresAt: monthly.expiresAt,
   });
 
   useEffect(() => {
@@ -119,6 +130,36 @@ const useForecastController = () => {
     weeklyState.expiresAt,
     weeklyState.isLoading,
     setWeeklyState,
+  ]);
+
+  useEffect(() => {
+    if (
+      isSameForecastState(monthly, {
+        data: monthlyState.data,
+        error: monthlyState.error,
+        fetchedAt: monthlyState.fetchedAt,
+        expiresAt: monthlyState.expiresAt,
+        isLoading: monthlyState.isLoading,
+      })
+    ) {
+      return;
+    }
+
+    setMonthlyState({
+      data: monthlyState.data,
+      fetchedAt: monthlyState.fetchedAt,
+      expiresAt: monthlyState.expiresAt,
+      error: monthlyState.error,
+      isLoading: monthlyState.isLoading,
+    });
+  }, [
+    monthly,
+    monthlyState.data,
+    monthlyState.error,
+    monthlyState.fetchedAt,
+    monthlyState.expiresAt,
+    monthlyState.isLoading,
+    setMonthlyState,
   ]);
 
   return null;

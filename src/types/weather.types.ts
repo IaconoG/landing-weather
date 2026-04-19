@@ -1,4 +1,39 @@
-import type { ErrorType } from "@i-giann/open-meteo-wrapper";
+import type {
+  ErrorType,
+  WeatherDescriptions,
+} from "@i-giann/open-meteo-wrapper";
+
+export type WmoWeatherCode =
+  | 0
+  | 1
+  | 2
+  | 3
+  | 45
+  | 48
+  | 51
+  | 53
+  | 55
+  | 56
+  | 57
+  | 61
+  | 63
+  | 65
+  | 66
+  | 67
+  | 71
+  | 73
+  | 75
+  | 77
+  | 80
+  | 81
+  | 82
+  | 85
+  | 86
+  | 95;
+
+export type WeatherDescription =
+  | `${WeatherDescriptions}`
+  | "Condicion desconocida";
 
 /**
  * Current weather snapshot used by the main card.
@@ -7,7 +42,7 @@ export type CurrentWeather = {
   temperature: number; // °C
   feelsLike: number; // °C
   humidity: number; // %
-  weatherDescription: string;
+  weatherDescription: WeatherDescription;
   windSpeed: number; // km/h
   pressure: number; // hPa
   visibility: number; // km
@@ -33,7 +68,7 @@ export type WeatherError = {
  * Map of weather codes to descriptions
  */
 export type WeatherCodeMap = {
-  [key: number]: string;
+  [key in WmoWeatherCode]?: WeatherDescription;
 };
 
 /**
@@ -66,8 +101,8 @@ export type HourlyForecastItem = ForecastPointBase & {
   temperature: number;
   feelsLike: number;
   humidity: number;
-  weatherCode: number;
-  weatherDescription: string;
+  weatherCode: WmoWeatherCode;
+  weatherDescription: WeatherDescription;
   windSpeed: number;
   pressure: number;
   visibility: number;
@@ -93,8 +128,8 @@ export type WeeklyForecastItem = {
   dateTimestamp: number; // start of day in epoch ms
   minTemperature: number;
   maxTemperature: number;
-  weatherCode?: number;
-  weatherDescription?: string;
+  weatherCode?: WmoWeatherCode;
+  weatherDescription?: WeatherDescription;
   sunriseTimestamp?: number;
   sunsetTimestamp?: number;
   daylightDurationSeconds?: number;
@@ -117,8 +152,9 @@ export type MonthlyForecastItem = {
   dateTimestamp: number; // start of month in epoch ms
   minTemperature: number;
   maxTemperature: number;
-  weatherCode?: number;
-  weatherDescription?: string;
+  weatherCode?: WmoWeatherCode;
+  weatherDescription?: WeatherDescription;
+  weatherIconUrl?: string;
 };
 
 /**

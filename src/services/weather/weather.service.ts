@@ -3,6 +3,7 @@ import type {
   CurrentWeatherResult,
   HourlyForecastItem,
   HourlyForecastResult,
+  MonthlyForecastItem,
   MonthlyForecastResult,
   WeatherError,
   WeeklyForecastItem,
@@ -11,7 +12,13 @@ import type {
 import {
   HOURLY_FORECAST_TTL_MS,
   WEEKLY_FORECAST_TTL_MS,
+  MONTHLY_FORECAST_TTL_MS,
 } from "../../constants/weather.cache";
+import {
+  CURRENT_FORRECAST_DAYS,
+  FULL_FORECAST_DAYS,
+  type WeatherFetchProfile,
+} from "./weather.fetch-profile";
 
 export type WeatherLocationParams = {
   latitude: number;
@@ -27,13 +34,13 @@ type SharedWeatherFetchResult = {
   current?: CurrentWeather;
   hourly?: HourlyForecastItem[];
   weekly?: WeeklyForecastItem[];
+  monthly?: MonthlyForecastItem[];
   error?: {
     message: string;
     type?: WeatherError["type"];
   };
 };
 
-const SHARED_FORECAST_DAYS = 6;
 const SHARED_RESPONSE_TTL_MS = 15_000;
 
 type WorkerRequestPayload = {
@@ -42,6 +49,7 @@ type WorkerRequestPayload = {
     latitude: number;
     longitude: number;
     timezone: string;
+    profile: WeatherFetchProfile;
     forecastDays: number;
   };
 };
@@ -53,8 +61,9 @@ type WorkerSuccessPayload = {
   timezone: string;
   timezoneOffsetSeconds: number;
   current: CurrentWeather;
-  hourly: HourlyForecastItem[];
-  weekly: WeeklyForecastItem[];
+  hourly?: HourlyForecastItem[];
+  weekly?: WeeklyForecastItem[];
+  monthly?: MonthlyForecastItem[];
 };
 
 type WorkerFailurePayload = {
@@ -99,6 +108,7 @@ weatherWorker.onmessage = (event: MessageEvent<WorkerResponsePayload>) => {
       current: message.current,
       hourly: message.hourly,
       weekly: message.weekly,
+      monthly: message.monthly,
     });
 
     return;
@@ -129,15 +139,20 @@ weatherWorker.onerror = (event) => {
 
 const fetchSharedWeatherInWorker = (
   params: WeatherLocationParams,
+  profile: WeatherFetchProfile,
 ): Promise<SharedWeatherFetchResult> => {
   const id = ++workerRequestId;
+  const forecastDays =
+    profile === "full" ? FULL_FORECAST_DAYS : CURRENT_FORRECAST_DAYS;
+
   const payload: WorkerRequestPayload = {
     id,
     params: {
       latitude: params.latitude,
       longitude: params.longitude,
       timezone: params.timezone ?? "auto",
-      forecastDays: SHARED_FORECAST_DAYS,
+      profile,
+      forecastDays,
     },
   };
 
@@ -183,6 +198,17 @@ const buildWeeklyMeta = (
   expiresAt: fetchedAt + WEEKLY_FORECAST_TTL_MS,
 });
 
+const buildMonthlyMeta = (
+  timezone: string,
+  timezoneOffsetSeconds: number,
+  fetchedAt: number,
+) => ({
+  timezone,
+  timezoneOffsetSeconds,
+  fetchedAt,
+  expiresAt: fetchedAt + MONTHLY_FORECAST_TTL_MS,
+});
+
 export class WeatherService {
   private readonly inFlightSharedFetches = new Map<
     string,
@@ -194,16 +220,32 @@ export class WeatherService {
     SharedWeatherFetchResult
   >();
 
-  private getLocationKey = (params: WeatherLocationParams): string => {
+  private getLocationKey = (
+    params: WeatherLocationParams,
+    profile: WeatherFetchProfile,
+  ): string => {
     const timezone = params.timezone ?? "auto";
-    return `${params.latitude}:${params.longitude}:${timezone}`;
+    return `${params.latitude}:${params.longitude}:${timezone}:${profile}`;
   };
 
   private fetchSharedWeather = async (
     params: WeatherLocationParams,
+    profile: WeatherFetchProfile,
   ): Promise<SharedWeatherFetchResult> => {
-    const key = this.getLocationKey(params);
     const now = Date.now();
+
+    if (profile === "current") {
+      const fullKey = this.getLocationKey(params, "full");
+      const fullCached = this.cachedSharedResponses.get(fullKey);
+      if (fullCached && now - fullCached.fetchedAt < SHARED_RESPONSE_TTL_MS) {
+        return fullCached;
+      }
+
+      const fullInFlight = this.inFlightSharedFetches.get(fullKey);
+      if (fullInFlight) return fullInFlight;
+    }
+
+    const key = this.getLocationKey(params, profile);
 
     const cachedResponse = this.cachedSharedResponses.get(key);
     if (
@@ -217,7 +259,7 @@ export class WeatherService {
     if (cachedPromise) return cachedPromise;
 
     const fetchPromise = (async () => {
-      return fetchSharedWeatherInWorker(params);
+      return fetchSharedWeatherInWorker(params, profile);
     })();
 
     this.inFlightSharedFetches.set(key, fetchPromise);
@@ -237,7 +279,7 @@ export class WeatherService {
     const fallbackFetchedAt = Date.now();
 
     try {
-      const shared = await this.fetchSharedWeather(params);
+      const shared = await this.fetchSharedWeather(params, "current");
 
       if (!shared.ok || !shared.current) {
         return buildErrorResult(
@@ -268,7 +310,7 @@ export class WeatherService {
     const fallbackFetchedAt = Date.now();
 
     try {
-      const shared = await this.fetchSharedWeather(params);
+      const shared = await this.fetchSharedWeather(params, "full");
 
       if (
         !shared.ok ||
@@ -322,7 +364,7 @@ export class WeatherService {
     const fallbackFetchedAt = Date.now();
 
     try {
-      const shared = await this.fetchSharedWeather(params);
+      const shared = await this.fetchSharedWeather(params, "full");
 
       if (
         !shared.ok ||
@@ -371,18 +413,57 @@ export class WeatherService {
   };
 
   getMonthlyForecast = async (
-    _params: WeatherLocationParams,
+    params: WeatherLocationParams,
   ): Promise<MonthlyForecastResult> => {
-    // Por implementar - pendiente de definir formato de datos mensual en el worker
-    return {
-      data: null,
-      error: {
-        message: "Pronóstico mensual no disponible por ahora",
-        type: "unavailable",
-        timestamp: new Date(),
-      },
-      meta: null,
-    };
+    const fallbackFetchedAt = Date.now();
+
+    try {
+      const shared = await this.fetchSharedWeather(params, "full");
+
+      if (
+        !shared.ok ||
+        !shared.monthly ||
+        !shared.timezone ||
+        shared.timezoneOffsetSeconds === undefined
+      ) {
+        return {
+          data: null,
+          error: {
+            message:
+              shared.error?.message ||
+              "Error al obtener los datos meteorologicos",
+            type: shared.error?.type,
+            timestamp: new Date(shared.fetchedAt),
+          },
+          meta: null,
+        };
+      }
+
+      return {
+        data: shared.monthly,
+        error: null,
+        meta: buildMonthlyMeta(
+          shared.timezone,
+          shared.timezoneOffsetSeconds,
+          shared.fetchedAt,
+        ),
+      };
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Error inesperado al consultar el clima";
+
+      return {
+        data: null,
+        error: {
+          message,
+          type: undefined,
+          timestamp: new Date(fallbackFetchedAt),
+        },
+        meta: null,
+      };
+    }
   };
 }
 

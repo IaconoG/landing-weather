@@ -10,20 +10,19 @@ import type {
   MonthlyForecastItem,
 } from "../../types/weather.types";
 import { toNumber, toTimestamp } from "./utils";
+import { getWeatherDescriptionFromWmo, normalizeWmoWeatherCode } from "./wmo";
 
 export const mapToCurrentWeather = (
   data: StructureWeatherData,
 ): CurrentWeather => {
   const firstHour: HourlyWeatherData | undefined = data.currentDay?.hourly?.[0];
-
-  const weatherDescription =
-    firstHour?.weatherDescription?.value ?? "Condición desconocida";
+  const weatherCode = normalizeWmoWeatherCode(firstHour?.weatherCode?.value);
 
   return {
     temperature: toNumber(firstHour?.temperature),
     feelsLike: toNumber(firstHour?.apparentTemperature),
     humidity: toNumber(firstHour?.relativeHumidity),
-    weatherDescription,
+    weatherDescription: getWeatherDescriptionFromWmo(weatherCode),
     windSpeed: toNumber(firstHour?.wind?.speed),
     pressure: toNumber(firstHour?.pressureMsl),
     visibility: toNumber(firstHour?.visibility),
@@ -44,15 +43,16 @@ export const mapToHourlyForecast = (
     const timestamp = toTimestamp(hour.hour);
     if (seenTimestamps.has(timestamp)) return;
 
+    const weatherCode = normalizeWmoWeatherCode(hour.weatherCode?.value) ?? 0;
+
     seenTimestamps.add(timestamp);
     hourlyItems.push({
       timestamp,
       temperature: toNumber(hour.temperature),
       feelsLike: toNumber(hour.apparentTemperature),
       humidity: toNumber(hour.relativeHumidity),
-      weatherCode: hour.weatherCode?.value ?? 0,
-      weatherDescription:
-        hour.weatherDescription?.value ?? "Condición desconocida",
+      weatherCode,
+      weatherDescription: getWeatherDescriptionFromWmo(weatherCode),
       windSpeed: toNumber(hour.wind?.speed),
       pressure: toNumber(hour.pressureMsl),
       visibility: toNumber(hour.visibility),
@@ -151,10 +151,8 @@ export const mapToWeeklyForecast = (
           ? day.sunset.value.getTime()
           : undefined,
       daylightDurationSeconds: day.daylightDuration?.value,
-      weatherCode: dominantWeatherCode,
-      weatherDescription:
-        representativeHour?.weatherDescription?.value ??
-        "Condición desconocida",
+      weatherCode: normalizeWmoWeatherCode(dominantWeatherCode),
+      weatherDescription: getWeatherDescriptionFromWmo(dominantWeatherCode),
       precipitationProbability:
         hourlyForecasts.length > 0 ? maxPrecipitationProbability : undefined,
     };
@@ -162,7 +160,38 @@ export const mapToWeeklyForecast = (
 };
 
 export const mapToMonthlyForecast = (
-  _data: StructureWeatherData,
+  data: StructureWeatherData,
 ): MonthlyForecastItem[] => {
-  return undefined as unknown as MonthlyForecastItem[]; // Por implementar
+  const days: DailyWeatherData[] = [
+    ...(data.pastDay ?? []),
+    ...(data.currentDay ? [data.currentDay] : []),
+    ...(data.forecast ?? []),
+  ];
+
+  const byDate = new Map<number, DailyWeatherData>();
+  for (const day of days) {
+    if (!(day.day?.value instanceof Date)) continue;
+
+    const dateTimestamp = day.day.value.getTime();
+    if (!byDate.has(dateTimestamp)) {
+      byDate.set(dateTimestamp, day);
+    }
+  }
+
+  return Array.from(byDate.entries())
+    .sort(([dateA], [dateB]) => dateA - dateB)
+    .map(([dateTimestamp, day]) => {
+      const representativeHour = day.hourly?.[0];
+      const weatherCode = normalizeWmoWeatherCode(
+        representativeHour?.weatherCode?.value,
+      );
+
+      return {
+        dateTimestamp,
+        minTemperature: toNumber(day.temperatureMin),
+        maxTemperature: toNumber(day.temperatureMax),
+        weatherCode,
+        weatherDescription: getWeatherDescriptionFromWmo(weatherCode),
+      };
+    });
 };
