@@ -1,9 +1,11 @@
 .location-input {
+  /* Base */
   width: 100%;
   position: relative;
   display: grid;
   gap: var(--spacing-xs);
 
+  /* Elements */
   & .location-input__input {
     width: 100%;
     min-height: 2.4rem;
@@ -14,23 +16,17 @@
     color: var(--color-text-primary);
     font-size: var(--font-size-md);
     line-height: 1.2;
-  }
 
-  & .location-input__input::placeholder {
-    color: var(--color-text-muted);
-    font-size: var(--font-size-sm);
-    letter-spacing: 0.01em;
-  }
+    &::placeholder {
+      color: var(--color-text-muted);
+      font-size: var(--font-size-sm);
+      letter-spacing: 0.01em;
+    }
 
-  & .location-input__input:focus {
-    outline: 2px solid var(--color-button-primary);
-    outline-offset: 1px;
-  }
-
-  & .location-input__error {
-    margin-left: var(--spacing-xs);
-    color: var(--color-feedback-error);
-    font-size: var(--font-size-sm);
+    &:focus {
+      outline: 2px solid var(--color-button-primary);
+      outline-offset: 1px;
+    }
   }
 
   & .location-input__results {
@@ -60,10 +56,17 @@
     background: transparent;
     color: var(--color-text-primary);
     cursor: pointer;
+
+    &:hover {
+      background: rgba(108, 126, 221, 0.18);
+      border-color: rgba(150, 165, 245, 0.22);
+    }
   }
 
-  & .location-input__select-button:hover {
-    background: rgba(108, 126, 221, 0.18);
-    border-color: rgba(150, 165, 245, 0.22);
+  /* States */
+  & .location-input__error {
+    margin-left: var(--spacing-xs);
+    color: var(--color-feedback-error);
+    font-size: var(--font-size-sm);
   }
 }

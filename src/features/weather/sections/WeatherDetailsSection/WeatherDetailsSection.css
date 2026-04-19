@@ -1,4 +1,8 @@
 .weather-details-section {
+  /* Base */
+  width: 100%;
+
+  /* Elements */
   & .weather-details-section__title {
     margin-bottom: var(--spacing-md);
     font-size: var(--font-size-md);
@@ -7,20 +11,17 @@
   }
 
   & .weather-details-section__metrics {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--spacing-md);
   }
 
   & .weather-details-section__metric {
-    height: 250px;
-    width: 300px;
+    height: 200px;
+    width: 100%;
     border-radius: var(--border-radius-lg);
     overflow: hidden;
-    padding: var(--spacing-md) 20px;
+    padding: var(--spacing-md);
     background: color-mix(
       in srgb,
       var(--color-surface-strong) 84%,
@@ -57,12 +58,14 @@
     color: var(--color-text-muted);
     font-size: var(--font-size-2xs);
     line-height: 1;
-    & .weather-details-section__metric-value {
-      font-size: var(--font-size-md);
-      font-weight: var(--font-weight-medium);
-    }
   }
 
+  & .weather-details-section__metric-value {
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-medium);
+  }
+
+  /* States */
   &.weather-details-section--error,
   &.weather-details-section--empty {
     border: none;

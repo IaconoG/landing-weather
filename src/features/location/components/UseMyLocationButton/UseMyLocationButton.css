@@ -1,9 +1,11 @@
 .use-my-location-button {
+  /* Base */
   display: grid;
   gap: 2px;
   align-items: start;
   min-height: 2rem;
 
+  /* States */
   & .use-my-location-button__error {
     margin: 0;
     color: var(--color-feedback-error);

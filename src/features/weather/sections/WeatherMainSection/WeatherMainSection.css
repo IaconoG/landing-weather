@@ -1,4 +1,5 @@
-.weather-main-section-content {
+.weather-main-section {
+  /* Base */
   min-height: 190px;
   width: 100%;
   display: grid;
@@ -16,6 +17,7 @@
   box-shadow: none;
   padding: var(--spacing-md) var(--spacing-lg);
 
+  /* Elements */
   & .weather-main-section__title {
     grid-area: title;
     font-size: var(--font-size-md);
@@ -76,48 +78,39 @@
     font-weight: var(--font-weight-medium);
   }
 
-  @media (max-width: 720px) {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "title"
-      "temperature"
-      "description"
-      "metrics";
-  }
-
+  /* States */
   &.weather-main-section--empty,
   &.weather-main-section--error {
     display: block;
   }
 
-  & .weather-main-section__empty-message,
   & .weather-main-section__error-message {
     margin: 0;
     color: var(--color-text-secondary);
   }
 
-  &.weather-main-section-content--skeleton {
-    & .weather-main-section-content__skeleton-title {
+  &.weather-main-section--skeleton {
+    & .weather-main-section__skeleton-title {
       grid-area: title;
     }
 
-    & .weather-main-section-content__skeleton-temperature {
+    & .weather-main-section__skeleton-temperature {
       grid-area: temperature;
     }
 
-    & .weather-main-section-content__skeleton-description {
+    & .weather-main-section__skeleton-description {
       grid-area: description;
       align-self: flex-end;
     }
 
-    & .weather-main-section-content__skeleton-metrics {
+    & .weather-main-section__skeleton-metrics {
       grid-area: metrics;
       display: flex;
       gap: var(--spacing-2xl);
     }
   }
 
-  &.weather-main-section-content--nodata {
+  &.weather-main-section--empty {
     & .weather-main-section__temperature-value,
     & .weather-main-section__description-value,
     & .weather-main-section__metric-value,
@@ -135,8 +128,14 @@
   }
 }
 
-.weather-main-section-error {
-  margin: 0;
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-sm);
+/* Responsive */
+@media (max-width: 720px) {
+  .weather-main-section {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "title"
+      "temperature"
+      "description"
+      "metrics";
+  }
 }

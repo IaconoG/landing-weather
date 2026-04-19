@@ -8,6 +8,8 @@
   --color-text-secondary: #b7c0e6;
   --color-text-muted: #929cc8;
   --color-text-accent: #90b7ff;
+  --color-detail-gold: #f2c75c;
+  --color-detail-gold-soft: rgba(242, 199, 92, 0.24);
 
   /* Colors - UI Components */
   --color-border-light: rgba(150, 163, 236, 0.2);

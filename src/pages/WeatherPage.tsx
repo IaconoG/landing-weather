@@ -19,7 +19,7 @@ const WeatherCurrentMainContainer: React.FC = () => {
   const current = useWeatherStore((state) => state.current);
 
   return (
-    <div className="weather-main-section">
+    <div className="weather-page__main-section">
       <WeatherMainSection
         data={current.data}
         error={current.error}
@@ -73,7 +73,7 @@ const WeatherPage: React.FC = () => {
     <div className="weather-page">
       <WeatherPageHeader />
 
-      <main className="weather-content">
+      <main className="weather-page__content">
         <WeatherCurrentMainContainer />
         <WeatherCurrentDetailsContainer />
         <WeatherHourlyContainer />

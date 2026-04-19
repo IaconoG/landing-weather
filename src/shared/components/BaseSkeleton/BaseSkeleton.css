@@ -1,4 +1,5 @@
 .base-skeleton {
+  /* Base */
   --skeleton-base: #2a315f;
   --skeleton-highlight: #374078;
 
@@ -12,31 +13,33 @@
   );
   background-size: 200% 100%;
   animation: base-skeleton-loading 2s ease-in-out infinite;
+
+  /* Variants */
+  &.base-skeleton--text {
+    height: 1rem;
+    width: 100%;
+    border-radius: var(--border-radius-sm);
+  }
+
+  &.base-skeleton--circle {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+  }
+
+  &.base-skeleton--block {
+    width: 100%;
+    height: 2rem;
+  }
+
+  &.base-skeleton--card {
+    width: 100%;
+    min-height: 10rem;
+    border-radius: var(--border-radius-lg);
+  }
 }
 
-.base-skeleton--text {
-  height: 1rem;
-  width: 100%;
-  border-radius: var(--border-radius-sm);
-}
-
-.base-skeleton--circle {
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: 9999px;
-}
-
-.base-skeleton--block {
-  width: 100%;
-  height: 2rem;
-}
-
-.base-skeleton--card {
-  width: 100%;
-  min-height: 10rem;
-  border-radius: var(--border-radius-lg);
-}
-
+/* Animation */
 @keyframes base-skeleton-loading {
   0% {
     background-position: 200% 0;

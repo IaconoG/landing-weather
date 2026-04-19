@@ -1,7 +1,9 @@
+/* Imports */
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&display=swap");
 @import "tailwindcss";
 @import "./styles/tokens.css";
 
+/* Base */
 :root {
   font-family: var(--font-family-base);
   line-height: 1.45;
@@ -15,6 +17,7 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Reset */
 * {
   box-sizing: border-box;
 }
@@ -26,6 +29,7 @@ body,
   min-height: 100%;
 }
 
+/* Page */
 body {
   min-height: 100vh;
   color: var(--color-text-primary);
