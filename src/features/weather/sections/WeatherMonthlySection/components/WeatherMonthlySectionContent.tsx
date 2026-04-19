@@ -1,53 +1,75 @@
-import type { WeeklyForecastItem } from "../../../../../types/weather.types";
+import { useMemo } from "react";
+import type { MonthlyForecastItem } from "../../../../../types/weather.types";
+import { buildMonthlySectionViewModel } from "../view-model/buildMonthlySectionViewModel";
 
-type WeatherMonthlySectionProps = {
-  _data: WeeklyForecastItem[] | null;
+type WeatherMonthlySectionContentProps = {
+  data: MonthlyForecastItem[];
 };
 
-const WeatherMonthlySectionContent: React.FC<WeatherMonthlySectionProps> = ({
-  _data,
-}) => {
-  console.log("Monthly data:", _data); // Log para verificar los datos recibidos
-  return (
-    <div className="weather-monthly-section">
-      <p className="weather-monthly-section__title">Pronóstico mensual</p>
-      <div className="weather-monthly-section__content">
-        <div className="weather-monthly-section__calendar">
-          <div className="weather-monthly-section__week">
-            <div className="weather-monthly-section__weekday">Dom</div>
-            <div className="weather-monthly-section__weekday">Lun</div>
-            <div className="weather-monthly-section__weekday">Mar</div>
-            <div className="weather-monthly-section__weekday">Mie</div>
-            <div className="weather-monthly-section__weekday">Jue</div>
-            <div className="weather-monthly-section__weekday">Vie</div>
-            <div className="weather-monthly-section__weekday">Sab</div>
-          </div>
-          <div className="weather-monthly-section__month">
-            {Array.from({ length: 35 }).map((_, index) => (
-              <div className="weather-monthly-section__month-day" key={index}>
-                <button className="weather-monthly-section__month-day-button">
-                  <div className="weather-monthly-section__month-day-number">
-                    {index}
-                  </div>
-                  <div className="weather-monthly-section__month-day-icon">
-                    sun
-                  </div>
+const WeatherMonthlySectionContent: React.FC<
+  WeatherMonthlySectionContentProps
+> = ({ data }) => {
+  const viewModel = useMemo(() => buildMonthlySectionViewModel(data), [data]);
+  console.log(viewModel);
 
-                  <div className="weather-monthly-section__month-day-temperatures">
-                    <div className="weather-monthly-section__month-day-maxtemp">
-                      {index}°
-                    </div>
-                    <div className="weather-monthly-section__month-day-mintemp">
-                      {-index}°
-                    </div>
-                  </div>
-                </button>
-              </div>
-            ))}
-          </div>
+  return (
+    <section className="weather-monthly-section">
+      <p className="weather-monthly-section__title">{viewModel.title}</p>
+      <div className="weather-monthly-section__content">
+        <div
+          className="weather-monthly-section__weekdays"
+          role="list"
+          aria-label="Dias de la semana del pronostico mensual"
+        >
+          <p className="weather-monthly-section__weekday">Dom</p>
+          <p className="weather-monthly-section__weekday">Lun</p>
+          <p className="weather-monthly-section__weekday">Mar</p>
+          <p className="weather-monthly-section__weekday">Mie</p>
+          <p className="weather-monthly-section__weekday">Jue</p>
+          <p className="weather-monthly-section__weekday">Vie</p>
+          <p className="weather-monthly-section__weekday">Sab</p>
+        </div>
+        <div
+          className="weather-monthly-section__grid"
+          role="list"
+          aria-label="Dias del pronostico mensual"
+        >
+          {viewModel.days.map((day) => (
+            <button
+              className={`weather-monthly-section__day ${day.isOutsideCurrentMonth ? "weather-monthly-section__day--outside" : ""} ${day.isToday ? "weather-monthly-section__day--today" : ""}`}
+              key={day.id}
+              type="button"
+            >
+              <p className="weather-monthly-section__day-date">
+                {day.dateLabel}
+              </p>
+              <p className="weather-monthly-section__day-day">{day.dayLabel}</p>
+              <img
+                className="weather-monthly-section__day-icon"
+                src={day.iconUrl}
+                alt={day.description}
+                title={day.description}
+              />
+              <p className="weather-monthly-section__day-range">
+                <span className="weather-monthly-section__day-max">
+                  {day.maxTemperatureLabel}
+                </span>
+                <span className="weather-monthly-section__day-min">
+                  {day.minTemperatureLabel}
+                </span>
+              </p>
+            </button>
+          ))}
+        </div>
+        <div className="weather-monthly-section__summary">
+          <span className="weather-monthly-section__summary-text">
+            Esta vista muestra un resumen del pronostico mensual, con la
+            temperatura máxima y mínima de cada día, junto con un ícono
+            representativo del clima esperado.
+          </span>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

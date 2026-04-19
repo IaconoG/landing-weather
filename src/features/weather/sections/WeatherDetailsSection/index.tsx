@@ -2,11 +2,14 @@ import type {
   CurrentWeather,
   WeatherError,
 } from "../../../../types/weather.types";
-import WeatherDetailsSectionSkeleton from "./componnents/WeatherDetailsSectionSkeleton";
-import WeatherDetailsSectionNoData from "./componnents/WeatherDetailsSectionNoData";
-import WeatherDetailsSectionError from "./componnents/WeatherDetailsSectionError";
-import { buildMetrics } from "./utils/buildMetrics";
-import type { MetricKey } from "./utils/metricConfig";
+import {
+  WeatherDetailsSectionContent,
+  WeatherDetailsSectionError,
+  WeatherDetailsSectionNoData,
+  WeatherDetailsSectionSkeleton,
+} from "./components";
+import { buildMetrics } from "./view-model/buildMetrics";
+import type { MetricKey } from "./view-model/metricConfig";
 import "./WeatherDetailsSection.css";
 
 type WeatherDetailsSectionProps = {
@@ -27,32 +30,9 @@ const WeatherDetailsSection: React.FC<WeatherDetailsSectionProps> = ({
   if (!data) return <WeatherDetailsSectionNoData />;
 
   const metrics = buildMetrics(data, metricKeys);
+  if (metrics.length === 0) return <WeatherDetailsSectionNoData />;
 
-  return (
-    <div className="weather-details-section">
-      <p className="weather-details-section__title">
-        Detalles del tiempo sobre el día
-      </p>
-      <div className="weather-details-section__metrics">
-        {metrics.map((metric) => (
-          <article key={metric.id} className="weather-details-section__metric">
-            <span className="weather-details-section__metric-label">
-              {metric.label}
-            </span>
-            <div className="weather-details-section__metric-graph" />
-            <div className="weather-details-section__metric-description">
-              <span className="weather-details-section__metric-text">
-                {metric.description}
-              </span>
-              <span className="weather-details-section__metric-value">
-                {metric.value}
-              </span>
-            </div>
-          </article>
-        ))}
-      </div>
-    </div>
-  );
+  return <WeatherDetailsSectionContent metrics={metrics} />;
 };
 
 export default WeatherDetailsSection;

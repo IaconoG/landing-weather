@@ -25,7 +25,7 @@ export const METRIC_CONFIG: Record<MetricKey, MetricConfig> = {
     format: (value) => `${Math.round(Number(value))}°C`,
   },
   feelsLike: {
-    label: "Sensación térmica",
+    label: "Sensacion termica",
     description: "Temperatura percibida",
     format: (value) => `${Math.round(Number(value))}°C`,
   },
@@ -40,8 +40,8 @@ export const METRIC_CONFIG: Record<MetricKey, MetricConfig> = {
     format: (value) => `${Math.round(Number(value))} km/h`,
   },
   pressure: {
-    label: "Presión",
-    description: "Presión atmosférica",
+    label: "Presion",
+    description: "Presion atmosferica",
     format: (value) => `${Math.round(Number(value))} hPa`,
   },
   visibility: {
@@ -50,8 +50,8 @@ export const METRIC_CONFIG: Record<MetricKey, MetricConfig> = {
     format: (value) => `${Number(value).toFixed(2)} km`,
   },
   uv: {
-    label: "Índice UV",
-    description: "Nivel de radiación UV",
+    label: "Indice UV",
+    description: "Nivel de radiacion UV",
     format: (value) => `${Number(value)}`,
   },
 };

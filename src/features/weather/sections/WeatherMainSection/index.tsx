@@ -10,6 +10,7 @@ import {
   WeatherMainSectionNoData,
   WeatherMainSectionSkeleton,
 } from "./components";
+import { buildMainSectionViewModel } from "./view-model/buildMainSectionViewModel";
 /* styles */
 import "./WeatherMainSection.css";
 
@@ -28,7 +29,9 @@ const WeatherMainSection: React.FC<WeatherMainSectionProps> = ({
   if (error) return <WeatherMainSectionError message={error.message} />;
   if (!data) return <WeatherMainSectionNoData />;
 
-  return <WeatherMainSectionContent data={data} />;
+  const viewModel = buildMainSectionViewModel(data);
+
+  return <WeatherMainSectionContent viewModel={viewModel} />;
 };
 
 export default WeatherMainSection;

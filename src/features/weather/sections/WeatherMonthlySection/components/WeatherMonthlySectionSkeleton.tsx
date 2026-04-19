@@ -9,6 +9,7 @@ const WeatherMonthlySectionSkeleton: React.FC = () => {
         height={24}
         width={400}
       />
+      <BaseSkeleton variant="card" height={280} width={960} />
     </div>
   );
 };

@@ -2,10 +2,12 @@ import type {
   WeatherError,
   MonthlyForecastItem,
 } from "../../../../types/weather.types";
-import WeatherMonthlySectionContent from "./components/WeatherMonthlySectionContent";
-import WeatherMonthlySectionNoData from "./components/WeatherMonthlySectionNoData";
-import WeatherMonthlySectionError from "./components/WeatherMonthlySectionError";
-import WeatherMonthlySectionSkeleton from "./components/WeatherMonthlySectionSkeleton";
+import {
+  WeatherMonthlySectionContent,
+  WeatherMonthlySectionError,
+  WeatherMonthlySectionNoData,
+  WeatherMonthlySectionSkeleton,
+} from "./components";
 import "./WeatherMonthlySection.css";
 
 type WeatherMonthlySectionProps = {
@@ -21,7 +23,7 @@ const WeatherMonthlySection: React.FC<WeatherMonthlySectionProps> = ({
 }) => {
   if (isLoading) return <WeatherMonthlySectionSkeleton />;
   if (error) return <WeatherMonthlySectionError message={error.message} />;
-  if (!data) return <WeatherMonthlySectionNoData />;
+  if (!data || data.length === 0) return <WeatherMonthlySectionNoData />;
 
   return <WeatherMonthlySectionContent data={data} />;
 };

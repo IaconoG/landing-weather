@@ -3,9 +3,16 @@ import BaseSkeleton from "../../../../../shared/components/BaseSkeleton";
 const WeatherHourlySectionSkeleton: React.FC = () => {
   return (
     <div className="weather-hourly-section weather-hourly-section--skeleton">
-      <BaseSkeleton className="weather-hourly-section__skeleton-title" variant="text" height={24} width={400}/>
-      <BaseSkeleton variant="text" height={16} width={100} />
-      <BaseSkeleton variant="text" height={16} width={100} />
+      <BaseSkeleton
+        className="weather-hourly-section__skeleton-title"
+        variant="text"
+        height={24}
+        width={280}
+      />
+      <div className="weather-hourly-section__skeleton-content">
+        <BaseSkeleton variant="card" height={96} width={960} />
+        <BaseSkeleton variant="card" height={260} width={960} />
+      </div>
     </div>
   );
 };

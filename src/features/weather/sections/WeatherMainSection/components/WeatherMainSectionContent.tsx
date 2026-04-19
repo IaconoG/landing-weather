@@ -1,47 +1,42 @@
-import type { CurrentWeather } from "../../../../../types/weather.types";
+import type { MainSectionViewModel } from "../view-model/buildMainSectionViewModel";
 
-type WeatherMainSectionProps = {
-  data: CurrentWeather;
-}
+type WeatherMainSectionContentProps = {
+  viewModel: MainSectionViewModel;
+};
 
-
-const WeatherMainSectionContent: React.FC<WeatherMainSectionProps> = ({ data }) => {
+const WeatherMainSectionContent: React.FC<WeatherMainSectionContentProps> = ({
+  viewModel,
+}) => {
   return (
-    <div className="weather-main-section-content">
-      <p className="weather-main-section__title">Clima actual</p>
-        <div className="weather-main-section__temperature">
-          <span className="weather-main-section__temperature-value">
-            {Math.round(data.temperature)}°C
-          </span>
-        </div>
-        <div className="weather-main-section__description">
-          <span className="weather-main-section__description-value">
-            {data.weatherDescription}
-          </span>
-          <span className="weather-main-section__sensation">
-            Sensación térmica: {Math.round(data.feelsLike)}°C
-          </span>
-        </div>
-        <div className="weather-main-section__metrics">
-          <div className="weather-main-section__metric">
-            <span className="weather-main-section__metric-label">Humedad</span>
-            <span className="weather-main-section__metric-value">{data.humidity}%</span>
+    <div className="weather-main-section">
+      <p className="weather-main-section__title">{viewModel.title}</p>
+      <div className="weather-main-section__temperature">
+        <span className="weather-main-section__temperature-value">
+          {viewModel.temperatureLabel}
+        </span>
+      </div>
+      <div className="weather-main-section__description">
+        <span className="weather-main-section__description-value">
+          {viewModel.description}
+        </span>
+        <span className="weather-main-section__sensation">
+          {viewModel.sensationLabel}
+        </span>
+      </div>
+      <div className="weather-main-section__metrics">
+        {viewModel.metrics.map((metric) => (
+          <div className="weather-main-section__metric" key={metric.id}>
+            <span className="weather-main-section__metric-label">
+              {metric.label}
+            </span>
+            <span className="weather-main-section__metric-value">
+              {metric.value}
+            </span>
           </div>
-          <div className="weather-main-section__metric">
-            <span className="weather-main-section__metric-label">Viento</span>
-            <span className="weather-main-section__metric-value">{Math.round(data.windSpeed)} km/h</span>
-          </div>
-          <div className="weather-main-section__metric">
-            <span className="weather-main-section__metric-label">Presión</span>
-            <span className="weather-main-section__metric-value">{data.pressure} hPa</span>
-          </div>
-          <div className="weather-main-section__metric">
-            <span className="weather-main-section__metric-label">Visibilidad</span>
-            <span className="weather-main-section__metric-value">{data.visibility} m</span>
-          </div>
-        </div>
+        ))}
+      </div>
     </div>
-  )
-}
+  );
+};
 
 export default WeatherMainSectionContent;

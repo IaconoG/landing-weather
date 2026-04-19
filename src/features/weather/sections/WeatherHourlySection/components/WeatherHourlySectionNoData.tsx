@@ -1,10 +1,10 @@
 const WeatherHourlySectionNoData: React.FC = () => {
   return (
-    <div className="weather-hourly-section">
-      <p className="weather-hourly-section__title">Pronóstico por horas (pendiente P2)</p>
-      <div className="weather-hourly-section__content">
-        <p className="weather-hourly-section__subtitle">
-          Base conectada con datos actuales. El detalle horario se agrega en P2.
+    <div className="weather-hourly-section weather-hourly-section--empty">
+      <p className="weather-hourly-section__title">Pronostico por horas</p>
+      <div className="weather-hourly-section__content weather-hourly-section__content--empty">
+        <p className="weather-hourly-section__empty-message">
+          No hay datos horarios para la ubicacion seleccionada.
         </p>
       </div>
     </div>

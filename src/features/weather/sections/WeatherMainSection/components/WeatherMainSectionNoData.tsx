@@ -1,13 +1,20 @@
 const WeatherMainSectionNoData: React.FC = () => {
   return (
-    <div className="weather-main-section-content weather-main-section-content--nodata" aria-label="Sin datos de clima">
+    <div
+      className="weather-main-section weather-main-section--empty"
+      aria-label="Sin datos de clima"
+    >
       <p className="weather-main-section__title">Clima actual</p>
       <div className="weather-main-section__temperature">
         <span className="weather-main-section__temperature-value">--°C</span>
       </div>
       <div className="weather-main-section__description">
-        <span className="weather-main-section__description-value">Sin ubicacion seleccionada</span>
-        <span className="weather-main-section__sensation">Sensacion termica: --°C</span>
+        <span className="weather-main-section__description-value">
+          Sin ubicacion seleccionada
+        </span>
+        <span className="weather-main-section__sensation">
+          Sensacion termica: --°C
+        </span>
       </div>
       <div className="weather-main-section__metrics">
         <div className="weather-main-section__metric">
@@ -23,7 +30,9 @@ const WeatherMainSectionNoData: React.FC = () => {
           <span className="weather-main-section__metric-value">-- hPa</span>
         </div>
         <div className="weather-main-section__metric">
-          <span className="weather-main-section__metric-label">Visibilidad</span>
+          <span className="weather-main-section__metric-label">
+            Visibilidad
+          </span>
           <span className="weather-main-section__metric-value">-- m</span>
         </div>
       </div>
