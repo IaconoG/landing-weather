@@ -5,7 +5,7 @@ import UseMyLocationButton from "../components/UseMyLocationButton";
 import LocationLoadingBadge from "./LocationLoadingBadge";
 import RecentLocationsList from "./RecentLocationsList";
 import ClearLocationsButton from "./ClearLocationsButton";
-import ThemeButtonPlaceholder from "./ThemeButtonPlaceholder";
+import ThemeButtonEmpty from "./ThemeButtonEmpty";
 /* store */
 import { useWeatherStore } from "../../../store/weather.store";
 /* hooks */
@@ -124,7 +124,7 @@ const LocationControls: React.FC = () => {
             />
           </div>
           <div className="location-controls-section__actions-right">
-            <ThemeButtonPlaceholder />
+            <ThemeButtonEmpty />
           </div>
         </div>
       </header>
