@@ -79,7 +79,6 @@
   }
 
   /* States */
-  &.weather-main-section--empty,
   &.weather-main-section--error {
     display: block;
   }
@@ -107,23 +106,6 @@
       grid-area: metrics;
       display: flex;
       gap: var(--spacing-2xl);
-    }
-  }
-
-  &.weather-main-section--empty {
-    & .weather-main-section__temperature-value,
-    & .weather-main-section__description-value,
-    & .weather-main-section__metric-value,
-    & .weather-main-section__sensation {
-      color: color-mix(
-        in srgb,
-        var(--color-text-secondary) 90%,
-        var(--color-text-primary) 10%
-      );
-    }
-
-    & .weather-main-section__description-value {
-      font-weight: var(--font-weight-medium);
     }
   }
 }

@@ -1,6 +1,7 @@
 .location-action-button {
   /* Base */
   min-height: 1.85rem;
+  height: 100%;
   border: 1px solid rgba(157, 171, 241, 0.18);
   border-radius: var(--border-radius-sm);
   padding: 0 var(--spacing-sm);
@@ -13,8 +14,6 @@
     background 0.2s ease,
     border-color 0.2s ease,
     transform 0.15s ease;
-
-  font-family: var(--font-family-base);
 
   /* States */
   &:not(:disabled):active {

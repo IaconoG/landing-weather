@@ -9,7 +9,7 @@
   --color-text-muted: #929cc8;
   --color-text-accent: #90b7ff;
   --color-detail-gold: #f2c75c;
-  --color-detail-gold-soft: rgba(242, 199, 92, 0.24);
+  --color-detail-gold-soft: rgba(242, 199, 92, 0.8);
 
   /* Colors - UI Components */
   --color-border-light: rgba(150, 163, 236, 0.2);
@@ -33,12 +33,20 @@
   );
 
   /* Spacing */
-  --spacing-xs: 0.25rem; /* 4px */
-  --spacing-sm: 0.5rem; /* 8px */
+  --spacing-2xs: 0.25rem; /* 4px */
+  --spacing-xs: 0.5rem; /* 8px */
+  --spacing-sm: 0.75rem; /* 12px */
   --spacing-md: 1rem; /* 14px */
   --spacing-lg: 1.286rem; /* 18px */
   --spacing-xl: 1.671rem; /* 22px */
   --spacing-2xl: 2.286rem; /* 32px */
+
+  /* Spacing - Layout */
+  --spacing-page: var(--spacing-2xl); /* 32px */
+  --spacing-section: var(--spacing-xl); /* 22px */
+
+  /* Layout */
+  --layout-max-width: 940px;
 
   /* Border Radius */
   --border-radius-xs: 0.25rem; /* 4px */

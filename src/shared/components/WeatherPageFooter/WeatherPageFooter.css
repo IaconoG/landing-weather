@@ -5,12 +5,10 @@
   gap: var(--spacing-2xl);
   font-size: var(--font-size-2xs);
   color: var(--color-text-secondary);
-  padding-top: var(--spacing-2xl);
 
   /* Elements */
   & a {
     color: var(--color-text-accent);
-    text-decoration: none;
     font-weight: var(--font-weight-medium);
 
     &:hover {

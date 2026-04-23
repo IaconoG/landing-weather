@@ -81,8 +81,6 @@
   }
 
   &.weather-details-section--empty {
-    padding-top: var(--spacing-sm);
-
     & .weather-details-section__metric-graph {
       border-style: dashed;
       border-color: color-mix(
