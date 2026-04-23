@@ -11,12 +11,19 @@ type UseLocationResult = {
   isLoading: boolean;
   requestLocation: () => void;
   clearLocationError: () => void;
+  clearLocation: () => void;
 };
 
 const useBrowserGeolocation = (): UseLocationResult => {
   const [location, setLocation] = useState<BrowserLocation | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const clearLocation = useCallback(() => {
+    setLocation(null);
+    setError(null);
+    setIsLoading(false);
+  }, []);
 
   const clearLocationError = useCallback(() => {
     setError(null);
@@ -64,7 +71,14 @@ const useBrowserGeolocation = (): UseLocationResult => {
     );
   }, []);
 
-  return { location, error, isLoading, requestLocation, clearLocationError };
+  return {
+    location,
+    error,
+    isLoading,
+    requestLocation,
+    clearLocationError,
+    clearLocation,
+  };
 };
 
 export default useBrowserGeolocation;

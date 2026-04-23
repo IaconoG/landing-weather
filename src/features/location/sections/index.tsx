@@ -37,6 +37,7 @@ const LocationControls: React.FC = () => {
     isLoading: isGeolocationLoading,
     requestLocation,
     clearLocationError,
+    clearLocation,
   } = useBrowserGeolocation();
 
   useEffect(() => {
@@ -95,9 +96,9 @@ const LocationControls: React.FC = () => {
   const handleClearLocations = useCallback(() => {
     setQuery("");
     clearSearch();
-    clearLocationError();
     clearLocations();
-  }, [clearLocations, clearLocationError, clearSearch]);
+    clearLocation();
+  }, [clearSearch, clearLocations, clearLocation]);
 
   const hasLocation = latitude !== null && longitude !== null;
   const hasRecentLocations = recentLocations.length > 0;
