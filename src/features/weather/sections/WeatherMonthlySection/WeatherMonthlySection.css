@@ -24,12 +24,6 @@
       transparent
     );
     box-shadow: none;
-
-    &.weather-monthly-section__content--empty,
-    &.weather-monthly-section__content--error {
-      justify-content: center;
-      align-items: center;
-    }
   }
 
   /* Calendar */
@@ -82,6 +76,14 @@
       background: rgba(28, 35, 76, 0.7);
       border-color: var(--color-detail-gold);
     }
+
+    &.weather-monthly-section__day--placeholder {
+      cursor: default;
+
+      &:hover {
+        background: rgba(28, 35, 76, 0.8);
+      }
+    }
   }
 
   & .weather-monthly-section__day-date {
@@ -113,6 +115,16 @@
     word-spacing: 100%;
     width: min-content;
     justify-self: center;
+
+    &.weather-monthly-section__day-icon--placeholder {
+      display: grid;
+      place-items: center;
+      font-size: var(--font-size-2xs);
+      color: var(--color-text-muted);
+      text-align: center;
+      font-weight: var(--font-weight-medium);
+      line-height: 1.2;
+    }
   }
 
   & .weather-monthly-section__day-range {
@@ -144,19 +156,8 @@
   }
 
   /* States */
-  & .weather-monthly-section__empty-message,
-  & .weather-monthly-section__error-message {
-    margin: 0;
-    color: var(--color-text-secondary);
-  }
-
-  &.weather-monthly-section--skeleton {
-    display: grid;
-    gap: var(--spacing-sm);
-
-    & .weather-monthly-section__skeleton-title {
-      margin-bottom: var(--spacing-sm);
-    }
+  & .weather-monthly-section__content--skeleton {
+    padding: 0;
   }
 }
 

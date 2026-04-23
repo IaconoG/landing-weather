@@ -2,12 +2,14 @@ import type { MonthlyForecastItem } from "../../../../../types/weather.types";
 
 type RelativeDayLabel = "Hoy" | "Mañana" | "Ayer" | "none";
 const DAY_MS = 86400000;
+const MONTHLY_GRID_DAYS = 35;
 
 type MonthlyDayViewModel = {
   id: string;
   dateLabel: string;
   dayLabel: string;
   relativeDayLabel: RelativeDayLabel;
+  hasData: boolean;
   description: string;
   iconUrl?: string;
   maxTemperatureLabel: string;
@@ -17,7 +19,6 @@ type MonthlyDayViewModel = {
 };
 
 type MonthlySectionViewModel = {
-  title: string;
   days: MonthlyDayViewModel[];
 };
 
@@ -56,6 +57,22 @@ const formatTemperature = (value: number): string => {
   return String(`${Math.round(value)}°C`);
 };
 
+const toStartOfDayTimestamp = (value: Date): number => {
+  return new Date(
+    value.getFullYear(),
+    value.getMonth(),
+    value.getDate(),
+  ).getTime();
+};
+
+const isValidForecastItem = (item: MonthlyForecastItem): boolean => {
+  return (
+    Number.isFinite(item.dateTimestamp) &&
+    Number.isFinite(item.maxTemperature) &&
+    Number.isFinite(item.minTemperature)
+  );
+};
+
 const isOutsideCurrentMonth = (date: Date, reference: Date): boolean => {
   return date.getMonth() !== reference.getMonth();
 };
@@ -63,31 +80,59 @@ const isOutsideCurrentMonth = (date: Date, reference: Date): boolean => {
 export const buildMonthlySectionViewModel = (
   data: MonthlyForecastItem[],
 ): MonthlySectionViewModel => {
-  const days = [...data]
-    .sort((a, b) => a.dateTimestamp - b.dateTimestamp)
-    .map((item) => {
-      const date = new Date(item.dateTimestamp);
+  const currentMonth = new Date();
+  const firstDayOfMonth = new Date(
+    currentMonth.getFullYear(),
+    currentMonth.getMonth(),
+    1,
+  );
+
+  const startOffset = firstDayOfMonth.getDay();
+  const gridStart = new Date(firstDayOfMonth);
+  gridStart.setDate(firstDayOfMonth.getDate() - startOffset);
+
+  const validItemsByDay = new Map<number, MonthlyForecastItem>();
+  for (const item of data) {
+    if (!isValidForecastItem(item)) {
+      continue;
+    }
+
+    const itemDate = new Date(item.dateTimestamp);
+    validItemsByDay.set(toStartOfDayTimestamp(itemDate), item);
+  }
+
+  return {
+    days: Array.from({ length: MONTHLY_GRID_DAYS }, (_, index) => {
+      const date = new Date(gridStart);
+      date.setDate(gridStart.getDate() + index);
+
+      const dayTimestamp = toStartOfDayTimestamp(date);
+      const item = validItemsByDay.get(dayTimestamp);
+      const hasData = Boolean(item);
+
       const relativeDayLabel = getRelativeDayLabel(date);
       const displayDayLabel =
         relativeDayLabel !== "none" ? relativeDayLabel : formatDay(date);
 
       return {
-        id: `${item.dateTimestamp}`,
+        id: `${dayTimestamp}`,
         dateLabel: formatDate(date),
         dayLabel: displayDayLabel,
         relativeDayLabel,
-        iconUrl: item.weatherIconUrl,
-        description: item.weatherDescription ?? "Sin descripcion",
-        maxTemperatureLabel: formatTemperature(item.maxTemperature),
-        minTemperatureLabel: formatTemperature(item.minTemperature),
-        isOutsideCurrentMonth: isOutsideCurrentMonth(date, new Date()),
-        isToday: date.toDateString() === new Date().toDateString(),
+        hasData,
+        iconUrl: hasData ? item?.weatherIconUrl : undefined,
+        description:
+          hasData && item?.weatherDescription
+            ? item.weatherDescription
+            : "Sin datos",
+        maxTemperatureLabel:
+          hasData && item ? formatTemperature(item.maxTemperature) : "--°C",
+        minTemperatureLabel:
+          hasData && item ? formatTemperature(item.minTemperature) : "--°C",
+        isOutsideCurrentMonth: isOutsideCurrentMonth(date, currentMonth),
+        isToday: dayTimestamp === toStartOfDayTimestamp(new Date()),
       };
-    });
-
-  return {
-    title: "Pronostico mensual",
-    days,
+    }),
   };
 };
 
