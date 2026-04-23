@@ -3,6 +3,7 @@ import { useWeatherStore } from "../store/weather.store";
 /* hooks */
 import useWeatherController from "../features/weather/hooks/useWeatherController";
 import useForecastController from "../features/weather/hooks/useForecastController";
+import useWeatherGlobalBanner from "../hooks/useWeatherGlobalBanner";
 /* components */
 import WeatherPageHeader from "../shared/components/WeatherPageHeader";
 import WeatherPageFooter from "../shared/components/WeatherPageFooter";
@@ -14,6 +15,7 @@ import WeatherMonthlySection from "../features/weather/sections/WeatherMonthlySe
 
 /* styles */
 import "./WeatherPage.css";
+import SectionBanner from "../shared/components/SectionBanner/SectionBanner";
 
 const WeatherCurrentMainContainer: React.FC = () => {
   const current = useWeatherStore((state) => state.current);
@@ -68,12 +70,22 @@ const WeatherMonthlyContainer: React.FC = () => {
 const WeatherPage: React.FC = () => {
   useWeatherController();
   useForecastController();
+  const { bannerState, onActionClick } = useWeatherGlobalBanner();
 
   return (
     <div className="weather-page">
       <WeatherPageHeader />
 
       <main className="weather-page__content">
+        {bannerState ? (
+          <SectionBanner
+            type={bannerState.type}
+            message={bannerState.message}
+            actionLabel={bannerState.actionLabel}
+            onActionClick={onActionClick}
+          />
+        ) : null}
+
         <WeatherCurrentMainContainer />
         <WeatherCurrentDetailsContainer />
         <WeatherHourlyContainer />
