@@ -15,14 +15,12 @@ const RecentLocationsSection = ({
   handleSearchLocationSelect,
 }: RecentLocationsSectionProps) => {
   return (
-    <div className="location-controls-section__locations">
-      <RecentLocationsList
-        latitude={latitude}
-        longitude={longitude}
-        recentLocations={recentLocations}
-        onLocationSelect={handleSearchLocationSelect}
-      />
-    </div>
+    <RecentLocationsList
+      latitude={latitude}
+      longitude={longitude}
+      recentLocations={recentLocations}
+      onLocationSelect={handleSearchLocationSelect}
+    />
   );
 };
 
