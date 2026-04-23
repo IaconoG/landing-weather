@@ -1,4 +1,4 @@
-import LocationControlsSection from "../../../features/location/LocationControlsSection";
+import LocationControlsSection from "../../../features/location/sections";
 import "./WeatherPageHeader.css";
 
 const WeatherPageHeader: React.FC = () => {
