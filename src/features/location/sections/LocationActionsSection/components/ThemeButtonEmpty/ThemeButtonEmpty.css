@@ -1,0 +1,10 @@
+.location-controls-section__theme-empty {
+  height: 100%;
+  border: 1px dashed rgba(157, 171, 241, 0.32);
+  border-radius: var(--border-radius-sm);
+  padding: 0 var(--spacing-sm);
+  background: rgba(28, 35, 76, 0.3);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-2xs);
+  cursor: not-allowed;
+}

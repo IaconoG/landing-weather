@@ -1,0 +1,8 @@
+.location-controls-section__loading {
+  font-size: var(--font-size-2xs);
+  color: var(--color-text-accent);
+  background: rgba(120, 147, 255, 0.14);
+  border-radius: var(--border-radius-sm);
+  padding: 2px var(--spacing-sm);
+  white-space: nowrap;
+}

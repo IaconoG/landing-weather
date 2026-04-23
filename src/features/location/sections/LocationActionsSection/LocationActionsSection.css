@@ -1,0 +1,20 @@
+.location-controls-section__actions {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+
+  & .location-controls-section__actions-left,
+  & .location-controls-section__actions-right {
+    width: fit-content;
+    height: 100%;
+  }
+
+  & .location-controls-section__actions-left {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+}

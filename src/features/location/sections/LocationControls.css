@@ -1,0 +1,12 @@
+.location-controls-section {
+  /* Base */
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(30px, auto) 1fr minmax(30px, auto);
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  border-radius: var(--border-radius-lg);
+  border: 1px solid rgba(150, 163, 236, 0.16);
+  background: color-mix(in srgb, var(--color-surface-strong) 88%, transparent);
+}
