@@ -23,17 +23,17 @@ const WeatherMonthlySection: React.FC<WeatherMonthlySectionProps> = ({
 
   if (isLoading) return <WeatherMonthlySectionSkeleton />;
 
-  if (hasNoData) {
-    return (
-      <WeatherMonthlySectionContent
-        data={[]}
-        sectionStateClass={"weather-monthly-section--placeholder"}
-        contentStateClass={"weather-monthly-section__content--placeholder"}
-      />
-    );
-  }
-
-  return <WeatherMonthlySectionContent data={data} />;
+  return (
+    <WeatherMonthlySectionContent
+      data={hasNoData ? [] : data}
+      sectionStateClass={
+        hasNoData ? "weather-monthly-section--placeholder" : ""
+      }
+      contentStateClass={
+        hasNoData ? "weather-monthly-section__content--placeholder" : ""
+      }
+    />
+  );
 };
 
 export default WeatherMonthlySection;
