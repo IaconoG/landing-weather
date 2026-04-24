@@ -1,7 +1,20 @@
 import type { MonthlyForecastItem } from "../../../../../types/weather.types";
+import {
+  getRelativeDayLabel,
+  type RelativeDayLabel,
+  toStartOfDayTimestamp,
+} from "../../../utils/date";
+import {
+  formatDate,
+  formatTemperature,
+  formatWeekday,
+} from "../../../utils/formatters";
+import {
+  isOutsideMonth,
+  isValidForecastDate,
+  isValidNumber,
+} from "../../../utils/validators";
 
-type RelativeDayLabel = "Hoy" | "Mañana" | "Ayer" | "none";
-const DAY_MS = 86400000;
 const MONTHLY_GRID_DAYS = 35;
 
 type MonthlyDayViewModel = {
@@ -22,59 +35,23 @@ type MonthlySectionViewModel = {
   days: MonthlyDayViewModel[];
 };
 
-const formatDate = (date: Date): string => {
-  return new Intl.DateTimeFormat("es-AR", {
-    day: "2-digit",
-  }).format(date);
-};
+const buildValidItemsByDay = (
+  data: MonthlyForecastItem[],
+): Map<number, MonthlyForecastItem> => {
+  const validItemsByDay = new Map<number, MonthlyForecastItem>();
+  for (const item of data) {
+    if (
+      !isValidForecastDate(item.dateTimestamp) ||
+      !isValidNumber(item.maxTemperature) ||
+      !isValidNumber(item.minTemperature)
+    ) {
+      continue;
+    }
 
-const formatDay = (date: Date): string => {
-  const raw = new Intl.DateTimeFormat("es-AR", {
-    weekday: "short",
-  }).format(date);
-  const normalized = raw.replace(".", "");
-  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
-};
-
-const getRelativeDayLabel = (date: Date): RelativeDayLabel => {
-  const toStartOfDay = (value: Date): number => {
-    return new Date(
-      value.getFullYear(),
-      value.getMonth(),
-      value.getDate(),
-    ).getTime();
-  };
-  const today = toStartOfDay(new Date());
-  const target = toStartOfDay(date);
-
-  if (target === today) return "Hoy";
-  if (target === today - DAY_MS) return "Ayer";
-  if (target === today + DAY_MS) return "Mañana";
-  return "none";
-};
-
-const formatTemperature = (value: number): string => {
-  return String(`${Math.round(value)}°C`);
-};
-
-const toStartOfDayTimestamp = (value: Date): number => {
-  return new Date(
-    value.getFullYear(),
-    value.getMonth(),
-    value.getDate(),
-  ).getTime();
-};
-
-const isValidForecastItem = (item: MonthlyForecastItem): boolean => {
-  return (
-    Number.isFinite(item.dateTimestamp) &&
-    Number.isFinite(item.maxTemperature) &&
-    Number.isFinite(item.minTemperature)
-  );
-};
-
-const isOutsideCurrentMonth = (date: Date, reference: Date): boolean => {
-  return date.getMonth() !== reference.getMonth();
+    const itemDate = new Date(item.dateTimestamp);
+    validItemsByDay.set(toStartOfDayTimestamp(itemDate), item);
+  }
+  return validItemsByDay;
 };
 
 export const buildMonthlySectionViewModel = (
@@ -91,15 +68,7 @@ export const buildMonthlySectionViewModel = (
   const gridStart = new Date(firstDayOfMonth);
   gridStart.setDate(firstDayOfMonth.getDate() - startOffset);
 
-  const validItemsByDay = new Map<number, MonthlyForecastItem>();
-  for (const item of data) {
-    if (!isValidForecastItem(item)) {
-      continue;
-    }
-
-    const itemDate = new Date(item.dateTimestamp);
-    validItemsByDay.set(toStartOfDayTimestamp(itemDate), item);
-  }
+  const validItemsByDay = buildValidItemsByDay(data);
 
   return {
     days: Array.from({ length: MONTHLY_GRID_DAYS }, (_, index) => {
@@ -112,7 +81,7 @@ export const buildMonthlySectionViewModel = (
 
       const relativeDayLabel = getRelativeDayLabel(date);
       const displayDayLabel =
-        relativeDayLabel !== "none" ? relativeDayLabel : formatDay(date);
+        relativeDayLabel !== "none" ? relativeDayLabel : formatWeekday(date);
 
       return {
         id: `${dayTimestamp}`,
@@ -129,7 +98,7 @@ export const buildMonthlySectionViewModel = (
           hasData && item ? formatTemperature(item.maxTemperature) : "--°C",
         minTemperatureLabel:
           hasData && item ? formatTemperature(item.minTemperature) : "--°C",
-        isOutsideCurrentMonth: isOutsideCurrentMonth(date, currentMonth),
+        isOutsideCurrentMonth: isOutsideMonth(date, currentMonth),
         isToday: dayTimestamp === toStartOfDayTimestamp(new Date()),
       };
     }),
