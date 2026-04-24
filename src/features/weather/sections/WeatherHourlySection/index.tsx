@@ -4,8 +4,6 @@ import type {
 } from "../../../../types/weather.types";
 import {
   WeatherHourlySectionContent,
-  WeatherHourlySectionError,
-  WeatherHourlySectionNoData,
   WeatherHourlySectionSkeleton,
 } from "./components";
 import "./WeatherHourlySection.css";
@@ -21,11 +19,19 @@ const WeatherHourlySection: React.FC<WeatherHourlySectionProps> = ({
   error,
   isLoading,
 }) => {
-  if (isLoading) return <WeatherHourlySectionSkeleton />;
-  if (error) return <WeatherHourlySectionError message={error.message} />;
-  if (!data || data.length === 0) return <WeatherHourlySectionNoData />;
+  const hasNoData = Boolean(error) || !data || data.length === 0;
 
-  return <WeatherHourlySectionContent data={data} />;
+  if (isLoading) return <WeatherHourlySectionSkeleton />;
+
+  return (
+    <WeatherHourlySectionContent
+      data={hasNoData ? [] : data}
+      sectionStateClass={hasNoData ? "weather-hourly-section--placeholder" : ""}
+      contentStateClass={
+        hasNoData ? "weather-hourly-section__content--placeholder" : ""
+      }
+    />
+  );
 };
 
 export default WeatherHourlySection;

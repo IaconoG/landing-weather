@@ -1,51 +1,45 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { HourlyForecastItem } from "../../../../../types/weather.types";
 import { buildHourlySectionViewModel } from "../view-model/buildHourlySectionViewModel";
 
 type WeatherHourlySectionContentProps = {
   data: HourlyForecastItem[];
+  sectionStateClass?: string;
+  contentStateClass?: string;
 };
 
 const WeatherHourlySectionContent: React.FC<
   WeatherHourlySectionContentProps
-> = ({ data }) => {
+> = ({ data, sectionStateClass, contentStateClass }) => {
   const viewModel = useMemo(() => buildHourlySectionViewModel(data), [data]);
-  const [activeDayId, setActiveDayId] = useState<string | null>(
-    viewModel.days[0]?.id ?? null,
-  );
+  const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!viewModel.days.length) {
-      setActiveDayId(null);
-      return;
+  const activeDay = useMemo(() => {
+    if (!viewModel.days.length) return null;
+
+    if (selectedDayId) {
+      const selectedDay = viewModel.days.find(
+        (day) => day.id === selectedDayId,
+      );
+      if (selectedDay) return selectedDay;
     }
+    return viewModel.days[0];
+  }, [selectedDayId, viewModel.days]);
 
-    const hasActiveDay = viewModel.days.some((day) => day.id === activeDayId);
-    if (!hasActiveDay) {
-      setActiveDayId(viewModel.days[0].id);
-    }
-  }, [activeDayId, viewModel.days]);
-
-  const activeDay =
-    viewModel.days.find((day) => day.id === activeDayId) ?? viewModel.days[0];
-
-  if (!activeDay) {
-    return (
-      <section className="weather-hourly-section weather-hourly-section--empty">
-        <p className="weather-hourly-section__empty-message">
-          No hay datos horarios disponibles.
-        </p>
-      </section>
-    );
-  }
+  if (!activeDay) return null;
 
   console.log("ViewModel days:", viewModel.days);
 
   return (
-    <section className="weather-hourly-section">
+    <section
+      className={`weather-hourly-section ${sectionStateClass ?? ""}`.trim()}
+      aria-label="Seccion de pronostico por horas"
+    >
       <p className="weather-hourly-section__title">Pronostico por horas</p>
 
-      <div className="weather-hourly-section__content">
+      <div
+        className={`weather-hourly-section__content ${contentStateClass ?? ""}`.trim()}
+      >
         <div
           className="weather-hourly-section__day-carousel"
           role="list"
@@ -59,8 +53,8 @@ const WeatherHourlySectionContent: React.FC<
                 key={day.id}
                 type="button"
                 role="listitem"
-                className={`weather-hourly-section__day-card${isActive ? " weather-hourly-section__day-card--active" : ""}`}
-                onClick={() => setActiveDayId(day.id)}
+                className={`weather-hourly-section__day-card${isActive ? " weather-hourly-section__day-card--active" : ""}${!day.hasData ? " weather-hourly-section__day-card--placeholder" : ""}`}
+                onClick={() => setSelectedDayId(day.id)}
                 aria-pressed={isActive}
               >
                 <span className="weather-hourly-section__day-card-name">
@@ -71,12 +65,13 @@ const WeatherHourlySectionContent: React.FC<
                 <span className="weather-hourly-section__day-card-date">
                   {day.dateLabel}
                 </span>
-                <img
-                  className="weather-hourly-section__day-card-icon"
-                  // src={day.iconUrl}
-                  alt={day.iconLabel}
-                  title={day.iconLabel}
-                />
+                <span
+                  className={`weather-hourly-section__day-card-icon ${!day.hasData ? "weather-hourly-section__day-card-icon--placeholder" : ""}`}
+                  aria-label={day.hasData ? day.iconLabel : "Sin datos"}
+                  title={day.hasData ? day.iconLabel : "Sin datos"}
+                >
+                  {day.hasData ? day.iconLabel : "--"}
+                </span>
                 <p className="weather-hourly-section__day-card-range">
                   <span className="weather-hourly-section__day-card-range-max">
                     {day.maxTemperatureLabel}{" "}
@@ -94,7 +89,7 @@ const WeatherHourlySectionContent: React.FC<
           <div className="weather-hourly-section__detail-header">
             <div className="weather-hourly-section__detail-title-group">
               <p className="weather-hourly-section__detail-title">
-                Detalle horario
+                Detalle Horario
               </p>
               <p className="weather-hourly-section__detail-subtitle">
                 Proximas 12 horas
@@ -112,7 +107,9 @@ const WeatherHourlySectionContent: React.FC<
             </div>
           </div>
 
-          <div className="weather-hourly-section__detail-body">
+          <div
+            className={`weather-hourly-section__detail-body ${!activeDay.hasData ? "weather-hourly-section__detail-body--placeholder" : ""}`}
+          >
             <div
               className="weather-hourly-section__chart weather-hourly-section__chart--placeholder"
               aria-label={`Grafico horario para ${activeDay.ariaDayLabel}`}
