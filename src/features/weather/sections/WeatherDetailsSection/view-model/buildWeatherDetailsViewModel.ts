@@ -6,7 +6,7 @@ import {
   getPressureTrend,
   getUvColorToken,
 } from "../../../utils/weather";
-import { formatTimeOrUnknown } from "../../../utils/formatters";
+import { formatDuration, formatTimeOrUnknown } from "../../../utils/formatters";
 import type { WeatherDetailsSourceDay } from "./weatherDetails.source.types";
 import type {
   WeatherDetailsRangeMetric,
@@ -68,7 +68,7 @@ export const buildWeatherDetailsViewModel = (
   );
   const sunriseLabel = formatTimeOrUnknown(data.sunriseTimestamp);
   const sunsetLabel = formatTimeOrUnknown(data.sunsetTimestamp);
-  const daylightLabel = formatTimeOrUnknown(data.daylightDurationSeconds);
+  const daylightLabel = formatDuration(data.daylightDurationSeconds);
   const moonriseLabel = formatTimeOrUnknown(data.moonriseTimestamp);
   const moonsetLabel = formatTimeOrUnknown(data.moonsetTimestamp);
 
