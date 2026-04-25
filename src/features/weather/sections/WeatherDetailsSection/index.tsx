@@ -1,38 +1,42 @@
-import type {
-  CurrentWeather,
-  WeatherError,
-} from "../../../../types/weather.types";
+import type { WeatherError } from "../../../../types/weather.types";
 import {
   WeatherDetailsSectionContent,
-  WeatherDetailsSectionError,
-  WeatherDetailsSectionNoData,
   WeatherDetailsSectionSkeleton,
 } from "./components";
-import { buildMetrics } from "./view-model/buildMetrics";
-import type { MetricKey } from "./view-model/metricConfig";
+import {
+  buildWeatherDetailsPlaceholderSourceDay,
+  buildWeatherDetailsSourceDay,
+} from "./view-model/weatherDetails.source.builder";
+import type { WeatherDetailsSectionData } from "./view-model/weatherDetails.source.types";
 import "./WeatherDetailsSection.css";
 
 type WeatherDetailsSectionProps = {
-  data: CurrentWeather | null;
+  data: WeatherDetailsSectionData;
   error: WeatherError | null;
   isLoading: boolean;
-  metricKeys?: MetricKey[];
 };
 
 const WeatherDetailsSection: React.FC<WeatherDetailsSectionProps> = ({
   data,
   error,
   isLoading,
-  metricKeys,
 }) => {
   if (isLoading) return <WeatherDetailsSectionSkeleton />;
-  if (error) return <WeatherDetailsSectionError message={error.message} />;
-  if (!data) return <WeatherDetailsSectionNoData />;
 
-  const metrics = buildMetrics(data, metricKeys);
-  if (metrics.length === 0) return <WeatherDetailsSectionNoData />;
+  const sourceDay = buildWeatherDetailsSourceDay(data);
+  const hasNoData = Boolean(error) || !sourceDay;
 
-  return <WeatherDetailsSectionContent metrics={metrics} />;
+  return (
+    <WeatherDetailsSectionContent
+      data={hasNoData ? buildWeatherDetailsPlaceholderSourceDay() : sourceDay!}
+      sectionStateClass={
+        hasNoData ? "weather-details-section--placeholder" : ""
+      }
+      contentStateClass={
+        hasNoData ? "weather-details-section__content--placeholder" : ""
+      }
+    />
+  );
 };
 
 export default WeatherDetailsSection;
