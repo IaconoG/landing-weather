@@ -15,6 +15,15 @@ export const formatDate = (date: Date): string => {
 };
 
 /* Formats a date to a string with the hour and minute, e.g. "14:30". */
+export const formatTimeOrUnknown = (
+  timestamp?: number,
+  fallback: string = "Desconocida",
+): string => {
+  if (!timestamp) return fallback;
+  return formatDate(new Date(timestamp));
+};
+
+/* Formats a date to a string with the hour and minute, e.g. "14:30". */
 export const formatHour = (date: Date): string => {
   return new Intl.DateTimeFormat("es-AR", {
     hour: "2-digit",
@@ -26,4 +35,12 @@ export const formatHour = (date: Date): string => {
 /* Formats a temperature value to a string with the degree symbol, e.g. "25°C". */
 export const formatTemperature = (value: number): string => {
   return String(`${Math.round(value)}°C`);
+};
+
+/* Formats a duration given in seconds to a string in the format "Xh Ym", e.g. "1h 30m". */
+export const formatDuration = (seconds?: number): string => {
+  if (seconds === undefined) return "Desconocida";
+  const hours = Math.floor(seconds / 3600);
+  const minutes = Math.floor((seconds % 3600) / 60);
+  return `${hours}h ${minutes}m`;
 };
