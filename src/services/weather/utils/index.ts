@@ -1,10 +1,9 @@
 /**
  * Converts a value to a number.
- * @param value - An optional object containing a number value.
- * @returns The number value or 0 if not provided.
+ * @param value - The value to convert, or undefined.
+ * @returns The numeric value, or 0 if the input is undefined.
  */
-export const toNumber = (value?: { value: number }): number =>
-  value?.value ?? 0;
+export const toNumber = (value: number): number => value ?? 0;
 
 /**
  * Converts a value to a timestamp in milliseconds.

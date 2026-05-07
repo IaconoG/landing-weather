@@ -1,8 +1,10 @@
 import type {
   ErrorType,
   WeatherDescriptions,
+  UvRiskLevels,
 } from "@i-giann/open-meteo-wrapper";
 
+/* WMO codes and descriptions */
 export type WmoWeatherCode =
   | 0
   | 1
@@ -35,23 +37,19 @@ export type WeatherDescription =
   | `${WeatherDescriptions}`
   | "Condicion desconocida";
 
-/**
- * Shared fetch state.
- */
+//** MAP OF WEATHER CODES TO DESCRIPTIONS *//
+export type WeatherCodeMap = {
+  [key in WmoWeatherCode]?: WeatherDescription;
+};
+
+/* State |  errors | metadata types */
 export type WeatherState = "idle" | "loading" | "success" | "error";
 
-/**
- * Standard UI error shape.
- */
+/* Standard UI error shape. */
 export type WeatherError = {
   message: string;
   type?: ErrorType;
   timestamp: Date;
-};
-
-//** MAP OF WEATHER CODES TO DESCRIPTIONS *//
-export type WeatherCodeMap = {
-  [key in WmoWeatherCode]?: WeatherDescription;
 };
 
 //** SHARED FORECAST METADATA *//
@@ -62,95 +60,128 @@ export type ForecastMeta = {
   expiresAt: number;
 };
 
-type ForecastPointBase = {
-  timestamp: number; // epoch ms normalized to the weather timezone
-};
+export interface WeatherValueUI {
+  value: number | undefined;
+  unit?: string;
+  label: string;
+}
+export interface DateValueUI {
+  value: Date;
+  unit?: string;
+  label: string;
+}
+export interface TextValueUI {
+  value: string;
+  unit?: string;
+  label: string;
+}
+export interface WindDataUI {
+  speed: WeatherValueUI;
+  direction?: WeatherValueUI;
+}
+export interface UVDataUI {
+  value: number | undefined;
+  riskLevel: UvRiskLevels;
+  description: string;
+  unit: string;
+  label: string;
+}
 
-// ** CURRENT WEATHER TYPES *//
-
-/* Current weather snapshot used by the main card. */
+/* Current weather (principal section) */
 export type CurrentWeather = {
-  temperature: number; // °C
-  feelsLike: number; // °C
-  humidity: number; // %
+  temperature: WeatherValueUI;
+  feelsLike: WeatherValueUI;
+  humidity: WeatherValueUI;
+  weatherCode?: WmoWeatherCode;
   weatherDescription: WeatherDescription;
-  windSpeed: number; // km/h
-  pressure: number; // hPa
-  visibility: number; // km
-  uv: number; // UV index
-  timestamp: number; // epoch ms
+  wind: WindDataUI;
+  pressure: WeatherValueUI;
+  visibility: WeatherValueUI;
+  uv: UVDataUI;
+  timestamp: number;
 };
 
-/* Result of fetching current weather, including data, error and metadata. */
 export type CurrentWeatherResult = {
   data: CurrentWeather | null;
   error: WeatherError | null;
   fetchedAt: number;
 };
 
-//** HOURLY FORECAST TYPES *//
-
-/* Item shape for hourly forecast data. */
-export type HourlyForecastItem = ForecastPointBase & {
-  temperature: number;
-  feelsLike: number;
-  humidity: number;
-  weatherCode: WmoWeatherCode;
+/* Hourly forecast item (normalizado para la app) */
+export type HourlyForecastItem = {
+  timestamp: number; // epoch ms (timezone normalizado)
+  temperature: WeatherValueUI;
+  humidity: WeatherValueUI;
+  dewPoint: WeatherValueUI;
+  feelsLike: WeatherValueUI;
+  precipitationProbability: WeatherValueUI;
+  precipitation: WeatherValueUI;
+  rain: WeatherValueUI;
+  snowfall: WeatherValueUI;
+  snowDepth: WeatherValueUI;
+  weatherCode?: WmoWeatherCode;
   weatherDescription: WeatherDescription;
-  windSpeed: number;
-  windDirection?: number;
-  windGustSpeed?: number;
-  dewPoint?: number;
-  pressure: number;
-  visibility: number;
-  uv: number;
-  isDay?: boolean;
-  precipitationProbability?: number;
-  cloudCover?: number;
+  wind: WindDataUI;
+  pressure: WeatherValueUI;
+  visibility: WeatherValueUI;
+  uv: UVDataUI;
+  isDay: boolean;
+  cloudCover: WeatherValueUI;
 };
 
-/* Result of fetching hourly forecast, including data, error and metadata. */
 export type HourlyForecastResult = {
   data: HourlyForecastItem[] | null;
   error: WeatherError | null;
   meta: ForecastMeta | null;
 };
 
-//** WEEKLY FORECAST TYPES *//
-
-/* Item shape for daily forecast data. */
+/* Weekly day forecast item */
 export type WeeklyForecastItem = {
-  dateTimestamp: number; // start of day in epoch ms
-  minTemperature: number;
-  maxTemperature: number;
-  weatherCode?: WmoWeatherCode;
-  weatherDescription?: WeatherDescription;
-  sunriseTimestamp?: number;
-  sunsetTimestamp?: number;
-  daylightDurationSeconds?: number;
-  precipitationProbability?: number;
+  dateTimestamp: number; // start of day epoch ms
+  dateLabel: string;
+  hourly: HourlyForecastItem[];
+  aggregates: {
+    minTemperature: WeatherValueUI;
+    maxTemperature: WeatherValueUI;
+    minFeelsLike: WeatherValueUI;
+    maxFeelsLike: WeatherValueUI;
+    minHumidity: WeatherValueUI;
+    maxHumidity: WeatherValueUI;
+    minDewPoint: WeatherValueUI;
+    maxDewPoint: WeatherValueUI;
+    maxPrecipitationProbability: WeatherValueUI;
+    totalPrecipitation: WeatherValueUI;
+    totalRain: WeatherValueUI;
+    totalSnowfall: WeatherValueUI;
+    maxSnowDepth: WeatherValueUI;
+    sunriseTimestamp?: number;
+    sunsetTimestamp?: number;
+    daylightDurationSeconds?: number;
+    avgWindSpeed: WeatherValueUI;
+    avgVisibility: WeatherValueUI;
+    maxUv: WeatherValueUI;
+  };
 };
 
-/* Result of fetching weekly forecast, including data, error and metadata. */
 export type WeeklyForecastResult = {
   data: WeeklyForecastItem[] | null;
   error: WeatherError | null;
   meta: ForecastMeta | null;
 };
 
-//** MONTHLY FORECAST TYPES *//
-
-/* Item shape for monthly forecast data. */
+/* Monthly forecast item */
 export type MonthlyForecastItem = {
-  dateTimestamp: number; // start of month in epoch ms
-  minTemperature: number;
-  maxTemperature: number;
+  dateTimestamp: number;
+  minTemperature: WeatherValueUI;
+  maxTemperature: WeatherValueUI;
+  maxPrecipitationProbability: WeatherValueUI;
+  maxWindSpeed: WeatherValueUI;
+  maxWindDirection: WeatherValueUI;
+  maxHumidity: WeatherValueUI;
   weatherCode?: WmoWeatherCode;
-  weatherDescription?: WeatherDescription;
-  weatherIconUrl?: string;
+  weatherDescription: WeatherDescription;
 };
 
-/* Result of fetching monthly forecast, including data, error and metadata. */
 export type MonthlyForecastResult = {
   data: MonthlyForecastItem[] | null;
   error: WeatherError | null;

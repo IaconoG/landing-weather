@@ -1,132 +1,137 @@
 /// <reference lib="webworker" />
 
 import {
+  ErrorType,
   fetchWeather,
+  MessageType,
   type FetchError,
+  type FetchWeatherProps,
   type StructureWeatherData,
 } from "@i-giann/open-meteo-wrapper";
-import {
-  CURRENT_HOURLY_PARAMS,
-  HOURLY_FORECAST_PARAMS,
-  WEEKLY_DAILY_PARAMS,
-} from "../../constants/weather.query";
-import {
-  mapToCurrentWeather,
-  mapToHourlyForecast,
-  mapToWeeklyForecast,
-  mapToMonthlyForecast,
-} from "./weather.mapper";
-import type { WeatherError } from "../../types/weather.types";
-import { getTimeZoneOffsetSeconds } from "./utils";
-import {
-  FULL_PAST_DAYS,
-  type WeatherFetchProfile,
-} from "./weather.fetch-profile";
+import { normalizeWeather } from "./weather.adapter";
+import type { NormalizedWeatherProfile } from "./weather.adapter";
+import type { WeatherProfile } from "./weather.fetch-profile";
 
+/* Message sent from main thread to worker */
 type WorkerRequest = {
-  id: number;
-  params: {
-    latitude: number;
-    longitude: number;
-    timezone: string;
-    profile: WeatherFetchProfile;
-    forecastDays: number;
-  };
+  profile: WeatherProfile;
+  params: FetchWeatherProps;
 };
-
+/* Success response from worker */
 type WorkerSuccess = {
-  id: number;
-  ok: true;
-  fetchedAt: number;
-  timezone: string;
-  timezoneOffsetSeconds: number;
-  current: ReturnType<typeof mapToCurrentWeather>;
-  hourly?: ReturnType<typeof mapToHourlyForecast>;
-  weekly?: ReturnType<typeof mapToWeeklyForecast>;
-  monthly?: ReturnType<typeof mapToMonthlyForecast>;
+  type: "success";
+  data: NormalizedWeatherProfile;
 };
-
+/* Failure response from worker */
 type WorkerFailure = {
-  id: number;
-  ok: false;
-  fetchedAt: number;
+  type: "error";
   error: {
     message: string;
-    type?: WeatherError["type"];
+    errorType?: string;
   };
 };
+
+type WorkerResponse = WorkerSuccess | WorkerFailure;
 
 const isWrapperError = (
   response: StructureWeatherData | FetchError,
 ): response is FetchError => {
-  return "errorType" in response;
+  return (
+    typeof response === "object" && response !== null && "errorType" in response
+  );
 };
 
+/* Worker message handler: receive profile+params, fetch, normalize, send back */
 self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
-  const { id, params } = event.data;
-  const fetchedAt = Date.now();
+  const { profile, params } = event.data;
 
   try {
-    const isFullProfile = params.profile === "full";
-    const requestPastDays = isFullProfile ? FULL_PAST_DAYS : 0;
+    const raw = await fetchWeather(params);
 
-    const response = await fetchWeather({
-      latitude: params.latitude,
-      longitude: params.longitude,
-      timezone: params.timezone,
-      hourly: isFullProfile ? HOURLY_FORECAST_PARAMS : CURRENT_HOURLY_PARAMS,
-      daily: isFullProfile ? WEEKLY_DAILY_PARAMS : undefined,
-      past_days: requestPastDays,
-      forecast_days: params.forecastDays,
-    });
-
-    if (isWrapperError(response)) {
-      const message: WorkerFailure = {
-        id,
-        ok: false,
-        fetchedAt,
+    if (isWrapperError(raw)) {
+      const errResponse: WorkerFailure = {
+        type: "error",
         error: {
-          message:
-            response.error || "Error al obtener los datos meteorológicos",
-          type: response.errorType,
+          message: raw.error || "Erro al obtener los datos meteorologicos",
+          errorType: raw.errorType,
         },
       };
-
-      self.postMessage(message);
+      self.postMessage(errResponse);
       return;
     }
 
-    const message: WorkerSuccess = {
-      id,
-      ok: true,
-      fetchedAt,
-      timezone: response.timezone,
-      timezoneOffsetSeconds: getTimeZoneOffsetSeconds(
-        response.timezone,
-        fetchedAt,
-      ),
-      current: mapToCurrentWeather(response),
-      hourly: isFullProfile ? mapToHourlyForecast(response) : undefined,
-      weekly: isFullProfile ? mapToWeeklyForecast(response) : undefined,
-      monthly: isFullProfile ? mapToMonthlyForecast(response) : undefined,
+    const normalized = normalizeWeather(raw, profile);
+    const response: WorkerSuccess = {
+      type: "success",
+      data: normalized,
     };
-
-    self.postMessage(message);
+    self.postMessage(response);
   } catch (error: unknown) {
-    const message: WorkerFailure = {
-      id,
-      ok: false,
-      fetchedAt,
+    const errResponse: WorkerFailure = {
+      type: "error",
       error: {
         message:
           error instanceof Error
             ? error.message
-            : "Error inesperado al consultar el clima",
+            : "Error desconocido al obtener los datos meteorologicos",
       },
     };
-
-    self.postMessage(message);
+    self.postMessage(errResponse);
   }
 };
+
+/**
+ * Main thread helper function to call the worker and get weather data for a profile+params
+ * - Returns a promise that resolves with NormalizedWeatherProfile on success, or FetchError on failure
+ * - Handles worker lifecycle, message passing, and error handling uniformly
+ * - Caller can use this function to fetch weather data without worrying about worker details
+ */
+export function runWeatherWorker(
+  profile: WeatherProfile,
+  params: FetchWeatherProps,
+): Promise<NormalizedWeatherProfile | FetchError> {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(new URL("./weather.worker.ts", import.meta.url), {
+      type: "module",
+    });
+
+    const timeout = setTimeout(() => {
+      worker.terminate();
+      reject(
+        new Error("Worker timeout: no response received within expected time"),
+      );
+    }, 30000); // 30 seconds timeout
+
+    worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
+      clearTimeout(timeout);
+      worker.terminate();
+
+      const { type } = event.data;
+      if (type === "success") {
+        resolve(event.data.data);
+      } else {
+        const errorData = event.data.error;
+        const fetchError: FetchError = {
+          error: errorData.message,
+          type: MessageType.ERROR,
+          errorType:
+            (errorData.errorType as ErrorType) || ErrorType.UNKNOWN_ERROR,
+        };
+        resolve(fetchError); // Return FetchError, not rejecting, to let caller handle it uniformly
+      }
+    };
+
+    worker.onerror = (error) => {
+      clearTimeout(timeout);
+      worker.terminate();
+      reject(
+        error.error ||
+          new Error("Worker error: An error occurred in the worker"),
+      );
+    };
+
+    worker.postMessage({ profile, params });
+  });
+}
 
 export {};

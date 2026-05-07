@@ -1,7 +1,7 @@
 import type {
   WeatherDescription,
   WmoWeatherCode,
-} from "../../types/weather.types";
+} from "../../../types/weather.types";
 
 const UNKNOWN_WEATHER_DESCRIPTION: WeatherDescription = "Condicion desconocida";
 

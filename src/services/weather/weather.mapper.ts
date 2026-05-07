@@ -9,25 +9,89 @@ import type {
   WeeklyForecastItem,
   MonthlyForecastItem,
 } from "../../types/weather.types";
-import { toNumber, toTimestamp } from "./utils";
-import { getWeatherDescriptionFromWmo, normalizeWmoWeatherCode } from "./wmo";
+import { toTimestamp } from "./utils";
+import {
+  getWeatherDescriptionFromWmo,
+  normalizeWmoWeatherCode,
+} from "./utils/wmo";
+import {
+  DEFAULT_CURRENT_WEATHER,
+  DAY_LABEL_FORMATTER,
+  formatWeatherValue,
+  formatWeatherUVValue,
+  formatWeatherWind,
+  makeValueUI,
+  computeMin,
+  computeMax,
+  computeAvg,
+} from "./weather.mapper.util";
+
+const mapHourlyForDay = (day: DailyWeatherData): HourlyForecastItem[] => {
+  const dayHours = day.hourly ?? [];
+
+  return dayHours.map((hour) => {
+    const weatherCode = normalizeWmoWeatherCode(hour?.weatherCode?.value);
+    const weatherDescription = getWeatherDescriptionFromWmo(weatherCode);
+
+    return {
+      timestamp: toTimestamp(hour.hour),
+      temperature: formatWeatherValue(hour?.temperature),
+      humidity: formatWeatherValue(hour?.relativeHumidity),
+      dewPoint: formatWeatherValue(hour?.dewPoint),
+      feelsLike: formatWeatherValue(hour?.apparentTemperature),
+      precipitationProbability: formatWeatherValue(
+        hour?.precipitationProbability,
+      ),
+      precipitation: formatWeatherValue(hour?.precipitation),
+      rain: formatWeatherValue(hour?.rain),
+      snowfall: formatWeatherValue(hour?.snowfall),
+      snowDepth: formatWeatherValue(hour?.snowDepth),
+      weatherDescription,
+      wind: formatWeatherWind(hour?.wind),
+      pressure: formatWeatherValue(hour?.pressureMsl),
+      visibility: formatWeatherValue(hour?.visibility),
+      uv: formatWeatherUVValue(hour?.uv),
+      cloudCover: formatWeatherValue(hour?.cloudCover),
+      isDay: Boolean(hour.isDay?.value),
+    };
+  });
+};
 
 export const mapToCurrentWeather = (
   data: StructureWeatherData,
 ): CurrentWeather => {
   const firstHour: HourlyWeatherData | undefined = data.currentDay?.hourly?.[0];
+
+  if (!firstHour) return DEFAULT_CURRENT_WEATHER;
+  if (Object.keys(firstHour).length === 0) return DEFAULT_CURRENT_WEATHER;
+
+  const timestamp = toTimestamp(firstHour.hour);
+
   const weatherCode = normalizeWmoWeatherCode(firstHour?.weatherCode?.value);
+  const weatherDescription = getWeatherDescriptionFromWmo(weatherCode);
+
+  const uv = formatWeatherUVValue(firstHour?.uv);
+  const temperature = formatWeatherValue(firstHour?.temperature);
+  const feelsLike = formatWeatherValue(firstHour?.apparentTemperature);
+  const humidity = formatWeatherValue(firstHour?.relativeHumidity);
+  const windSpeed = formatWeatherValue(firstHour?.wind?.speed);
+  const windDirection = formatWeatherValue(firstHour?.wind?.direction);
+  const pressure = formatWeatherValue(firstHour?.pressureMsl);
+  const visibility = formatWeatherValue(firstHour?.visibility);
 
   return {
-    temperature: toNumber(firstHour?.temperature),
-    feelsLike: toNumber(firstHour?.apparentTemperature),
-    humidity: toNumber(firstHour?.relativeHumidity),
-    weatherDescription: getWeatherDescriptionFromWmo(weatherCode),
-    windSpeed: toNumber(firstHour?.wind?.speed),
-    pressure: toNumber(firstHour?.pressureMsl),
-    visibility: toNumber(firstHour?.visibility),
-    uv: firstHour?.uv?.value ?? 0,
-    timestamp: toTimestamp(firstHour?.hour),
+    timestamp,
+    temperature,
+    feelsLike: feelsLike,
+    humidity: humidity,
+    weatherDescription,
+    wind: {
+      speed: windSpeed,
+      direction: windDirection,
+    },
+    pressure: pressure,
+    visibility: visibility,
+    uv,
   };
 };
 
@@ -43,26 +107,46 @@ export const mapToHourlyForecast = (
     const timestamp = toTimestamp(hour.hour);
     if (seenTimestamps.has(timestamp)) return;
 
-    const weatherCode = normalizeWmoWeatherCode(hour.weatherCode?.value) ?? 0;
+    const weatherCode = normalizeWmoWeatherCode(hour?.weatherCode?.value);
+    const weatherDescription = getWeatherDescriptionFromWmo(weatherCode);
+
+    const temperature = formatWeatherValue(hour?.temperature);
+    const humidity = formatWeatherValue(hour?.relativeHumidity);
+    const dewPoint = formatWeatherValue(hour?.dewPoint);
+    const feelsLike = formatWeatherValue(hour?.apparentTemperature);
+    const precipitationProbability = formatWeatherValue(
+      hour?.precipitationProbability,
+    );
+    const precipitation = formatWeatherValue(hour?.precipitation);
+    const rain = formatWeatherValue(hour?.rain);
+    const snowfall = formatWeatherValue(hour?.snowfall);
+    const snowDepth = formatWeatherValue(hour?.snowDepth);
+    const wind = formatWeatherWind(hour?.wind);
+    const pressure = formatWeatherValue(hour?.pressureMsl);
+    const visibility = formatWeatherValue(hour?.visibility);
+    const cloudCover = formatWeatherValue(hour?.cloudCover);
+    const uv = formatWeatherUVValue(hour?.uv);
+    const isDay = Boolean(hour.isDay?.value);
 
     seenTimestamps.add(timestamp);
     hourlyItems.push({
       timestamp,
-      temperature: toNumber(hour.temperature),
-      feelsLike: toNumber(hour.apparentTemperature),
-      humidity: toNumber(hour.relativeHumidity),
-      weatherCode,
-      weatherDescription: getWeatherDescriptionFromWmo(weatherCode),
-      windSpeed: toNumber(hour.wind?.speed),
-      pressure: toNumber(hour.pressureMsl),
-      visibility: toNumber(hour.visibility),
-      uv: hour.uv?.value ?? 0,
-      isDay:
-        hour.isDay?.value !== undefined
-          ? Boolean(Math.round(hour.isDay.value))
-          : undefined,
-      precipitationProbability: hour.precipitationProbability?.value,
-      cloudCover: hour.cloudCover?.value,
+      temperature,
+      humidity,
+      dewPoint,
+      feelsLike,
+      precipitationProbability,
+      precipitation,
+      rain,
+      snowfall,
+      snowDepth,
+      weatherDescription,
+      wind,
+      pressure,
+      visibility,
+      uv,
+      cloudCover,
+      isDay,
     });
   };
 
@@ -86,7 +170,12 @@ export const mapToHourlyForecast = (
 export const mapToWeeklyForecast = (
   data: StructureWeatherData,
 ): WeeklyForecastItem[] => {
+  const previousDay = data.pastDay?.length
+    ? [data.pastDay[data.pastDay.length - 1]]
+    : [];
+
   const days: DailyWeatherData[] = [
+    ...previousDay,
     ...(data.currentDay ? [data.currentDay] : []),
     ...(data.forecast ?? []),
   ];
@@ -107,54 +196,110 @@ export const mapToWeeklyForecast = (
   }
 
   return uniqueDays.map(({ dateTimestamp, day }) => {
-    const hourlyByCode = new Map<number, number>();
-    const hourlyForecasts = day.hourly ?? [];
+    const hourly = mapHourlyForDay(day);
 
-    let dominantWeatherCode: number | undefined;
-    let dominantWeatherCount = 0;
-    let representativeHour = hourlyForecasts[0];
-    let maxPrecipitationProbability = 0;
+    const definedNumbers = (values: Array<number | undefined>): number[] =>
+      values.filter((value): value is number => value !== undefined);
+    const aggregated = (() => {
+      const temps: Array<number | undefined> = [];
+      const feels: Array<number | undefined> = [];
+      const humidity: Array<number | undefined> = [];
+      const dewPoints: Array<number | undefined> = [];
+      const precProb: Array<number | undefined> = [];
+      const precip: Array<number | undefined> = [];
+      const rain: Array<number | undefined> = [];
+      const snowfall: Array<number | undefined> = [];
+      const snowDepth: Array<number | undefined> = [];
+      const windSpeeds: Array<number | undefined> = [];
+      const visibility: Array<number | undefined> = [];
+      const uvs: Array<number | undefined> = [];
 
-    for (const hour of hourlyForecasts) {
-      const code = hour.weatherCode?.value;
-      if (code !== undefined) {
-        const nextCount = (hourlyByCode.get(code) ?? 0) + 1;
-        hourlyByCode.set(code, nextCount);
-
-        if (nextCount > dominantWeatherCount) {
-          dominantWeatherCount = nextCount;
-          dominantWeatherCode = code;
-        }
-
-        if (!representativeHour) {
-          representativeHour = hour;
-        }
+      for (const hour of hourly) {
+        temps.push(hour.temperature.value);
+        feels.push(hour.feelsLike.value);
+        humidity.push(hour.humidity.value);
+        dewPoints.push(hour.dewPoint.value);
+        precProb.push(hour.precipitationProbability.value);
+        precip.push(hour.precipitation.value);
+        rain.push(hour.rain.value);
+        snowfall.push(hour.snowfall.value);
+        snowDepth.push(hour.snowDepth.value);
+        windSpeeds.push(hour.wind.speed.value);
+        visibility.push(hour.visibility.value);
+        uvs.push(hour.uv.value);
       }
 
-      const precipitationProbability =
-        hour.precipitationProbability?.value ?? 0;
-      if (precipitationProbability > maxPrecipitationProbability) {
-        maxPrecipitationProbability = precipitationProbability;
-      }
-    }
+      return {
+        temperatures: definedNumbers(temps),
+        feelsLikeValues: definedNumbers(feels),
+        humidityValues: definedNumbers(humidity),
+        dewPointValues: definedNumbers(dewPoints),
+        precipitationProbabilityValues: definedNumbers(precProb),
+        precipitationValues: definedNumbers(precip),
+        rainValues: definedNumbers(rain),
+        snowfallValues: definedNumbers(snowfall),
+        snowDepthValues: definedNumbers(snowDepth),
+        windSpeedValues: definedNumbers(windSpeeds),
+        visibilityValues: definedNumbers(visibility),
+        uvValues: definedNumbers(uvs),
+      };
+    })();
 
     return {
       dateTimestamp,
-      minTemperature: toNumber(day.temperatureMin),
-      maxTemperature: toNumber(day.temperatureMax),
-      sunriseTimestamp:
-        day.sunrise?.value instanceof Date
-          ? day.sunrise.value.getTime()
-          : undefined,
-      sunsetTimestamp:
-        day.sunset?.value instanceof Date
-          ? day.sunset.value.getTime()
-          : undefined,
-      daylightDurationSeconds: day.daylightDuration?.value,
-      weatherCode: normalizeWmoWeatherCode(dominantWeatherCode),
-      weatherDescription: getWeatherDescriptionFromWmo(dominantWeatherCode),
-      precipitationProbability:
-        hourlyForecasts.length > 0 ? maxPrecipitationProbability : undefined,
+      dateLabel: DAY_LABEL_FORMATTER.format(new Date(dateTimestamp)),
+      hourly,
+      aggregates: {
+        minTemperature: makeValueUI(
+          computeMin(aggregated.temperatures),
+          day.temperatureMin?.unit ?? "°C",
+        ),
+        maxTemperature: makeValueUI(
+          computeMax(aggregated.temperatures),
+          day.temperatureMax?.unit ?? "°C",
+        ),
+        minFeelsLike: makeValueUI(computeMin(aggregated.feelsLikeValues), "°C"),
+        maxFeelsLike: makeValueUI(computeMax(aggregated.feelsLikeValues), "°C"),
+        minHumidity: makeValueUI(computeMin(aggregated.humidityValues), "%"),
+        maxHumidity: makeValueUI(computeMax(aggregated.humidityValues), "%"),
+        minDewPoint: makeValueUI(computeMin(aggregated.dewPointValues), "°C"),
+        maxDewPoint: makeValueUI(computeMax(aggregated.dewPointValues), "°C"),
+        maxPrecipitationProbability: makeValueUI(
+          computeMax(aggregated.precipitationProbabilityValues),
+          "%",
+        ),
+        totalPrecipitation: makeValueUI(
+          aggregated.precipitationValues.reduce((sum, value) => sum + value, 0),
+          "mm",
+        ),
+        totalRain: makeValueUI(
+          aggregated.rainValues.reduce((sum, value) => sum + value, 0),
+          "mm",
+        ),
+        totalSnowfall: makeValueUI(
+          aggregated.snowfallValues.reduce((sum, value) => sum + value, 0),
+          "cm",
+        ),
+        maxSnowDepth: makeValueUI(computeMax(aggregated.snowDepthValues), "cm"),
+        sunriseTimestamp:
+          day.sunrise?.value instanceof Date
+            ? day.sunrise.value.getTime()
+            : undefined,
+        sunsetTimestamp:
+          day.sunset?.value instanceof Date
+            ? day.sunset.value.getTime()
+            : undefined,
+        daylightDurationSeconds: day.daylightDuration?.value,
+        avgWindSpeed: makeValueUI(
+          computeAvg(aggregated.windSpeedValues),
+          "km/h",
+        ),
+        avgVisibility: makeValueUI(
+          computeAvg(aggregated.visibilityValues),
+          "m",
+        ),
+        maxUv: makeValueUI(computeMax(aggregated.uvValues), ""),
+      },
     };
   });
 };
@@ -186,10 +331,61 @@ export const mapToMonthlyForecast = (
         representativeHour?.weatherCode?.value,
       );
 
+      const hourly = day.hourly ?? [];
+      const temperatures: number[] = [];
+      const humidityValues: number[] = [];
+      const precipitationProbabilityValues: number[] = [];
+      const windSpeedValues: number[] = [];
+      const windDirectionsBySpeed: Array<number | undefined> = [];
+
+      for (const hour of hourly) {
+        const temperature = hour.temperature?.value;
+        if (temperature !== undefined) temperatures.push(temperature);
+
+        const humidity = hour.relativeHumidity?.value;
+        if (humidity !== undefined) humidityValues.push(humidity);
+
+        const precipitationProbability = hour.precipitationProbability?.value;
+        if (precipitationProbability !== undefined) {
+          precipitationProbabilityValues.push(precipitationProbability);
+        }
+
+        const windSpeed = hour.wind?.speed?.value;
+        if (windSpeed !== undefined) {
+          windSpeedValues.push(windSpeed);
+          windDirectionsBySpeed.push(hour.wind?.direction?.value);
+        }
+      }
+
+      const maxWindSpeedIndex = windSpeedValues.indexOf(
+        computeMax(windSpeedValues) ?? Number.NaN,
+      );
+      const maxWindDirectionValue =
+        maxWindSpeedIndex >= 0
+          ? windDirectionsBySpeed[maxWindSpeedIndex]
+          : undefined;
+
+      const minTemperature = makeValueUI(
+        day.temperatureMin?.value ?? computeMin(temperatures),
+        day.temperatureMin?.unit ?? "°C",
+      );
+
+      const maxTemperature = makeValueUI(
+        day.temperatureMax?.value ?? computeMax(temperatures),
+        day.temperatureMax?.unit ?? "°C",
+      );
+
       return {
         dateTimestamp,
-        minTemperature: toNumber(day.temperatureMin),
-        maxTemperature: toNumber(day.temperatureMax),
+        minTemperature,
+        maxTemperature,
+        maxPrecipitationProbability: makeValueUI(
+          computeMax(precipitationProbabilityValues),
+          "%",
+        ),
+        maxWindSpeed: makeValueUI(computeMax(windSpeedValues), "km/h"),
+        maxWindDirection: makeValueUI(maxWindDirectionValue, "°"),
+        maxHumidity: makeValueUI(computeMax(humidityValues), "%"),
         weatherCode,
         weatherDescription: getWeatherDescriptionFromWmo(weatherCode),
       };

@@ -1,89 +1,85 @@
 import { useEffect } from "react";
-import type {
-  CurrentWeather,
-  WeatherError,
-} from "../../../types/weather.types";
 import { useWeatherStore } from "../../../store/weather.store";
-import useWeather from "./useWeather";
-import { CURRENT_WEATHER_TTL_MS } from "../../../constants/weather.cache";
-
-const isSameCurrentWeather = (
-  a: CurrentWeather | null,
-  b: CurrentWeather | null,
-): boolean => {
-  if (a === b) return true;
-  if (!a || !b) return false;
-
-  return (
-    a.temperature === b.temperature &&
-    a.feelsLike === b.feelsLike &&
-    a.humidity === b.humidity &&
-    a.weatherDescription === b.weatherDescription &&
-    a.windSpeed === b.windSpeed &&
-    a.pressure === b.pressure &&
-    a.visibility === b.visibility &&
-    a.uv === b.uv &&
-    a.timestamp === b.timestamp
-  );
-};
-
-const isSameWeatherError = (
-  a: WeatherError | null,
-  b: WeatherError | null,
-): boolean => {
-  if (a === b) return true;
-  if (!a || !b) return false;
-
-  return (
-    a.message === b.message &&
-    a.type === b.type &&
-    a.timestamp.getTime() === b.timestamp.getTime()
-  );
-};
+import { useWeatherProfile } from "../../../services/weather/useWeatherProfile";
+import type { FetchWeatherProps } from "@i-giann/open-meteo-wrapper";
+import { TTL } from "../../../services/weather/utils/constants";
 
 const useWeatherController = () => {
   const latitude = useWeatherStore((state) => state.latitude);
   const longitude = useWeatherStore((state) => state.longitude);
 
-  const current = useWeatherStore((state) => state.current);
   const setCurrentState = useWeatherStore((state) => state.setCurrentState);
+  const setHourlyState = useWeatherStore((state) => state.setHourlyState);
+  const setWeeklyState = useWeatherStore((state) => state.setWeeklyState);
+  const setMonthlyState = useWeatherStore((state) => state.setMonthlyState);
 
-  const { weather, isLoading } = useWeather({ latitude, longitude });
+  const params: FetchWeatherProps = {
+    latitude: latitude!,
+    longitude: longitude!,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  };
+
+  // Fetch all profiles
+  const day = useWeatherProfile("day", params);
+  const week = useWeatherProfile("week", params);
+  const month = useWeatherProfile("month", params);
 
   useEffect(() => {
-    const fetchedAt = weather.fetchedAt > 0 ? weather.fetchedAt : null;
-    const expiresAt =
-      fetchedAt !== null ? fetchedAt + CURRENT_WEATHER_TTL_MS : null;
-
-    const sameData = isSameCurrentWeather(current.data, weather.data);
-    const sameError = isSameWeatherError(current.error, weather.error);
-    const sameLoading = current.isLoading === isLoading;
-    const sameFetchedAt = current.fetchedAt === fetchedAt;
-    const sameExpiresAt = current.expiresAt === expiresAt;
-
-    if (sameData && sameError && sameLoading && sameFetchedAt && sameExpiresAt)
-      return;
-
     setCurrentState({
-      data: weather.data,
-      error: weather.error,
-      isLoading,
-      fetchedAt,
-      expiresAt,
+      data: day.data?.current || null,
+      error: day.error
+        ? { message: day.error.message, timestamp: new Date() }
+        : null,
+      isLoading: day.loading,
+      fetchedAt: day.data ? Date.now() : null,
+      expiresAt: day.data ? Date.now() + TTL.day : null,
+    });
+
+    setHourlyState({
+      data: week.data?.hourly || null,
+      error: week.error
+        ? { message: week.error.message, timestamp: new Date() }
+        : null,
+      isLoading: week.loading,
+      fetchedAt: week.data ? Date.now() : null,
+      expiresAt: week.data ? Date.now() + TTL.week : null,
+    });
+
+    setWeeklyState({
+      data: week.data?.weekly || null,
+      error: week.error
+        ? { message: week.error.message, timestamp: new Date() }
+        : null,
+      isLoading: week.loading,
+      fetchedAt: week.data ? Date.now() : null,
+      expiresAt: week.data ? Date.now() + TTL.week : null,
+    });
+
+    setMonthlyState({
+      data: month.data?.monthly || null,
+      error: month.error
+        ? { message: month.error.message, timestamp: new Date() }
+        : null,
+      isLoading: month.loading,
+      fetchedAt: month.data ? Date.now() : null,
+      expiresAt: month.data ? Date.now() + TTL.month : null,
     });
   }, [
-    current.data,
-    current.error,
-    current.isLoading,
-    current.fetchedAt,
-    current.expiresAt,
-
-    weather.data,
-    weather.error,
-    weather.fetchedAt,
-    isLoading,
+    day.data,
+    day.loading,
+    day.error,
+    week.data,
+    week.loading,
+    week.error,
+    month.data,
+    month.loading,
+    month.error,
     setCurrentState,
+    setHourlyState,
+    setWeeklyState,
+    setMonthlyState,
   ]);
+
   return null;
 };
 

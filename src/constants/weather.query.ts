@@ -13,16 +13,22 @@ export const CURRENT_HOURLY_PARAMS: HourlyParams[] = [
 
 export const HOURLY_FORECAST_PARAMS: HourlyParams[] = [
   HourlyParams.Temperature,
-  HourlyParams.ApparentTemperature,
   HourlyParams.RelativeHumidity,
+  HourlyParams.DewPoint,
+  HourlyParams.ApparentTemperature,
+  HourlyParams.PrecipitationProbability,
+  HourlyParams.Precipitation,
+  HourlyParams.Rain,
+  HourlyParams.Snowfall,
+  HourlyParams.SnowDepth,
   HourlyParams.WeatherCode,
-  HourlyParams.WindSpeed,
   HourlyParams.PressureMsl,
+  HourlyParams.CloudCover,
   HourlyParams.Visibility,
+  HourlyParams.WindSpeed,
+  HourlyParams.WindDirection,
   HourlyParams.UvIndex,
   HourlyParams.IsDay,
-  HourlyParams.PrecipitationProbability,
-  HourlyParams.CloudCover,
 ];
 
 export const WEEKLY_DAILY_PARAMS: DailyParams[] = [
