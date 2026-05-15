@@ -47,11 +47,18 @@ export const getUvColorToken = (severity: WeatherDetailSeverity): string => {
   return bySeverity[severity];
 };
 
-/* Determines the pressure trend based on a series of pressure points. */
+/**
+ * Determines the pressure trend based on a series of pressure points.
+ * - This is calculate by an interval of 3 hours,
+ * - If the pressure has INCreased more than 1.5 hPa, it's "rising".
+ * - If the pressure has DECreased more than 1.5 hPa, it's "falling".
+ * - Otherwise, it's "steady".
+ * The threshold of 1.5 hPa is a common standard for determining significant pressure changes in meteorology.
+ */
 export const getPressureTrend = (
   points: WeatherDetailsSeriesPoint[],
 ): PressureTrend => {
-  if (points.length < 4) return "steady";
+  if (points.length < 2) return "steady";
   const first = points[0].value;
   const last = points[points.length - 1].value;
   const delta = last - first;

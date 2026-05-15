@@ -93,6 +93,10 @@ const DEFUALT_WEATHER_BASE = {
     ...WEATHER_VALUE_DEFAULT,
     unit: "%",
   },
+  precipitationProbability: {
+    ...WEATHER_VALUE_DEFAULT,
+    unit: "%",
+  },
   weatherDescription: "Condicion desconocida",
   wind: {
     speed: {
@@ -130,10 +134,7 @@ export const DEFAULT_CURRENT_WEATHER: CurrentWeather = {
 export const DEFAULT_HOURLY_FORECAST_ITEM: HourlyForecastItem = {
   ...(DEFUALT_WEATHER_BASE as HourlyForecastItem),
   dewPoint: { ...WEATHER_VALUE_DEFAULT },
-  precipitationProbability: {
-    ...WEATHER_VALUE_DEFAULT,
-    unit: "%",
-  },
+
   precipitation: {
     ...WEATHER_VALUE_DEFAULT,
     unit: "mm",

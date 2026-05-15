@@ -92,6 +92,7 @@ export type CurrentWeather = {
   temperature: WeatherValueUI;
   feelsLike: WeatherValueUI;
   humidity: WeatherValueUI;
+  precipitationProbability: WeatherValueUI;
   weatherCode?: WmoWeatherCode;
   weatherDescription: WeatherDescription;
   wind: WindDataUI;

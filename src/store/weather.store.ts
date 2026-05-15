@@ -17,6 +17,8 @@ type DataState<T> = {
   isLoading: boolean;
   fetchedAt: number | null;
   expiresAt: number | null;
+  source?: "cache" | "network";
+  stale?: boolean;
 };
 
 interface WeatherState {
@@ -48,6 +50,8 @@ const emptyDataState = <T>(): DataState<T> => ({
   isLoading: false,
   fetchedAt: null,
   expiresAt: null,
+  source: undefined,
+  stale: undefined,
 });
 
 export const useWeatherStore = create<WeatherState & WeatherActions>()(

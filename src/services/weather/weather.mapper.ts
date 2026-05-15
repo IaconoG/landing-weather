@@ -74,6 +74,9 @@ export const mapToCurrentWeather = (
   const temperature = formatWeatherValue(firstHour?.temperature);
   const feelsLike = formatWeatherValue(firstHour?.apparentTemperature);
   const humidity = formatWeatherValue(firstHour?.relativeHumidity);
+  const precipitationProbability = formatWeatherValue(
+    firstHour?.precipitationProbability,
+  );
   const windSpeed = formatWeatherValue(firstHour?.wind?.speed);
   const windDirection = formatWeatherValue(firstHour?.wind?.direction);
   const pressure = formatWeatherValue(firstHour?.pressureMsl);
@@ -82,15 +85,16 @@ export const mapToCurrentWeather = (
   return {
     timestamp,
     temperature,
-    feelsLike: feelsLike,
-    humidity: humidity,
+    feelsLike,
+    humidity,
+    precipitationProbability,
     weatherDescription,
     wind: {
       speed: windSpeed,
       direction: windDirection,
     },
-    pressure: pressure,
-    visibility: visibility,
+    pressure,
+    visibility,
     uv,
   };
 };

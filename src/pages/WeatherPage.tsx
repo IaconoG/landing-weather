@@ -2,16 +2,15 @@
 import { useWeatherStore } from "../store/weather.store";
 /* hooks */
 import useWeatherController from "../features/weather/hooks/useWeatherController";
-import useForecastController from "../features/weather/hooks/useForecastController";
 import useWeatherGlobalBanner from "../hooks/useWeatherGlobalBanner";
 /* components */
 import WeatherPageHeader from "../shared/components/WeatherPageHeader";
 import WeatherPageFooter from "../shared/components/WeatherPageFooter";
 
 import WeatherMainSection from "../features/weather/sections/WeatherMainSection";
-import WeatherHourlySection from "../features/weather/sections/WeatherHourlySection";
 import WeatherDetailsSection from "../features/weather/sections/WeatherDetailsSection";
-import WeatherMonthlySection from "../features/weather/sections/WeatherMonthlySection";
+// import WeatherHourlySection from "../features/weather/sections/WeatherHourlySection";
+// import WeatherMonthlySection from "../features/weather/sections/WeatherMonthlySection";
 
 /* styles */
 import "./WeatherPage.css";
@@ -31,45 +30,48 @@ const WeatherCurrentMainContainer: React.FC = () => {
   );
 };
 
-const WeatherCurrentDetailsContainer: React.FC = () => {
-  const current = useWeatherStore((state) => state.current);
+const WeatherDetailsContainer: React.FC = () => {
+  const weekly = useWeatherStore((state) => state.weekly);
+
+  const detailsError = weekly.error;
+  const detailsIsLoading = weekly.isLoading;
+  const activeDay = weekly.data?.[0] ?? null;
 
   return (
     <WeatherDetailsSection
-      data={current.data}
-      error={current.error}
-      isLoading={current.isLoading}
+      data={activeDay}
+      error={detailsError}
+      isLoading={detailsIsLoading}
     />
   );
 };
 
-const WeatherHourlyContainer: React.FC = () => {
-  const hourly = useWeatherStore((state) => state.hourly);
+// const WeatherHourlyContainer: React.FC = () => {
+//   const hourly = useWeatherStore((state) => state.hourly);
 
-  return (
-    <WeatherHourlySection
-      data={hourly.data}
-      error={hourly.error}
-      isLoading={hourly.isLoading}
-    />
-  );
-};
+//   return (
+//     <WeatherHourlySection
+//       data={hourly.data}
+//       error={hourly.error}
+//       isLoading={hourly.isLoading}
+//     />
+//   );
+// };
 
-const WeatherMonthlyContainer: React.FC = () => {
-  const monthly = useWeatherStore((state) => state.monthly);
+// const WeatherMonthlyContainer: React.FC = () => {
+//   const monthly = useWeatherStore((state) => state.monthly);
 
-  return (
-    <WeatherMonthlySection
-      data={monthly.data}
-      error={monthly.error}
-      isLoading={monthly.isLoading}
-    />
-  );
-};
+//   return (
+//     <WeatherMonthlySection
+//       data={monthly.data}
+//       error={monthly.error}
+//       isLoading={monthly.isLoading}
+//     />
+//   );
+// };
 
 const WeatherPage: React.FC = () => {
   useWeatherController();
-  useForecastController();
   const { bannerState, onActionClick } = useWeatherGlobalBanner();
 
   return (
@@ -87,9 +89,9 @@ const WeatherPage: React.FC = () => {
         ) : null}
 
         <WeatherCurrentMainContainer />
-        <WeatherCurrentDetailsContainer />
-        <WeatherHourlyContainer />
-        <WeatherMonthlyContainer />
+        <WeatherDetailsContainer />
+        {/* <WeatherHourlyContainer /> */}
+        {/*<WeatherMonthlyContainer /> */}
         {/* <WeatherGraphSection /> */}
         {/* <WeatherMapSection /> */}
         {/* <WeatherAlertsSection /> */}
