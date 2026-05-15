@@ -1,140 +1,185 @@
 import { toStartOfDayTimestamp } from "../../../utils/date";
 import { aggregateNumericValues } from "../../../utils/math";
 import {
-  getUvSeverity,
-  getWindDirectionLabel,
   getPressureTrend,
   getUvColorToken,
+  getUvSeverity,
+  getWindDirectionLabel,
 } from "../../../utils/weather";
 import { formatDuration, formatTimeOrUnknown } from "../../../utils/formatters";
-import type { WeatherDetailsSourceDay } from "./weatherDetails.source.types";
+import type { WeatherDetailsSource } from "./weatherDetails.source.types";
 import type {
+  WeatherDetailsDayViewModel,
   WeatherDetailsRangeMetric,
   WeatherDetailsSeriesPoint,
-  WeatherDetailsViewModel,
 } from "./weatherDetails.types";
 
 const toSeries = (
-  items: WeatherDetailsSourceDay["hourly"],
-  pick: (item: WeatherDetailsSourceDay["hourly"][number]) => number,
+  items: WeatherDetailsSource["hourly"],
+  pick: (item: WeatherDetailsSource["hourly"][number]) => number | undefined,
 ): WeatherDetailsSeriesPoint[] => {
-  return items.map((item) => ({
-    timestamp: item.timestamp,
-    value: pick(item),
-  }));
+  return items
+    .map((item) => {
+      const value = pick(item);
+      if (value === undefined) return null;
+      return {
+        timestamp: item.timestamp,
+        value,
+      };
+    })
+    .filter((item): item is WeatherDetailsSeriesPoint => item !== null);
+};
+
+const resolveCurrentPointIndex = (
+  points: WeatherDetailsSeriesPoint[],
+  now: Date,
+): number => {
+  if (!points.length) return 0;
+
+  const nowTs = now.getTime();
+  let closestIndex = 0;
+  let closestDelta = Math.abs(points[0].timestamp - nowTs);
+
+  for (let index = 1; index < points.length; index += 1) {
+    const delta = Math.abs(points[index].timestamp - nowTs);
+    if (delta < closestDelta) {
+      closestDelta = delta;
+      closestIndex = index;
+    }
+  }
+
+  return closestIndex;
 };
 
 const buildRangeMetric = (
   points: WeatherDetailsSeriesPoint[],
+  now: Date,
 ): WeatherDetailsRangeMetric => {
-  const agg = aggregateNumericValues(points.map((p) => p.value));
+  const agg = aggregateNumericValues(points.map((point) => point.value));
 
   if (!agg.hasData || agg.minValue === null || agg.maxValue === null) {
     return {
-      current: 0,
+      currentValue: 0,
+      currentPointIndex: 0,
       min: 0,
       max: 0,
       points: [],
     };
   }
 
+  const currentPointIndex = resolveCurrentPointIndex(points, now);
+
   return {
-    current: points[0]?.value ?? 0,
+    currentValue: points[currentPointIndex]?.value ?? points[0]?.value ?? 0,
+    currentPointIndex,
     min: agg.minValue,
     max: agg.maxValue,
     points,
   };
 };
 
-export const buildWeatherDetailsViewModel = (
-  data: WeatherDetailsSourceDay,
-): WeatherDetailsViewModel => {
-  const dayDate = new Date(data.dateTimestamp);
+export const buildDetailsSectionViewModel = (
+  source: WeatherDetailsSource,
+  now: Date = new Date(),
+): WeatherDetailsDayViewModel => {
+  const dayDate = new Date(source.dateTimestamp);
   const isToday =
     toStartOfDayTimestamp(dayDate) === toStartOfDayTimestamp(new Date());
 
-  const temperaturePoints = toSeries(data.hourly, (point) => point.temperature);
-  const feelsLikePoints = toSeries(data.hourly, (point) => point.feelsLike);
-  const pressurePoints = toSeries(data.hourly, (point) => point.pressure);
-  const visibilityPoints = toSeries(data.hourly, (point) => point.visibility);
-  const humidityPoints = toSeries(data.hourly, (point) => point.humidity);
-  const windPoints = toSeries(data.hourly, (point) => point.windSpeed);
+  const temperaturePoints = toSeries(
+    source.hourly,
+    (point) => point.temperature,
+  );
+  const feelsLikePoints = toSeries(source.hourly, (point) => point.feelsLike);
+  const pressurePoints = toSeries(source.hourly, (point) => point.pressure);
+  const visibilityPoints = toSeries(source.hourly, (point) => point.visibility);
+  const humidityPoints = toSeries(source.hourly, (point) => point.humidity);
+  const dewPointPoints = toSeries(source.hourly, (point) => point.dewPoint);
+  const windSpeedPoints = toSeries(source.hourly, (point) => point.windSpeed);
+  const windDirectionPoints = toSeries(
+    source.hourly,
+    (point) => point.windDirection,
+  );
+  const uvPoints = toSeries(source.hourly, (point) => point.uv);
   const precipitationPoints = toSeries(
-    data.hourly,
-    (point) => point.precipitationProbability ?? 0,
+    source.hourly,
+    (point) => point.precipitationProbability,
   );
-  const precipitationAgg = aggregateNumericValues(
-    data.hourly.map((h) => h.precipitationProbability ?? 0),
-  );
-  const sunriseLabel = formatTimeOrUnknown(data.sunriseTimestamp);
-  const sunsetLabel = formatTimeOrUnknown(data.sunsetTimestamp);
-  const daylightLabel = formatDuration(data.daylightDurationSeconds);
-  const moonriseLabel = formatTimeOrUnknown(data.moonriseTimestamp);
-  const moonsetLabel = formatTimeOrUnknown(data.moonsetTimestamp);
 
-  const firstHour = data.hourly[0];
-  const uvValue = firstHour?.uv ?? 0;
-  const uvSeverity = getUvSeverity(uvValue);
+  const temperatureRange = buildRangeMetric(temperaturePoints, now);
+  const feelsLikeRange = buildRangeMetric(feelsLikePoints, now);
+  const pressureRange = buildRangeMetric(pressurePoints, now);
+  const pressureTrend = getPressureTrend(pressurePoints);
+  const visibilityRange = buildRangeMetric(visibilityPoints, now);
+  const humidityRange = buildRangeMetric(humidityPoints, now);
+  const dewPointRange = buildRangeMetric(dewPointPoints, now);
+  const windSpeedRange = buildRangeMetric(windSpeedPoints, now);
+  const windDirectionRange = buildRangeMetric(windDirectionPoints, now);
+  const windDirectionSymbols = windDirectionRange.points.map((point) =>
+    getWindDirectionLabel(point.value),
+  );
+  const currentWindDirectionSymbol = getWindDirectionLabel(
+    windDirectionRange.points[windDirectionRange.currentPointIndex]?.value,
+  );
+  const uvRange = buildRangeMetric(uvPoints, now);
+  const uvSeveritys = uvRange.points.map((point) => getUvSeverity(point.value));
+  const currentUvSeverity = getUvSeverity(uvRange.currentValue);
+  const uvColorTokens = uvSeveritys.map((severity) =>
+    getUvColorToken(severity),
+  );
+  const currentUvColorToken = getUvColorToken(currentUvSeverity);
+  const precipitationRange = buildRangeMetric(precipitationPoints, now);
+
+  const sun = {
+    sunriseTimestamp: formatTimeOrUnknown(source.sunriseTimestamp),
+    sunsetTimestamp: formatTimeOrUnknown(source.sunsetTimestamp),
+    daylightDurationSeconds: formatDuration(source.daylightDurationSeconds, {
+      timeMeasure: "hour",
+    }),
+  };
+  // TODO: API not giving moon data for some reason, check later
+  const moon = {
+    moonriseTimestamp: formatTimeOrUnknown(source.moonriseTimestamp),
+    moonsetTimestamp: formatTimeOrUnknown(source.moonsetTimestamp),
+    illuminationPercentage: source.moonIllumination,
+    phaseLabel: source.moonPhase ?? "Desconocida",
+  };
 
   return {
-    day: {
-      dateTimestamp: data.dateTimestamp,
-      isToday,
-
-      temperature: {
-        ...buildRangeMetric(temperaturePoints),
-        min: data.temperatureMin,
-        max: data.temperatureMax,
-      },
-      feelsLike: buildRangeMetric(feelsLikePoints),
-      visibility: buildRangeMetric(visibilityPoints),
-      humidity: {
-        relativeHumidity: firstHour?.humidity ?? 0,
-        dewPoint: firstHour?.dewPoint,
-        points: humidityPoints,
-      },
-      wind: {
-        directionDegrees: firstHour?.windDirection,
-        directionLabel: firstHour?.windDirection
-          ? getWindDirectionLabel(firstHour.windDirection)
-          : "Desconocida",
-        speed: firstHour?.windSpeed ?? 0,
-        gustSpeed: firstHour?.windGustSpeed,
-        points: windPoints,
-      },
-      uv: {
-        value: uvValue ?? 0,
-        severity: uvSeverity,
-        colorToken: getUvColorToken(uvSeverity),
-      },
-      pressure: {
-        ...buildRangeMetric(pressurePoints),
-        trend: getPressureTrend(pressurePoints),
-      },
-      precipitation: {
-        probability: firstHour?.precipitationProbability ?? 0,
-        maxProbability: precipitationAgg.maxValue ?? 0,
-        points: precipitationPoints,
-        hasData: precipitationAgg.hasData,
-      },
-      sun: {
-        sunriseTimestamp: data.sunriseTimestamp ?? 0,
-        sunsetTimestamp: data.sunsetTimestamp ?? 0,
-        daylightDurationSeconds: data.daylightDurationSeconds ?? 0,
-        sunriseLabel,
-        sunsetLabel,
-        daylightLabel,
-      },
-      moon: {
-        phaseLabel: data.moonPhase ?? "Desconocida",
-        illuminationPercentage: data.moonIllumination ?? 0,
-        moonriseTimestamp: data.moonriseTimestamp,
-        moonsetTimestamp: data.moonsetTimestamp,
-        moonriseLabel,
-        moonsetLabel,
-        hasData:
-          data.moonPhase !== undefined && data.moonIllumination !== undefined,
+    dateTimestamp: source.dateTimestamp,
+    isToday,
+    temperature: {
+      ...temperatureRange,
+      min: source.temperatureMin ?? temperatureRange.min,
+      max: source.temperatureMax ?? temperatureRange.max,
+    },
+    feelsLike: feelsLikeRange,
+    visibility: visibilityRange,
+    humidity: {
+      ...humidityRange,
+      dewPoint: dewPointRange,
+    },
+    wind: {
+      speed: windSpeedRange,
+      direction: {
+        ...windDirectionRange,
+        directionSimbols: windDirectionSymbols,
+        currentDirectionSymbol: currentWindDirectionSymbol,
       },
     },
+    uv: {
+      ...uvRange,
+      severitys: uvSeveritys,
+      currentSeverity: currentUvSeverity,
+      colorTokens: uvColorTokens,
+      currentColorToken: currentUvColorToken,
+    },
+    pressure: {
+      ...pressureRange,
+      trend: pressureTrend,
+    },
+    precipitation: precipitationRange,
+    sun,
+    moon,
   };
 };

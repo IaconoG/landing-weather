@@ -49,18 +49,41 @@
       rgba(35, 41, 92, 0.22) 100%
     );
     border: 1px dashed rgba(150, 165, 245, 0.22);
+    padding: 6px;
+    text-align: center;
+    align-content: center;
+
+    & span {
+      font-size: var(--font-size-2xs);
+      color: var(--color-text-muted);
+    }
+  }
+
+  & .weather-details-section__metric-graph-empty {
+    height: 100%;
+    display: grid;
+    justify-content: space-between;
+    place-items: center;
+    font-size: var(--font-size-2xs);
+    color: var(--color-text-muted);
   }
 
   & .weather-details-section__metric-description {
     display: flex;
-    justify-content: space-between;
+    flex-wrap: wrap;
     align-items: flex-end;
+    gap: var(--spacing-2xs);
     color: var(--color-text-muted);
     font-size: var(--font-size-2xs);
     line-height: 1;
   }
-
+  & .weather-details-section__metric-text {
+    flex: 2 1 50%;
+    text-wrap: stable;
+  }
   & .weather-details-section__metric-value {
+    flex: 0 2 0;
+    white-space: nowrap;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
   }

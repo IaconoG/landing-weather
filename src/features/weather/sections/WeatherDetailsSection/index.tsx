@@ -1,14 +1,17 @@
+import { useMemo } from "react";
 import type { WeatherError } from "../../../../types/weather.types";
 import {
   WeatherDetailsSectionContent,
   WeatherDetailsSectionSkeleton,
 } from "./components";
-import {
-  buildWeatherDetailsPlaceholderSourceDay,
-  buildWeatherDetailsSourceDay,
-} from "./view-model/weatherDetails.source.builder";
-import type { WeatherDetailsSectionData } from "./view-model/weatherDetails.source.types";
 import "./WeatherDetailsSection.css";
+import {
+  buildDetailsCards,
+  buildDetailsSectionViewModel,
+  buildWeatherDetailsSource,
+  PLACEHOLDER_DETAILS_VIEW_MODEL,
+  type WeatherDetailsSectionData,
+} from "./view-model";
 
 type WeatherDetailsSectionProps = {
   data: WeatherDetailsSectionData;
@@ -21,20 +24,21 @@ const WeatherDetailsSection: React.FC<WeatherDetailsSectionProps> = ({
   error,
   isLoading,
 }) => {
+  const shouldShowPlaceholder = Boolean(error) || !data || !data.hourly.length;
+  const viewModel = useMemo(() => {
+    if (shouldShowPlaceholder) return PLACEHOLDER_DETAILS_VIEW_MODEL;
+    const source = buildWeatherDetailsSource(data);
+    console.log("Built detailsSource", { source });
+    if (!source) return PLACEHOLDER_DETAILS_VIEW_MODEL;
+    const detailsViewModel = buildDetailsSectionViewModel(source);
+    return buildDetailsCards(detailsViewModel, shouldShowPlaceholder);
+  }, [data, shouldShowPlaceholder]);
+
   if (isLoading) return <WeatherDetailsSectionSkeleton />;
-
-  const sourceDay = buildWeatherDetailsSourceDay(data);
-  const hasNoData = Boolean(error) || !sourceDay;
-
   return (
     <WeatherDetailsSectionContent
-      data={hasNoData ? buildWeatherDetailsPlaceholderSourceDay() : sourceDay!}
-      sectionStateClass={
-        hasNoData ? "weather-details-section--placeholder" : ""
-      }
-      contentStateClass={
-        hasNoData ? "weather-details-section__content--placeholder" : ""
-      }
+      cards={viewModel}
+      isPlaceholder={shouldShowPlaceholder}
     />
   );
 };

@@ -5,29 +5,26 @@ import type {
   WmoWeatherCode,
 } from "../../../../../types/weather.types";
 
-export type WeatherDetailsSectionData = {
-  hourly: HourlyForecastItem[] | null;
-  weekly: WeeklyForecastItem[] | null;
-};
+export type WeatherDetailsSectionData = WeeklyForecastItem | null;
 
 export type WeatherDetailsSourcePoint = {
   timestamp: number;
-  temperature: number;
-  feelsLike: number;
-  humidity: number;
-  pressure: number;
-  visibility: number;
-  uv: number;
-  windSpeed: number;
+  temperature?: number;
+  feelsLike?: number;
+  humidity?: number;
+  pressure?: number;
+  visibility?: number;
+  uv?: number;
+  windSpeed?: number;
   windDirection?: number;
-  windGustSpeed?: number;
   dewPoint?: number;
-  weatherCode: WmoWeatherCode;
+  weatherCode?: WmoWeatherCode;
   precipitationProbability?: number;
 };
 
-export type WeatherDetailsSourceDay = {
+export type WeatherDetailsSource = {
   dateTimestamp: number;
+  dateLabel: string;
   sunriseTimestamp?: number;
   sunsetTimestamp?: number;
   daylightDurationSeconds?: number;
@@ -35,9 +32,16 @@ export type WeatherDetailsSourceDay = {
   moonsetTimestamp?: number;
   moonPhase?: string;
   moonIllumination?: number;
-  temperatureMin: number;
-  temperatureMax: number;
+  temperatureMin?: number;
+  temperatureMax?: number;
   weatherCode?: WmoWeatherCode;
   weatherDescription?: WeatherDescription;
   hourly: WeatherDetailsSourcePoint[];
 };
+
+export type BuildWeatherDetailsSourceInput = {
+  day: WeeklyForecastItem;
+  now?: Date;
+};
+
+export type WeatherDetailsHourlyInput = HourlyForecastItem[];
