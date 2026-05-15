@@ -2,11 +2,15 @@ import type {
   HourlyForecastItem,
   WeatherError,
 } from "../../../../types/weather.types";
+import type {} from "./view-model/weatherHourly.source.types";
 import {
   WeatherHourlySectionContent,
   WeatherHourlySectionSkeleton,
 } from "./components";
 import "./WeatherHourlySection.css";
+import { buildWeatherHourlySource } from "./view-model/weatherHourly.source.builder";
+import { useMemo } from "react";
+import { PLACEHOLDER_HOURLY_VIEW_MODEL } from "./view-model/weatherHourly.placeholder";
 
 type WeatherHourlySectionProps = {
   data: HourlyForecastItem[] | null;
@@ -19,17 +23,22 @@ const WeatherHourlySection: React.FC<WeatherHourlySectionProps> = ({
   error,
   isLoading,
 }) => {
-  const hasNoData = Boolean(error) || !data || data.length === 0;
+  const shouldShowPlaceholder = Boolean(error) || !data;
+
+  const viewModel = useMemo(() => {
+    if (shouldShowPlaceholder) return PLACEHOLDER_HOURLY_VIEW_MODEL;
+    const source = buildWeatherHourlySource(data);
+    if (!source) return PLACEHOLDER_HOURLY_VIEW_MODEL;
+    const hourlyViewModel = buildWeatherHourlySource(data);
+    return hourlyViewModel;
+  }, [data, shouldShowPlaceholder]);
 
   if (isLoading) return <WeatherHourlySectionSkeleton />;
 
   return (
     <WeatherHourlySectionContent
-      data={hasNoData ? [] : data}
-      sectionStateClass={hasNoData ? "weather-hourly-section--placeholder" : ""}
-      contentStateClass={
-        hasNoData ? "weather-hourly-section__content--placeholder" : ""
-      }
+      data={viewModel}
+      isPlaceholder={shouldShowPlaceholder}
     />
   );
 };

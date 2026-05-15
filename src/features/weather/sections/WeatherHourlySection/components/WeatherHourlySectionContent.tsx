@@ -4,13 +4,12 @@ import { buildHourlySectionViewModel } from "../view-model/buildHourlySectionVie
 
 type WeatherHourlySectionContentProps = {
   data: HourlyForecastItem[];
-  sectionStateClass?: string;
-  contentStateClass?: string;
+  isPlaceholder: boolean;
 };
 
 const WeatherHourlySectionContent: React.FC<
   WeatherHourlySectionContentProps
-> = ({ data, sectionStateClass, contentStateClass }) => {
+> = ({ data, isPlaceholder }) => {
   const viewModel = useMemo(() => buildHourlySectionViewModel(data), [data]);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
 
@@ -28,17 +27,15 @@ const WeatherHourlySectionContent: React.FC<
 
   if (!activeDay) return null;
 
-  console.log("ViewModel days:", viewModel.days);
-
   return (
     <section
-      className={`weather-hourly-section ${sectionStateClass ?? ""}`.trim()}
+      className={`weather-hourly-section ${isPlaceholder ? "weather-hourly-section--placeholder" : ""}`}
       aria-label="Seccion de pronostico por horas"
     >
       <p className="weather-hourly-section__title">Pronostico por horas</p>
 
       <div
-        className={`weather-hourly-section__content ${contentStateClass ?? ""}`.trim()}
+        className={`weather-hourly-section__content ${isPlaceholder ? "weather-hourly-section__content--placeholder" : ""}`}
       >
         <div
           className="weather-hourly-section__day-carousel"
@@ -58,9 +55,7 @@ const WeatherHourlySectionContent: React.FC<
                 aria-pressed={isActive}
               >
                 <span className="weather-hourly-section__day-card-name">
-                  {day.displayDayLabel !== "none"
-                    ? day.displayDayLabel
-                    : day.weekdayLabel}
+                  {day.displayDayLabel}
                 </span>
                 <span className="weather-hourly-section__day-card-date">
                   {day.dateLabel}
@@ -114,37 +109,7 @@ const WeatherHourlySectionContent: React.FC<
               className="weather-hourly-section__chart weather-hourly-section__chart--placeholder"
               aria-label={`Grafico horario para ${activeDay.ariaDayLabel}`}
             >
-              {/* Implement chart details for each hour here */}
-              {/* {activeDay.hours.map((hour) => {
-                const chartPointStyle = {
-                  "--temperature-offset": `${hour.temperatureOffset}%`,
-                  "--feels-like-offset": `${hour.feelsLikeOffset}%`,
-                } as CSSProperties;
-
-                return (
-                  <div
-                    key={hour.id}
-                    className="weather-hourly-section__chart-point"
-                    style={chartPointStyle}
-                  >
-                    <span className="weather-hourly-section__chart-time">
-                      {hour.timeLabel}
-                    </span>
-
-                    <div className="weather-hourly-section__chart-track">
-                      <div className="weather-hourly-section__chart-temperature-bar" />
-                      <div className="weather-hourly-section__chart-feels-line" />
-                    </div>
-
-                    <span className="weather-hourly-section__chart-temperature-value">
-                      {hour.temperatureLabel}
-                    </span>
-                    <span className="weather-hourly-section__chart-feels-value">
-                      ST {hour.feelsLikeLabel}
-                    </span>
-                  </div>
-                );
-              })} */}
+              {/* Implement the hourly chart here, using activeDay.hours for data */}
             </div>
 
             <div className="weather-hourly-section__precipitation">
