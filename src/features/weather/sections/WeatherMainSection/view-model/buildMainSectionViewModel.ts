@@ -22,8 +22,6 @@ export const buildMainSectionViewModel = (
     precipitationProbability,
   } = data;
 
-  console.log("Current weather data:", data);
-
   const temperatureLabel = formatValue(temperature.value, temperature.unit);
   const feelsLikeLabel = `Sensacion termica: ${formatValue(feelsLike.value, feelsLike.unit)}`;
   const description = weatherDescription;

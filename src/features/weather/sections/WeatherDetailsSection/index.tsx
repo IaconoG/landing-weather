@@ -28,7 +28,6 @@ const WeatherDetailsSection: React.FC<WeatherDetailsSectionProps> = ({
   const viewModel = useMemo(() => {
     if (shouldShowPlaceholder) return PLACEHOLDER_DETAILS_VIEW_MODEL;
     const source = buildWeatherDetailsSource(data);
-    console.log("Built detailsSource", { source });
     if (!source) return PLACEHOLDER_DETAILS_VIEW_MODEL;
     const detailsViewModel = buildDetailsSectionViewModel(source);
     return buildDetailsCards(detailsViewModel, shouldShowPlaceholder);

@@ -17,8 +17,6 @@ export const buildDetailsCards = (
   day: WeatherDetailsDayViewModel,
   isPlaceholder: boolean,
 ): WeatherDetailsCardViewModel[] => {
-  console.log("Built detailsViewModel", { day });
-
   if (isPlaceholder) {
     return PLACEHOLDER_DETAILS_VIEW_MODEL.map((card) => ({
       ...card,

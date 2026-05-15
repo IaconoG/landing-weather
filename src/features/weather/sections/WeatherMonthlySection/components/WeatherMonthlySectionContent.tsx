@@ -13,8 +13,6 @@ const WeatherMonthlySectionContent: React.FC<
 > = ({ data, sectionStateClass, contentStateClass }) => {
   const viewModel = useMemo(() => buildMonthlySectionViewModel(data), [data]);
 
-  console.log("ViewModel days:", viewModel);
-
   return (
     <section className={`weather-monthly-section ${sectionStateClass}`.trim()}>
       <p className="weather-monthly-section__title">Pronostico mensual</p>
@@ -46,7 +44,9 @@ const WeatherMonthlySectionContent: React.FC<
               type="button"
               disabled={!day.hasData}
             >
-              <p className="weather-monthly-section__day-date">{day.dateLabel}</p>
+              <p className="weather-monthly-section__day-date">
+                {day.dateLabel}
+              </p>
               <p className="weather-monthly-section__day-day">{day.dayLabel}</p>
 
               {day.hasData && day.iconUrl ? (
