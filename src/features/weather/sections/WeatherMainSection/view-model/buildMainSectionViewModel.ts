@@ -1,50 +1,72 @@
 import type { CurrentWeather } from "../../../../../types/weather.types";
+import { PLACEHOLDER_VIEW_MODEL } from "./weatherMain.placeholder";
+import type { MainSectionViewModel } from "./weatherMain.types";
 
-type MainMetricViewModel = {
-  id: "humidity" | "wind" | "pressure" | "visibility";
-  label: string;
-  value: string;
-};
-
-type MainSectionViewModel = {
-  title: string;
-  temperatureLabel: string;
-  description: string;
-  sensationLabel: string;
-  metrics: MainMetricViewModel[];
+const formatValue = (value: number | undefined, unit?: string): string => {
+  if (value === undefined || Number.isNaN(value))
+    return unit ? `-- ${unit}` : "--";
+  return unit ? `${Math.round(value)} ${unit}` : `${Math.round(value)}`;
 };
 
 export const buildMainSectionViewModel = (
   data: CurrentWeather,
 ): MainSectionViewModel => {
+  const {
+    temperature,
+    feelsLike,
+    weatherDescription,
+    humidity,
+    wind,
+    pressure,
+    visibility,
+    precipitationProbability,
+  } = data;
+
+  console.log("Current weather data:", data);
+
+  const temperatureLabel = formatValue(temperature.value, temperature.unit);
+  const feelsLikeLabel = `Sensacion termica: ${formatValue(feelsLike.value, feelsLike.unit)}`;
+  const description = weatherDescription;
+  const humidityLabel = formatValue(humidity.value, humidity.unit);
+  const windLabel = formatValue(wind.speed.value, wind.speed.unit);
+  const pressureLabel = formatValue(pressure.value, pressure.unit);
+  const visibilityLabel = formatValue(visibility.value, visibility.unit);
+  const precipitationProbabilityLabel = formatValue(
+    precipitationProbability.value,
+    precipitationProbability.unit,
+  );
+
   return {
-    title: "Clima actual",
-    temperatureLabel: `${Math.round(data.temperature)}°C`,
-    description: data.weatherDescription,
-    sensationLabel: `Sensacion termica: ${Math.round(data.feelsLike)}°C`,
+    ...PLACEHOLDER_VIEW_MODEL,
+    temperatureLabel,
+    description,
+    feelsLikeLabel,
     metrics: [
       {
         id: "humidity",
         label: "Humedad",
-        value: `${Math.round(data.humidity)}%`,
+        value: humidityLabel,
       },
       {
         id: "wind",
         label: "Viento",
-        value: `${Math.round(data.windSpeed)} km/h`,
+        value: windLabel,
       },
       {
         id: "pressure",
-        label: "Presion",
-        value: `${Math.round(data.pressure)} hPa`,
+        label: "Presión",
+        value: pressureLabel,
       },
       {
         id: "visibility",
         label: "Visibilidad",
-        value: `${Math.round(data.visibility)} m`,
+        value: visibilityLabel,
+      },
+      {
+        id: "precipitationProbability",
+        label: "Probabilidad de Precipitación",
+        value: precipitationProbabilityLabel,
       },
     ],
   };
 };
-
-export type { MainMetricViewModel, MainSectionViewModel };

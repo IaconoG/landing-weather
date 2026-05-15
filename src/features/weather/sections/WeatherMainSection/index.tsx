@@ -1,17 +1,15 @@
-/* types */
+import { useMemo } from "react";
 import type {
   CurrentWeather,
   WeatherError,
 } from "../../../../types/weather.types";
-/* components */
 import {
   WeatherMainSectionContent,
-  WeatherMainSectionError,
-  WeatherMainSectionNoData,
   WeatherMainSectionSkeleton,
 } from "./components";
 import { buildMainSectionViewModel } from "./view-model/buildMainSectionViewModel";
-/* styles */
+import { PLACEHOLDER_VIEW_MODEL } from "./view-model/weatherMain.placeholder";
+
 import "./WeatherMainSection.css";
 
 type WeatherMainSectionProps = {
@@ -25,13 +23,19 @@ const WeatherMainSection: React.FC<WeatherMainSectionProps> = ({
   error,
   isLoading,
 }) => {
+  const shouldShowPlaceholder = Boolean(error) || !data;
+
+  const viewModel = useMemo(
+    () =>
+      shouldShowPlaceholder
+        ? PLACEHOLDER_VIEW_MODEL
+        : buildMainSectionViewModel(data),
+    [data, shouldShowPlaceholder],
+  );
+
   if (isLoading) return <WeatherMainSectionSkeleton />;
-  if (error) return <WeatherMainSectionError message={error.message} />;
-  if (!data) return <WeatherMainSectionNoData />;
 
-  const viewModel = buildMainSectionViewModel(data);
-
-  return <WeatherMainSectionContent viewModel={viewModel} />;
+  return <WeatherMainSectionContent data={viewModel} />;
 };
 
 export default WeatherMainSection;

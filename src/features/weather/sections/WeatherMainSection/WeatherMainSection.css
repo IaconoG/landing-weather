@@ -1,28 +1,35 @@
 .weather-main-section {
   /* Base */
-  min-height: 190px;
+  /* min-height: 190px; */
   width: 100%;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto auto;
-  grid-template-areas:
-    "title title"
-    "temperature description"
-    "metrics metrics";
-  gap: var(--spacing-md) var(--spacing-lg);
 
-  border-radius: var(--border-radius-lg);
-  background: color-mix(in srgb, var(--color-surface-strong) 88%, transparent);
-  backdrop-filter: blur(4px);
-  box-shadow: none;
-  padding: var(--spacing-md) var(--spacing-lg);
-
-  /* Elements */
+  /* Header */
   & .weather-main-section__title {
-    grid-area: title;
-    font-size: var(--font-size-md);
+    margin: 0 0 var(--spacing-sm);
+    font-size: var(--font-size-lg);
     font-weight: var(--font-weight-bold);
     color: var(--color-text-primary);
+  }
+
+  /* Content */
+  & .weather-main-section__container {
+    width: 100%;
+    max-width: 960px;
+    min-height: 100px;
+    margin: 0 auto;
+  }
+  & .weather-main-section__content {
+    border-radius: var(--border-radius-lg);
+    padding: var(--spacing-xl) var(--spacing-md);
+    background: color-mix(
+      in srgb,
+      var(--color-surface-strong) 88%,
+      transparent
+    );
+    backdrop-filter: blur(4px);
+
+    display: flex;
+    gap: var(--spacing-lg);
   }
 
   & .weather-main-section__temperature {
@@ -37,12 +44,10 @@
     color: var(--color-text-secondary);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-self: center;
+    justify-content: flex-end;
   }
 
   & .weather-main-section__description-value {
-    padding-top: var(--spacing-sm);
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-medium);
     line-height: 1.2;
@@ -58,13 +63,17 @@
     display: flex;
     flex-wrap: wrap;
     gap: var(--spacing-2xl);
+    margin-left: auto;
   }
 
   & .weather-main-section__metric {
-    min-width: 96px;
+    width: auto;
+    min-width: 70px;
+    height: auto;
+    min-height: 40px;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    justify-content: center;
   }
 
   & .weather-main-section__metric-label {
@@ -73,7 +82,7 @@
   }
 
   & .weather-main-section__metric-value {
-    font-size: var(--font-size-md);
+    font-size: var(--font-size-sm);
     color: var(--color-text-primary);
     font-weight: var(--font-weight-medium);
   }
@@ -86,27 +95,6 @@
   & .weather-main-section__error-message {
     margin: 0;
     color: var(--color-text-secondary);
-  }
-
-  &.weather-main-section--skeleton {
-    & .weather-main-section__skeleton-title {
-      grid-area: title;
-    }
-
-    & .weather-main-section__skeleton-temperature {
-      grid-area: temperature;
-    }
-
-    & .weather-main-section__skeleton-description {
-      grid-area: description;
-      align-self: flex-end;
-    }
-
-    & .weather-main-section__skeleton-metrics {
-      grid-area: metrics;
-      display: flex;
-      gap: var(--spacing-2xl);
-    }
   }
 }
 
