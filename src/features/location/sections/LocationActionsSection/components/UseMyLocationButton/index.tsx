@@ -25,9 +25,7 @@ const UseMyLocationButton: React.FC<UseMyLocationButtonProps> = ({
 };
 
 export default UseMyLocationButton;
-{
-  /* IMPLMENT ERROR ON TOAST */
-}
-{
-  /* {error && <p className="use-my-location-button__error">{error}</p>} */
-}
+
+/* IMPLMENT ERROR ON TOAST */
+
+/* {error && <p className="use-my-location-button__error">{error}</p>} */
