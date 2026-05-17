@@ -35,10 +35,13 @@ const WeatherDetailsSection: React.FC<WeatherDetailsSectionProps> = ({
 
   if (isLoading) return <WeatherDetailsSectionSkeleton />;
   return (
-    <WeatherDetailsSectionContent
-      cards={viewModel}
-      isPlaceholder={shouldShowPlaceholder}
-    />
+    <>
+      <WeatherDetailsSectionContent
+        cards={viewModel}
+        isPlaceholder={shouldShowPlaceholder}
+      />
+      <WeatherDetailsSectionSkeleton />
+    </>
   );
 };
 

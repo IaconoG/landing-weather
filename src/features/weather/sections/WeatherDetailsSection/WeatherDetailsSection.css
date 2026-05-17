@@ -127,19 +127,4 @@
       );
     }
   }
-
-  &.weather-details-section--skeleton {
-    & .weather-details-section__skeleton-title {
-      margin-bottom: var(--spacing-md);
-    }
-
-    & .weather-details-section__skeleton-metrics {
-      display: flex;
-      flex-wrap: wrap;
-      align-content: flex-start;
-      align-items: stretch;
-      justify-content: flex-start;
-      gap: 20px;
-    }
-  }
 }
