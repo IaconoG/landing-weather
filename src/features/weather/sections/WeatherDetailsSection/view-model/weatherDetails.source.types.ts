@@ -1,5 +1,4 @@
 import type {
-  HourlyForecastItem,
   WeatherDescription,
   WeeklyForecastItem,
   WmoWeatherCode,
@@ -7,7 +6,7 @@ import type {
 
 export type WeatherDetailsSectionData = WeeklyForecastItem | null;
 
-export type WeatherDetailsSourcePoint = {
+type WeatherDetailsSourcePoint = {
   timestamp: number;
   temperature?: number;
   feelsLike?: number;
@@ -38,10 +37,3 @@ export type WeatherDetailsSource = {
   weatherDescription?: WeatherDescription;
   hourly: WeatherDetailsSourcePoint[];
 };
-
-export type BuildWeatherDetailsSourceInput = {
-  day: WeeklyForecastItem;
-  now?: Date;
-};
-
-export type WeatherDetailsHourlyInput = HourlyForecastItem[];
