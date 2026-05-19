@@ -100,7 +100,7 @@ export function runWeatherWorker(
       reject(
         new Error("Worker timeout: no response received within expected time"),
       );
-    }, 30000); // 30 seconds timeout
+    }, 120000); // 2 minute timeout
 
     worker.onmessage = (event: MessageEvent<WorkerResponse>) => {
       clearTimeout(timeout);

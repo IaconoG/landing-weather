@@ -10,7 +10,7 @@ import WeatherPageFooter from "../shared/components/WeatherPageFooter";
 import WeatherMainSection from "../features/weather/sections/WeatherMainSection";
 import WeatherDetailsSection from "../features/weather/sections/WeatherDetailsSection";
 // import WeatherHourlySection from "../features/weather/sections/WeatherHourlySection";
-// import WeatherMonthlySection from "../features/weather/sections/WeatherMonthlySection";
+import WeatherMonthlySection from "../features/weather/sections/WeatherMonthlySection";
 
 /* styles */
 import "./WeatherPage.css";
@@ -33,15 +33,11 @@ const WeatherCurrentMainContainer: React.FC = () => {
 const WeatherDetailsContainer: React.FC = () => {
   const weekly = useWeatherStore((state) => state.weekly);
 
-  const detailsError = weekly.error;
-  const detailsIsLoading = weekly.isLoading;
-  const activeDay = weekly.data?.[0] ?? null;
-
   return (
     <WeatherDetailsSection
-      data={activeDay}
-      error={detailsError}
-      isLoading={detailsIsLoading}
+      data={weekly?.data?.[0] || null}
+      error={weekly.error}
+      isLoading={weekly.isLoading}
     />
   );
 };
@@ -58,17 +54,17 @@ const WeatherDetailsContainer: React.FC = () => {
 //   );
 // };
 
-// const WeatherMonthlyContainer: React.FC = () => {
-//   const monthly = useWeatherStore((state) => state.monthly);
+const WeatherMonthlyContainer: React.FC = () => {
+  const monthly = useWeatherStore((state) => state.monthly);
 
-//   return (
-//     <WeatherMonthlySection
-//       data={monthly.data}
-//       error={monthly.error}
-//       isLoading={monthly.isLoading}
-//     />
-//   );
-// };
+  return (
+    <WeatherMonthlySection
+      data={monthly.data}
+      error={monthly.error}
+      isLoading={monthly.isLoading}
+    />
+  );
+};
 
 const WeatherPage: React.FC = () => {
   useWeatherController();
@@ -91,7 +87,7 @@ const WeatherPage: React.FC = () => {
         <WeatherCurrentMainContainer />
         <WeatherDetailsContainer />
         {/* <WeatherHourlyContainer /> */}
-        {/*<WeatherMonthlyContainer /> */}
+        <WeatherMonthlyContainer />
         {/* <WeatherGraphSection /> */}
         {/* <WeatherMapSection /> */}
         {/* <WeatherAlertsSection /> */}

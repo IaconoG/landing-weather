@@ -44,15 +44,15 @@ const useWeatherController = () => {
       keepPreviousData: true,
     },
   );
-  // const month = useWeatherProfile(
-  //   "month",
-  //   params ?? { latitude: 0, longitude: 0, timezone: "" },
-  //   {
-  //     enabled: hasLocation,
-  //     staleTimeMs: TTL.month,
-  //     keepPreviousData: true,
-  //   },
-  // );
+  const month = useWeatherProfile(
+    "month",
+    params ?? { latitude: 0, longitude: 0, timezone: "" },
+    {
+      enabled: hasLocation,
+      staleTimeMs: TTL.month,
+      keepPreviousData: true,
+    },
+  );
 
   useEffect(() => {
     if (!hasLocation) {
@@ -123,17 +123,17 @@ const useWeatherController = () => {
       stale: week.isStale,
     });
 
-    // setMonthlyState({
-    //   data: month.data?.monthly || null,
-    //   error: month.error
-    //     ? { message: month.error.message, timestamp: new Date() }
-    //     : null,
-    //   isLoading: month.isLoading,
-    //   fetchedAt: month.fetchedAt,
-    //   expiresAt: month.expiresAt,
-    //   source: month.fromCache ? "cache" : "network",
-    //   stale: month.isStale,
-    // });
+    setMonthlyState({
+      data: month.data?.monthly || null,
+      error: month.error
+        ? { message: month.error.message, timestamp: new Date() }
+        : null,
+      isLoading: month.isLoading,
+      fetchedAt: month.fetchedAt,
+      expiresAt: month.expiresAt,
+      source: month.fromCache ? "cache" : "network",
+      stale: month.isStale,
+    });
   }, [
     hasLocation,
 
@@ -153,13 +153,13 @@ const useWeatherController = () => {
     week.fromCache,
     week.isStale,
 
-    // month.data,
-    // month.error,
-    // month.fetchedAt,
-    // month.expiresAt,
-    // month.isLoading,
-    // month.fromCache,
-    // month.isStale,
+    month.data,
+    month.error,
+    month.fetchedAt,
+    month.expiresAt,
+    month.isLoading,
+    month.fromCache,
+    month.isStale,
 
     setCurrentState,
     setHourlyState,

@@ -190,7 +190,7 @@ export function useWeatherProfile<P extends WeatherProfile>(
     enabled,
     forceRefresh,
     keepPreviousData,
-    location,
+    locationKey,
     onError,
     onSuccess,
     params,
