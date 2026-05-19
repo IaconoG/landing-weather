@@ -11,9 +11,6 @@
     gap: var(--spacing-sm);
   }
 
-  & .location-controls-section__search-header {
-  }
-
   & .location-controls-section__title {
     font-size: var(--font-size-base);
     font-weight: var(--font-weight-medium);

@@ -3,7 +3,7 @@
   min-height: 1.85rem;
   height: 100%;
   border: 1px solid rgba(157, 171, 241, 0.18);
-  border-radius: var(--border-radius-sm);
+  border-radius: var(--inner-radius);
   padding: 0 var(--spacing-sm);
   background: rgba(28, 35, 76, 0.62);
   color: var(--color-text-primary);

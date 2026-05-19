@@ -76,7 +76,7 @@ const WeatherMonthlySectionContent: React.FC<
             <span className="weather-monthly-section__summary-text">
               Esta vista muestra un resumen del pronostico mensual, con la
               temperatura maxima y minima de cada dia, junto con un icono
-              representativo del clima esperado.
+              representativo del clima.
             </span>
           </div>
         </div>

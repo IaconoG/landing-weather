@@ -1,4 +1,6 @@
 .weather-details-section {
+  --outer-radius: var(--border-radius-sm);
+  --inner-radius: calc(var(--border-radius-sm) / 2);
   /* Base */
   width: 100%;
 
@@ -19,7 +21,7 @@
   & .weather-details-section__metric {
     height: 200px;
     width: 100%;
-    border-radius: var(--border-radius-lg);
+    border-radius: var(--outer-radius);
     overflow: hidden;
     padding: var(--spacing-md);
     background: color-mix(
@@ -31,7 +33,7 @@
     border: none;
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: var(--spacing-xs);
   }
 
   & .weather-details-section__metric-label {
@@ -42,7 +44,7 @@
 
   & .weather-details-section__metric-graph {
     flex: 1;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--inner-radius);
     background: linear-gradient(
       180deg,
       rgba(33, 39, 83, 0.58) 0%,
@@ -89,42 +91,15 @@
   }
 
   /* States */
-  &.weather-details-section--error,
-  &.weather-details-section--empty {
+  &.weather-details-section--error {
     border: none;
     border-radius: var(--border-radius-lg);
     box-shadow: none;
     padding: 0;
   }
 
-  & .weather-details-section__error-message,
-  & .weather-details-section__empty-message {
+  & .weather-details-section__error-message {
     margin: 0;
     color: var(--color-text-secondary);
-  }
-
-  &.weather-details-section--empty {
-    & .weather-details-section__metric-graph {
-      border-style: dashed;
-      border-color: color-mix(
-        in srgb,
-        var(--color-text-secondary) 18%,
-        transparent
-      );
-      background: linear-gradient(
-        180deg,
-        rgba(64, 72, 108, 0.25) 0%,
-        rgba(64, 72, 108, 0.08) 100%
-      );
-    }
-
-    & .weather-details-section__metric-text,
-    & .weather-details-section__metric-value {
-      color: color-mix(
-        in srgb,
-        var(--color-text-secondary) 88%,
-        var(--color-text-primary) 12%
-      );
-    }
   }
 }

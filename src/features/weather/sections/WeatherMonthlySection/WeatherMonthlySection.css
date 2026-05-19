@@ -1,4 +1,6 @@
 .weather-monthly-section {
+  --outer-radius: var(--border-radius-sm);
+  --inner-radius: calc(var(--border-radius-sm) / 2);
   /* Base */
   width: 100%;
 
@@ -19,7 +21,7 @@
   & .weather-monthly-section__content {
     padding: var(--spacing-md);
     border: none;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--outer-radius);
     background: color-mix(
       in srgb,
       var(--color-surface-strong) 84%,
@@ -50,7 +52,7 @@
   & .weather-monthly-section__grid {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     grid-template-rows: repeat(auto-fit, minmax(0, 1fr));
   }
 
@@ -72,8 +74,9 @@
     }
 
     &.weather-monthly-section__day--today {
-      border-radius: var(--border-radius-xs);
+      border-radius: var(--inner-radius);
       background: rgba(28, 35, 76, 0.7);
+
       border: 1px solid var(--color-detail-gold);
 
       &:hover {

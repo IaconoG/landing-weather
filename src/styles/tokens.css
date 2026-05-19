@@ -49,11 +49,13 @@
   --layout-max-width: 940px;
 
   /* Border Radius */
-  --border-radius-xs: 0.25rem; /* 4px */
-  --border-radius-sm: 0.429rem; /* 6px */
-  --border-radius-md: 0.5rem; /* 8px */
-  --border-radius-lg: 0.857rem; /* 12px */
-  --border-radius-xl: 1rem; /* 14px */
+  --border-radius-2xs: 0.214rem; /* 3px */
+  --border-radius-xs: 0.429rem; /* 6px */
+  --border-radius-sm: 0.571rem; /* 8px */
+  --border-radius-md: 0.857rem; /* 12px */
+  --border-radius-lg: 1rem; /* 14px */
+  --border-radius-xl: 1.286rem; /* 18px */
+  --border-radius-2xl: 1.571rem; /* 22px */
 
   /* Shadows */
   --shadow-sm: 0 2px 8px rgba(8, 11, 28, 0.14);

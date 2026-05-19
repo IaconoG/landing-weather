@@ -1,4 +1,6 @@
 .location-controls-section {
+  --outer-radius: var(--border-radius-sm);
+  --inner-radius: calc(var(--border-radius-sm) / 2);
   /* Base */
   width: 100%;
   display: grid;
@@ -6,7 +8,7 @@
   grid-template-rows: repeat(auto-fit, minmax(30px, auto));
   gap: var(--spacing-md);
   padding: var(--spacing-md);
-  border-radius: var(--border-radius-lg);
+  border-radius: var(--outer-radius);
   border: 1px solid rgba(150, 163, 236, 0.16);
   background: color-mix(in srgb, var(--color-surface-strong) 88%, transparent);
 }

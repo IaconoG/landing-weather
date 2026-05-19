@@ -9,7 +9,7 @@
     width: 100%;
     min-height: 2.4rem;
     border: 1px solid rgba(157, 171, 241, 0.18);
-    border-radius: var(--border-radius-sm);
+    border-radius: var(--inner-radius);
     padding: 0 var(--spacing-md);
     background: rgba(27, 33, 70, 0.58);
     color: var(--color-text-primary);
@@ -39,7 +39,7 @@
   & .location-input__results {
     padding: var(--spacing-xs);
     border: 1px solid rgba(157, 171, 241, 0.16);
-    border-radius: var(--border-radius-md);
+    border-radius: var(--inner-radius);
     background: rgba(24, 30, 68, 0.94);
     box-shadow: none;
     display: grid;
@@ -50,7 +50,7 @@
   & .location-input__select-button {
     width: 100%;
     border: 1px solid transparent;
-    border-radius: var(--border-radius-md);
+    border-radius: var(--inner-radius);
     padding: var(--spacing-sm);
     text-align: left;
     background: transparent;
