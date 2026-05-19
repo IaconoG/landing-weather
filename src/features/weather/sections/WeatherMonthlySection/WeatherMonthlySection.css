@@ -11,19 +11,25 @@
   }
 
   /* Content */
+  & .weather-monthly-section__container {
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+  }
   & .weather-monthly-section__content {
     padding: var(--spacing-md);
     border: none;
     border-radius: var(--border-radius-md);
-    display: flex;
-    flex-direction: column;
-    gap: var(--spacing-md);
     background: color-mix(
       in srgb,
       var(--color-surface-strong) 84%,
       transparent
     );
     box-shadow: none;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
   }
 
   /* Calendar */
@@ -31,8 +37,7 @@
     width: 100%;
     display: grid;
     grid-template-columns: repeat(7, minmax(0, 1fr));
-    gap: var(--spacing-xs);
-    margin-left: var(--spacing-sm);
+    padding-left: var(--spacing-sm);
   }
 
   & .weather-monthly-section__weekday {
@@ -47,23 +52,15 @@
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(125px, 1fr));
     grid-template-rows: repeat(auto-fit, minmax(0, 1fr));
-    gap: var(--spacing-xs);
   }
 
   & .weather-monthly-section__day {
-    height: 5.357rem;
-    border: 1px solid rgba(157, 171, 241, 0.2);
-    border-radius: var(--border-radius-sm);
+    max-width: 130px;
+    width: 100%;
+    height: 80px;
+    border-top: 1px solid rgba(157, 171, 241, 0.2);
     background: rgba(28, 35, 76, 0.4);
-    padding: var(--spacing-sm);
-    display: grid;
-    grid-template-columns: 1fr auto;
-    grid-template-rows: auto 1fr;
-    grid-template-areas:
-      "date date"
-      "icon range";
-    gap: 0 var(--spacing-xs);
-    cursor: pointer;
+    padding: var(--spacing-xs);
 
     &:hover {
       border-color: rgba(157, 171, 241, 0.3);
@@ -73,17 +70,36 @@
     &.weather-monthly-section__day--outside {
       opacity: 0.4;
     }
+
     &.weather-monthly-section__day--today {
+      border-radius: var(--border-radius-xs);
       background: rgba(28, 35, 76, 0.7);
-      border-color: var(--color-detail-gold);
+      border: 1px solid var(--color-detail-gold);
+
+      &:hover {
+        background: rgba(28, 35, 76, 0.9);
+        border-color: rgba(255, 215, 0, 0.8);
+      }
     }
+
+    &.weather-monthly-section__day--placeholder:hover {
+      background: rgba(28, 35, 76, 0.8);
+    }
+  }
+  & .weather-monthly-section__day-button {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+      "date day"
+      "icon range";
+    gap: 0 var(--spacing-2xs);
+    padding: var(--spacing-2xs) var(--spacing-xs);
+    cursor: pointer;
 
     &.weather-monthly-section__day--placeholder {
       cursor: default;
-
-      &:hover {
-        background: rgba(28, 35, 76, 0.8);
-      }
     }
   }
 
@@ -96,32 +112,27 @@
   }
 
   & .weather-monthly-section__day-day {
-    grid-area: date;
+    grid-area: day;
     margin: 0;
     color: var(--color-text-muted);
     font-size: var(--font-size-2xs);
     text-align: right;
-    /* default hidden */
-    opacity: 0;
-    display: none;
-    visibility: hidden;
   }
 
   & .weather-monthly-section__day-icon {
     grid-area: icon;
-    font-size: var(--font-size-2xs);
     min-height: 100%;
     text-align: center;
     align-content: center;
-    word-spacing: 100%;
     width: min-content;
     justify-self: center;
+    font-size: var(--font-size-2xs);
+    line-height: 1.2;
 
     &.weather-monthly-section__day-icon--placeholder {
       display: grid;
       place-items: center;
       font-size: var(--font-size-2xs);
-      color: var(--color-text-muted);
       text-align: center;
       font-weight: var(--font-weight-medium);
       line-height: 1.2;
@@ -156,9 +167,6 @@
   }
 
   /* States */
-  & .weather-monthly-section__content--skeleton {
-    padding: 0;
-  }
 
   & .weather-monthly-section__content--placeholder {
     background: color-mix(

@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import type {
   WeatherError,
   MonthlyForecastItem,
@@ -7,6 +8,8 @@ import {
   WeatherMonthlySectionSkeleton,
 } from "./components";
 import "./WeatherMonthlySection.css";
+import { PLACEHOLDER_MONTHLY_VIEW_MODEL } from "./view-model/weatherMonthly.placeholder";
+import { buildMonthlySectionViewModel } from "./view-model/buildMonthlySectionViewModel";
 
 type WeatherMonthlySectionProps = {
   data: MonthlyForecastItem[] | null;
@@ -19,19 +22,20 @@ const WeatherMonthlySection: React.FC<WeatherMonthlySectionProps> = ({
   error,
   isLoading,
 }) => {
-  const hasNoData = Boolean(error) || !data || data.length === 0;
+  const shouldShowPlaceholder = Boolean(error) || !data;
+
+  const viewModel = useMemo(() => {
+    if (shouldShowPlaceholder) return PLACEHOLDER_MONTHLY_VIEW_MODEL;
+    const monthlyViewModel = buildMonthlySectionViewModel(data);
+    return monthlyViewModel;
+  }, [shouldShowPlaceholder, data]);
 
   if (isLoading) return <WeatherMonthlySectionSkeleton />;
 
   return (
     <WeatherMonthlySectionContent
-      data={hasNoData ? [] : data}
-      sectionStateClass={
-        hasNoData ? "weather-monthly-section--placeholder" : ""
-      }
-      contentStateClass={
-        hasNoData ? "weather-monthly-section__content--placeholder" : ""
-      }
+      data={viewModel}
+      isPlaceholder={shouldShowPlaceholder}
     />
   );
 };

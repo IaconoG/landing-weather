@@ -2,18 +2,20 @@ import BaseSkeleton from "../../../../../shared/components/BaseSkeleton";
 
 const WeatherMonthlySectionSkeleton: React.FC = () => {
   return (
-    <section className="weather-monthly-section weather-monthly-section--skeleton">
-      <div className="weather-monthly-section__title">
-        <BaseSkeleton
-          className="weather-monthly-section__skeleton-title"
-          variant="text"
-          height={24}
-          width={400}
-        />
-      </div>
-      <div className="weather-monthly-section__content weather-monthly-section__content--skeleton">
-        <BaseSkeleton variant="card" height={300} width={960} />
-      </div>
+    <section className="weather-monthly-section">
+      <BaseSkeleton
+        className="weather-monthly-section__title"
+        variant="text"
+        height={24}
+        width={400}
+      />
+
+      <BaseSkeleton
+        className="weather-monthly-section__container"
+        variant="card"
+        height={480}
+        width={960}
+      />
     </section>
   );
 };

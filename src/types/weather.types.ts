@@ -177,7 +177,6 @@ export type MonthlyForecastItem = {
   maxTemperature: WeatherValueUI;
   maxPrecipitationProbability: WeatherValueUI;
   maxWindSpeed: WeatherValueUI;
-  maxWindDirection: WeatherValueUI;
   maxHumidity: WeatherValueUI;
   weatherCode?: WmoWeatherCode;
   weatherDescription: WeatherDescription;
